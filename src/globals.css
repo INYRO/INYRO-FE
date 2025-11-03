@@ -5,3 +5,59 @@
         @apply flex min-h-screen max-w-sm mx-auto items-center justify-center;
     }
 }
+
+@layer base {
+    /* Title */
+    h1 {
+        @apply text-[48px] font-bold;
+    }
+    h2 {
+        @apply text-[32px] font-bold;
+    }
+    h3 {
+        @apply text-base font-medium;
+    }
+    h4 {
+        @apply text-[11px] font-medium;
+    }
+    /* Body/T2 기준(본문 텍스트) */
+    p {
+        @apply text-base font-semibold;
+    }
+}
+
+@layer utilities {
+    /* Body 텍스트 */
+    .body-t1 {
+        @apply text-base font-bold;
+    }
+    .body-t2 {
+        @apply text-base font-semibold;
+    }
+    .body-t3 {
+        @apply text-[13px] font-medium;
+    }
+    .body-t4 {
+        @apply text-[13px] font-normal;
+    }
+    .body-t5 {
+        @apply text-[10px] font-semibold;
+    }
+    .body-t6 {
+        @apply text-[10px] font-medium;
+    }
+    .body-t7 {
+        @apply text-[10px] font-normal;
+    }
+
+    /* Button 텍스트 */
+    .btn-main {
+        @apply text-base font-semibold;
+    }
+    .btn-sub {
+        @apply text-[13px] font-semibold;
+    }
+    .btn-sub2 {
+        @apply text-[10px] font-light;
+    }
+}
