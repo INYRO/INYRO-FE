@@ -1,3 +1,7 @@
 export default function Home() {
-    return <main></main>;
+    return (
+        <>
+            <span className="font-pretendard-light">!23</span>
+        </>
+    );
 }
