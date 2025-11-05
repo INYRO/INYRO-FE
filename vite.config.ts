@@ -10,7 +10,7 @@ export default defineConfig({
     resolve: {
         // alias 설정(절대 경로)
         alias: {
-            "@": path.resolve(path.dirname(fileURLToPath(import.meta.url)), "./src"),
+            "@": path.resolve(import.meta.dirname, "./src"),
         },
     },
 });
