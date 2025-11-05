@@ -1,5 +1,5 @@
-import { useAppDispatch, useAppSelector } from "../../store/hooks";
-import { closeModal } from "../../store/modalSlice";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { closeModal } from "@/store/modalSlice";
 
 export default function Modal() {
     const dispatch = useAppDispatch();
