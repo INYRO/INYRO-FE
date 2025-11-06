@@ -58,63 +58,58 @@
         @apply text-base font-pretendard-semiBold text-text bg-background-100;
     }
 
-    /* Main */
-    main {
-        @apply flex min-h-screen max-w-sm mx-auto items-center justify-center;
-    }
-
     /* Title */
     h1 {
-        @apply text-[48px] font-pretendard-bold;
+        @apply text-[48px] font-pretendard-bold font-bold text-primary;
     }
     h2 {
-        @apply text-[32px] font-pretendard-bold;
+        @apply text-[32px] font-pretendard-bold font-bold;
     }
     h3 {
-        @apply text-base font-pretendard-medium;
+        @apply text-base font-pretendard-medium font-medium text-primary;
     }
     h4 {
-        @apply text-[11px] font-pretendard-medium;
+        @apply text-[11px] font-pretendard-medium font-medium;
     }
 
     /* Body(T2 기준(본문 텍스트)) */
     p {
-        @apply text-base font-pretendard-semiBold;
+        @apply text-base font-pretendard-semiBold font-semibold;
     }
 }
 
 @layer utilities {
     /* Body 텍스트 */
     .body-t1 {
-        @apply text-base font-pretendard-bold;
+        @apply text-base font-pretendard-bold font-bold;
     }
     .body-t2 {
-        @apply text-base font-pretendard-semiBold;
+        @apply text-base font-pretendard-semiBold font-semibold;
     }
     .body-t3 {
-        @apply text-[13px] font-pretendard-medium;
+        @apply text-[13px] font-pretendard-medium font-medium;
     }
     .body-t4 {
-        @apply text-[13px] font-pretendard-regular;
+        @apply text-[13px] font-pretendard-regular font-normal;
     }
     .body-t5 {
-        @apply text-[10px] font-pretendard-semiBold;
+        @apply text-[10px] font-pretendard-semiBold font-semibold;
     }
     .body-t6 {
-        @apply text-[10px] font-pretendard-medium;
+        @apply text-[10px] font-pretendard-medium font-medium;
     }
     .body-t7 {
-        @apply text-[10px] font-pretendard-regular;
+        @apply text-[10px] font-pretendard-regular font-normal;
     }
 
     /* Button 텍스트 */
     .btn-main {
-        @apply text-base font-pretendard-semiBold;
+        @apply text-base font-pretendard-semiBold font-semibold;
     }
     .btn-sub {
-        @apply text-[13px] font-pretendard-semiBold;
+        @apply text-[13px] font-pretendard-semiBold font-semibold text-[#1A1F1E];
     }
     .btn-sub2 {
-        @apply text-[10px] font-pretendard-light;
+        @apply text-[10px] font-pretendard-light font-light text-[#1A1F1E];
     }
 }
