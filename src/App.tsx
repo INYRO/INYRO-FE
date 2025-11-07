@@ -14,7 +14,7 @@ function App() {
 
     return (
         <>
-            <main className="relative flex flex-col max-w-sm mx-auto items-center justify-center gap-5 min-h-screen p-9">
+            <main className="relative v-stack max-w-sm mx-auto items-center justify-center gap-5 min-h-screen p-9">
                 {/* 세션 로그아웃 버튼 */}
                 {isLogin && (
                     <button

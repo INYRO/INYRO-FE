@@ -45,7 +45,7 @@ export const router = createBrowserRouter([
                 element: <Reserve />,
             },
             {
-                path: "my_page",
+                path: "mypage",
                 element: <MyPage />,
             },
 

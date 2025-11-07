@@ -4,7 +4,7 @@ import SubLogo from "@/components/common/subLogo";
 
 export default function Register() {
     return (
-        <div className="flex flex-col gap-9">
+        <div className="v-stack w-full gap-9">
             <SubLogo />
             <section className="flex flex-col gap-[5px]">
                 <article className="bg-background-200 rounded-[10px] p-5 flex flex-col gap-2">

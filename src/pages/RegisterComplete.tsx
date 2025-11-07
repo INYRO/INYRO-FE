@@ -4,7 +4,7 @@ import MainLogo from "@/components/common/mainLogo";
 
 export default function RegisterComplete() {
     return (
-        <div className="w-full flex flex-col gap-10">
+        <div className="v-stack w-full gap-10">
             <MainLogo />
             <form className="flex flex-col">
                 <article className="flex flex-col gap-2.5 mb-[15px]">

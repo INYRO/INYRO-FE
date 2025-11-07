@@ -113,3 +113,10 @@
         @apply text-[10px] font-pretendard-light font-light text-main;
     }
 }
+
+@layer components {
+    /* layout */
+    .v-stack {
+        @apply flex flex-col;
+    }
+}
