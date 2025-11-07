@@ -1,6 +1,6 @@
 import FormButton from "@/components/account/formButton";
 import FormInput from "@/components/account/formInput";
-import MainLogo from "@/components/common/mainLogo";
+import MainLogo from "@/components/common/logo/mainLogo";
 
 export default function RegisterComplete() {
     return (

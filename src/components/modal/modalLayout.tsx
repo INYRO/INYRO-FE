@@ -1,6 +1,9 @@
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { closeModal } from "@/store/modalSlice";
-import NeedLoginModal from "../modal/findPasswordModal";
+import ChangePasswordModal from "./changePasswordModal";
+import DeleteAccountModal from "./deleteAccountModal";
+import FindPasswordModal from "./findPasswordModal";
+import ReserveCompleteModal from "./reserveCompleteModal";
 
 export default function ModalLayout() {
     const dispatch = useAppDispatch();
@@ -16,9 +19,12 @@ export default function ModalLayout() {
         >
             <div
                 onClick={(e) => e.stopPropagation()}
-                className="z-20 w-[250px] flex flex-col p-5 bg-white gap-[15px] rounded-[10px]"
+                className="z-20 w-[280px] flex flex-col p-5 bg-white gap-[15px] rounded-[10px]"
             >
-                {modalType === "findPassword" && <NeedLoginModal />}
+                {modalType === "findPassword" && <FindPasswordModal />}
+                {modalType === "changePassword" && <ChangePasswordModal />}
+                {modalType === "deleteAccount" && <DeleteAccountModal />}
+                {modalType === "reserveComplete" && <ReserveCompleteModal />}
             </div>
         </div>
     );

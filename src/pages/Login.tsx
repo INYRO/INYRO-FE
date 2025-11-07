@@ -1,7 +1,7 @@
 import FormButton from "@/components/account/formButton";
 import FormInput from "@/components/account/formInput";
-import LinkButton from "@/components/common/linkButton";
-import MainLogo from "@/components/common/mainLogo";
+import LinkButton from "@/components/common/button/linkButton";
+import MainLogo from "@/components/common/logo/mainLogo";
 import { useAppDispatch } from "@/store/hooks";
 import { openModal } from "@/store/modalSlice";
 

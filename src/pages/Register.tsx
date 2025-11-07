@@ -1,6 +1,6 @@
 import FormButton from "@/components/account/formButton";
 import FormInput from "@/components/account/formInput";
-import SubLogo from "@/components/common/subLogo";
+import SubLogo from "@/components/common/logo/subLogo";
 
 export default function Register() {
     return (

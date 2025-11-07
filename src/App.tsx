@@ -1,5 +1,5 @@
 import { Outlet } from "react-router-dom";
-import ModalLayout from "./components/common/modalLayout";
+import ModalLayout from "./components/modal/modalLayout";
 import { logout } from "./store/authSlice";
 import { useAppDispatch, useAppSelector } from "./store/hooks";
 

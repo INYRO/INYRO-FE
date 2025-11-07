@@ -81,7 +81,7 @@
 @layer utilities {
     /* Body 텍스트 */
     .body-t1 {
-        @apply text-base font-pretendard-bold font-bold text-main;
+        @apply text-base font-pretendard-bold font-bold;
     }
     .body-t2 {
         @apply text-base font-pretendard-semiBold font-semibold text-main;

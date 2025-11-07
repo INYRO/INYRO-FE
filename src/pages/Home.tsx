@@ -1,5 +1,5 @@
-import LinkButton from "@/components/common/linkButton";
-import MainLogo from "@/components/common/mainLogo";
+import LinkButton from "@/components/common/button/linkButton";
+import MainLogo from "@/components/common/logo/mainLogo";
 import { useAppSelector } from "@/store/hooks";
 
 export default function Home() {
