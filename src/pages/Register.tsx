@@ -53,7 +53,7 @@ export default function Register() {
                             샘물 통합로그인을 통해 재학생 인증을 진행합니다.
                         </span>
                         <span className="body-t5">
-                            상명대학교 샘물포털시스템학번/비밀번호
+                            상명대학교 샘물포털시스템 학번/비밀번호
                         </span>
                     </div>
                     <form className="flex flex-col">
@@ -62,11 +62,13 @@ export default function Register() {
                                 label="학번"
                                 isPlaceholder={false}
                                 isError={true}
+                                disabled={false}
                             />
                             <FormInput
                                 label="비밀번호"
                                 isPlaceholder={false}
                                 isError={false}
+                                disabled={false}
                             />
                         </div>
                         <span className="body-t7 text-accent">
