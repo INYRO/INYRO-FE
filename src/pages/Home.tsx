@@ -1,5 +1,5 @@
 import LinkButton from "@/components/common/linkButton";
-import Logo from "@/components/common/logo";
+import MainLogo from "@/components/common/mainLogo";
 import { useAppSelector } from "@/store/hooks";
 
 export default function Home() {
@@ -7,7 +7,7 @@ export default function Home() {
 
     return (
         <div className="flex flex-col gap-5">
-            <Logo />
+            <MainLogo />
             <section className="flex flex-col w-full gap-2.5">
                 {isLogin ? (
                     <>

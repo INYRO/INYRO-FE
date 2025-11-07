@@ -1,4 +1,4 @@
-export default function Logo() {
+export default function MainLogo() {
     return (
         <section className="text-center">
             <h1>INYRO</h1>
