@@ -4,7 +4,7 @@ import { logout } from "./store/authSlice";
 import { useAppDispatch, useAppSelector } from "./store/hooks";
 
 function App() {
-    const dispatch = useAppDispatch(); // isLogin 상태를 upload 위한 dispatch 선언
+    const dispatch = useAppDispatch(); // isLogin 상태를 업데이트하기 위한 dispatch 선언
     const isLogin = useAppSelector((state) => state.authState.isLogin); // redux store에서 isLogin state 가져옴
 
     /* 로그아웃 handling function */
