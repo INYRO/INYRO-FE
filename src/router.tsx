@@ -7,6 +7,7 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import MyPage from "./pages/MyPage";
 import Register from "./pages/Register";
+import RegisterComplete from "./pages/RegisterComplete";
 import Reserve from "./pages/Reserve";
 
 // 라우트 정의
@@ -27,14 +28,24 @@ export const router = createBrowserRouter([
             },
             {
                 path: "register",
-                element: <Register />,
+                element: <Outlet />,
+                children: [
+                    {
+                        index: true, // path: '/register'
+                        element: <Register />,
+                    },
+                    {
+                        path: "complete", // path: '/register/complete'
+                        element: <RegisterComplete />,
+                    },
+                ],
             },
             {
                 path: "reserve",
                 element: <Reserve />,
             },
             {
-                path: "my_page",
+                path: "mypage",
                 element: <MyPage />,
             },
 
