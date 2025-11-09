@@ -3,6 +3,7 @@ interface LinkButtonProps {
     bgColor: string;
     textColor: string;
     isBorder: boolean;
+    isLoading?: boolean;
 }
 
 export default function FormButton({
@@ -10,12 +11,16 @@ export default function FormButton({
     bgColor,
     textColor,
     isBorder,
+    isLoading = false,
 }: LinkButtonProps) {
     return (
         <button
             className={`text-center w-full py-2 rounded-[10px] ${isBorder && "border"} border-background-200 ${bgColor}`}
+            disabled={isLoading}
         >
-            <span className={`btn-main ${textColor}`}>{text}</span>
+            <span className={`btn-main ${textColor}`}>
+                {isLoading ? "로딩 중..." : text}
+            </span>
         </button>
     );
 }

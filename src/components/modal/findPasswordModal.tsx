@@ -1,5 +1,5 @@
-import FormButton from "../account/formButton";
-import FormInput from "../account/formInput";
+import FormButton from "../common/button/formButton";
+import FormInput from "../input/formInput";
 
 export default function FindPasswordModal() {
     return (

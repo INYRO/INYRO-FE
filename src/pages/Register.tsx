@@ -1,6 +1,6 @@
-import FormButton from "@/components/account/formButton";
-import FormInput from "@/components/account/formInput";
+import FormButton from "@/components/common/button/formButton";
 import SubLogo from "@/components/common/logo/subLogo";
+import FormInput from "@/components/input/formInput";
 
 export default function Register() {
     return (

@@ -14,6 +14,7 @@
         "@hookform/resolvers": "^5.2.2",
         "@reduxjs/toolkit": "^2.10.1",
         "@tailwindcss/vite": "^4.1.16",
+        "js-cookie": "^3.0.5",
         "react": "^19.1.1",
         "react-dom": "^19.1.1",
         "react-hook-form": "^7.66.0",
@@ -24,6 +25,7 @@
     },
     "devDependencies": {
         "@eslint/js": "^9.36.0",
+        "@types/js-cookie": "^3.0.6",
         "@types/node": "^24.6.0",
         "@types/react": "^19.1.16",
         "@types/react-dom": "^19.1.9",
