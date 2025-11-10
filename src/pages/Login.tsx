@@ -1,24 +1,38 @@
+import axiosInstance from "@/api/axiosInstance";
 import FormButton from "@/components/common/button/formButton";
 import LinkButton from "@/components/common/button/linkButton";
 import MainLogo from "@/components/common/logo/mainLogo";
 import FormInput from "@/components/input/formInput";
 import { loginSchema, type LoginType } from "@/schema/loginSchema";
+import { login } from "@/store/authSlice";
 import { useAppDispatch } from "@/store/hooks";
 import { openModal } from "@/store/modalSlice";
 import { zodResolver } from "@hookform/resolvers/zod";
+import axios from "axios";
+import Cookies from "js-cookie";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 
 interface LoginResponse {
     isSuccess: boolean;
     code: string;
     message: string;
-    result: null;
+    result: {
+        accessToken: string;
+        refreshToken: string;
+    };
 }
 
 export default function Login() {
     const [isLoading, setIsLoading] = useState(false);
 
+    const dispatch = useAppDispatch();
+    const handleModalOpen = () => {
+        dispatch(openModal("findPassword"));
+    };
+
+    const navigate = useNavigate();
     const { register, handleSubmit } = useForm<LoginType>({
         resolver: zodResolver(loginSchema),
     });
@@ -26,34 +40,39 @@ export default function Login() {
         setIsLoading(true);
         try {
             // fetch-POST('/api/v1/auth/login', data) [데이터를 로그인 검증 API로 전송]
-            const response = await fetch(
-                "https://api.inyro.com/api/v1/auth/login",
-                {
-                    method: "POST",
-                    headers: {
-                        accept: "*/*",
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(data),
-                }
+            const response = await axiosInstance.post<LoginResponse>(
+                "/auth/login",
+                data
             );
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+            if (response.data.isSuccess && response.data.code === "200") {
+                const accessToken = response.data.result.accessToken;
+                const refreshToken = response.data.result.refreshToken;
+                Cookies.set("accessToken", accessToken, {
+                    expires: 1 / 48,
+                    sameSite: "Lax",
+                });
+                Cookies.set("refreshToken", refreshToken, {
+                    expires: 7,
+                    sameSite: "Lax",
+                });
+                dispatch(login());
+                await navigate("/");
             }
-            const result = (await response.json()) as LoginResponse;
-            console.log(result);
         } catch (err) {
-            console.warn("로그인 실패", err);
+            if (axios.isAxiosError(err)) {
+                console.warn("로그인 실패", err.response?.data || err.message);
+                // 에러 상태 코드별 처리 가능
+                if (err.response?.status === 401) {
+                    // 인증 실패 처리
+                    alert("학번 또는 비밀번호가 일치하지 않습니다.");
+                }
+            } else {
+                console.warn("알 수 없는 에러", err);
+            }
         } finally {
             setIsLoading(false);
         }
     });
-
-    const dispatch = useAppDispatch();
-
-    const handleModalOpen = () => {
-        dispatch(openModal("findPassword"));
-    };
     return (
         <div className="v-stack w-full gap-10">
             <MainLogo />
