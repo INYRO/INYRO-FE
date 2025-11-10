@@ -1,15 +1,49 @@
+import axios from "axios";
+import Cookies from "js-cookie";
+import { useState } from "react";
 import { Outlet } from "react-router-dom";
+import axiosInstance from "./api/axiosInstance";
 import ModalLayout from "./components/modal/modalLayout";
 import { logout } from "./store/authSlice";
 import { useAppDispatch, useAppSelector } from "./store/hooks";
+
+interface LogoutResponse {
+    isSuccess: boolean;
+    code: string;
+    message: string;
+    result: string;
+}
 
 function App() {
     const dispatch = useAppDispatch(); // isLogin 상태를 업데이트하기 위한 dispatch 선언
     const isLogin = useAppSelector((state) => state.authState.isLogin); // redux store에서 isLogin state 가져옴
 
+    const [isLoading, setIsLoading] = useState(false);
     /* 로그아웃 handling function */
-    const handleLogout = () => {
-        dispatch(logout());
+    const handleLogout = async () => {
+        setIsLoading(true);
+        try {
+            const response =
+                await axiosInstance.post<LogoutResponse>("/auth/logout");
+
+            if (response.data.isSuccess) {
+                Cookies.remove("accessToken");
+                Cookies.remove("refreshToken");
+                dispatch(logout());
+            }
+        } catch (err) {
+            if (axios.isAxiosError(err)) {
+                console.warn(
+                    "로그아웃 실패",
+                    err.response?.data || err.message
+                );
+                // 에러 상태 코드별 처리 가능
+            } else {
+                console.warn("알 수 없는 에러", err);
+            }
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -18,7 +52,8 @@ function App() {
                 {/* 세션 로그아웃 버튼 */}
                 {isLogin && (
                     <button
-                        onClick={handleLogout}
+                        onClick={() => void handleLogout()}
+                        disabled={isLoading}
                         className="top-0 right-0 absolute btn-sub2 m-5 px-2 py-1 border border-background-200 rounded-md"
                     >
                         로그아웃
