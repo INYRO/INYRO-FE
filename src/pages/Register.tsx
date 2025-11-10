@@ -1,8 +1,56 @@
+import axiosInstance from "@/api/axiosInstance";
 import FormButton from "@/components/common/button/formButton";
 import SubLogo from "@/components/common/logo/subLogo";
 import FormInput from "@/components/input/formInput";
+import type { LoginType } from "@/schema/loginSchema";
+import { type RegisterType, registerSchema } from "@/schema/registerSchema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import axios from "axios";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
+
+interface RegisterResponse {
+    isSuccess: boolean;
+    code: string;
+    message: string;
+    result: {
+        sno: string;
+        name: string;
+        dept: string;
+        registered: boolean;
+    };
+}
 
 export default function Register() {
+    const [isLoading, setIsLoading] = useState(false);
+    const navigate = useNavigate();
+
+    const { register, handleSubmit } = useForm<RegisterType>({
+        resolver: zodResolver(registerSchema),
+    });
+    const onSubmit = handleSubmit(async (data: LoginType) => {
+        setIsLoading(true);
+        try {
+            const response = await axiosInstance.post<RegisterResponse>(
+                "/auth/smul",
+                data
+            );
+            console.log(response);
+        } catch (err) {
+            if (axios.isAxiosError(err)) {
+                console.warn("로그인 실패", err.response?.data || err.message);
+                // 에러 상태 코드별 처리 가능
+                if (err.response?.status === 401) {
+                    // 인증 실패 처리
+                    alert("학번 또는 비밀번호가 일치하지 않습니다.");
+                }
+            }
+        } finally {
+            setIsLoading(false);
+        }
+    });
+
     return (
         <div className="v-stack w-full gap-9">
             <SubLogo />
@@ -59,16 +107,14 @@ export default function Register() {
                     <form className="flex flex-col">
                         <div className="flex flex-col gap-3 mb-[9px]">
                             <FormInput
-                                label="학번"
-                                isPlaceholder={false}
-                                isError={true}
-                                disabled={false}
+                                type="text"
+                                {...register("sno")}
+                                required
                             />
                             <FormInput
-                                label="비밀번호"
-                                isPlaceholder={false}
-                                isError={false}
-                                disabled={false}
+                                type="password"
+                                {...register("password")}
+                                required
                             />
                         </div>
                         <span className="body-t7 text-accent">
