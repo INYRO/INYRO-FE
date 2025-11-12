@@ -1,5 +1,5 @@
 import MainLogo from "@/components/common/logo/mainLogo";
-import { useAppDispatch } from "@/store/hooks";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { openModal } from "@/store/modalSlice";
 
 export default function MyPage() {
@@ -9,6 +9,8 @@ export default function MyPage() {
         if (id === "change") dispatch(openModal("changePassword"));
         if (id === "delete") dispatch(openModal("deleteAccount"));
     };
+
+    const { sno, dept, name } = useAppSelector((state) => state.authState);
 
     const dummy = [
         { date: "2025.10.04 (토)", time: "12:00 ~ 14:00" },
@@ -25,18 +27,18 @@ export default function MyPage() {
             </div>
             <div className="flex flex-col gap-[30px]">
                 <section className="flex flex-col gap-[15px]">
-                    <p className="body-t1">내 정보</p>
+                    <p className="body-t1">{}</p>
                     <article className="flex flex-col gap-[5px]">
                         <p className="body-t1">김수뭉</p>
                         <div className="flex gap-2 body-t3">
                             <div className="flex gap-1">
-                                <span>학번</span>
-                                <span>202511111</span>
+                                <span>{name}</span>
+                                <span>{sno}</span>
                             </div>
                             <span>&#183;</span>
                             <div className="flex gap-1">
                                 <span>학과</span>
-                                <span>컴퓨터과학전공</span>
+                                <span>{dept}</span>
                             </div>
                         </div>
                     </article>

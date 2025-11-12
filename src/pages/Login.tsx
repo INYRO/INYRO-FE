@@ -24,6 +24,19 @@ interface LoginResponse {
     };
 }
 
+interface MemberResponse {
+    isSuccess: boolean;
+    code: string;
+    message: string;
+    result: {
+        id: number;
+        sno: string;
+        name: string;
+        dept: string;
+        status: string;
+    };
+}
+
 export default function Login() {
     const [isLoading, setIsLoading] = useState(false);
 
@@ -55,7 +68,16 @@ export default function Login() {
                     expires: 7,
                     sameSite: "Lax",
                 });
-                dispatch(login());
+
+                const user =
+                    await axiosInstance.get<MemberResponse>("/members/my");
+                dispatch(
+                    login({
+                        sno: user.data.result.sno,
+                        name: user.data.result.name,
+                        dept: user.data.result.dept,
+                    })
+                );
                 await navigate("/");
             }
         } catch (err) {

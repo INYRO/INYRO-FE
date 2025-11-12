@@ -1,7 +1,7 @@
 import axios from "axios";
 import Cookies from "js-cookie";
 import { useState } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import axiosInstance from "./api/axiosInstance";
 import ModalLayout from "./components/modal/modalLayout";
 import { logout } from "./store/authSlice";
@@ -17,6 +17,7 @@ interface LogoutResponse {
 function App() {
     const dispatch = useAppDispatch(); // isLogin 상태를 업데이트하기 위한 dispatch 선언
     const isLogin = useAppSelector((state) => state.authState.isLogin); // redux store에서 isLogin state 가져옴
+    const navigate = useNavigate();
 
     const [isLoading, setIsLoading] = useState(false);
     /* 로그아웃 handling function */
@@ -30,6 +31,7 @@ function App() {
                 Cookies.remove("accessToken");
                 Cookies.remove("refreshToken");
                 dispatch(logout());
+                await navigate("/");
             }
         } catch (err) {
             if (axios.isAxiosError(err)) {
