@@ -36,12 +36,11 @@ export default function ChangePasswordModal() {
             }
         } catch (err) {
             if (axios.isAxiosError(err)) {
-                console.warn("로그인 실패", err.response?.data || err.message);
+                console.warn(
+                    "비밀번호 변경 실패",
+                    err.response?.data || err.message
+                );
                 // 에러 상태 코드별 처리 가능
-                if (err.response?.status === 401) {
-                    // 인증 실패 처리
-                    alert("학번 또는 비밀번호가 일치하지 않습니다.");
-                }
             } else {
                 console.warn("알 수 없는 에러", err);
             }

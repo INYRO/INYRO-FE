@@ -16,7 +16,7 @@ const _Input = (
                 ref={ref}
                 name={name}
                 {...rest}
-                className={`h-[35px] ring-1  rounded-[10px] body-t6 px-[15px] bg-white disabled:bg-background-200 ${error ? "ring-accent" : "ring-background-200"} `}
+                className={`h-[35px] ring-1  rounded-[10px] body-t6 px-[15px] bg-white read-only:bg-background-200 ${error ? "ring-accent" : "ring-background-200"} `}
             />
         </div>
     );
