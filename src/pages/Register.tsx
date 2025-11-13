@@ -1,8 +1,67 @@
-import FormButton from "@/components/account/formButton";
-import FormInput from "@/components/account/formInput";
+import axiosInstance from "@/api/axiosInstance";
+import FormButton from "@/components/common/button/formButton";
 import SubLogo from "@/components/common/logo/subLogo";
+import FormInput from "@/components/input/formInput";
+import type { LoginType } from "@/schema/loginSchema";
+import { type RegisterType, registerSchema } from "@/schema/registerSchema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import axios from "axios";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
+
+interface RegisterResponse {
+    isSuccess: boolean;
+    code: string;
+    message: string;
+    result: {
+        sno: string;
+        name: string;
+        dept: string;
+        registered: boolean;
+    };
+}
 
 export default function Register() {
+    const [agreed, setAgreed] = useState(false);
+
+    const [isLoading, setIsLoading] = useState(false);
+    const navigate = useNavigate();
+
+    const { register, handleSubmit } = useForm<RegisterType>({
+        resolver: zodResolver(registerSchema),
+    });
+    const onSubmit = handleSubmit(async (data: LoginType) => {
+        if (!agreed) {
+            alert("약관에 동의해주세요.");
+            return;
+        }
+
+        setIsLoading(true);
+        try {
+            const response = await axiosInstance.post<RegisterResponse>(
+                "/auth/smul",
+                data
+            );
+            if (response.data.isSuccess) {
+                await navigate("/register/complete", {
+                    state: {
+                        userData: response.data.result,
+                    },
+                });
+            }
+        } catch (err) {
+            if (axios.isAxiosError(err)) {
+                console.warn(
+                    "회원가입 실패",
+                    err.response?.data || err.message
+                );
+            }
+        } finally {
+            setIsLoading(false);
+        }
+    });
+
     return (
         <div className="v-stack w-full gap-9">
             <SubLogo />
@@ -38,7 +97,10 @@ export default function Register() {
                         </li>
                     </ol>
                 </article>
-                <form className="ml-[5px] flex gap-[3px] items-center">
+                <form
+                    onChange={() => void setAgreed((prev) => !prev)}
+                    className="ml-[5px] flex gap-[3px] items-center"
+                >
                     <input type="checkbox" className="size-2.5" />
                     <label className="body-t7">다음 약관에 동의합니다.</label>
                 </form>
@@ -56,19 +118,20 @@ export default function Register() {
                             상명대학교 샘물포털시스템 학번/비밀번호
                         </span>
                     </div>
-                    <form className="flex flex-col">
+                    <form
+                        onSubmit={(e) => void onSubmit(e)}
+                        className="flex flex-col"
+                    >
                         <div className="flex flex-col gap-3 mb-[9px]">
                             <FormInput
-                                label="학번"
-                                isPlaceholder={false}
-                                isError={true}
-                                disabled={false}
+                                type="text"
+                                {...register("sno")}
+                                required
                             />
                             <FormInput
-                                label="비밀번호"
-                                isPlaceholder={false}
-                                isError={false}
-                                disabled={false}
+                                type="password"
+                                {...register("password")}
+                                required
                             />
                         </div>
                         <span className="body-t7 text-accent">
@@ -77,10 +140,11 @@ export default function Register() {
                         </span>
                         <div className="mt-[9px]">
                             <FormButton
-                                text="인증"
+                                text="회원가입"
                                 bgColor="bg-secondary"
                                 isBorder={false}
                                 textColor="text-white"
+                                isLoading={isLoading}
                             />
                         </div>
                     </form>

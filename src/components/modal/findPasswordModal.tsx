@@ -1,5 +1,5 @@
-import FormButton from "../account/formButton";
-import FormInput from "../account/formInput";
+import FormButton from "../common/button/formButton";
+import FormInput from "../input/formInput";
 
 export default function FindPasswordModal() {
     return (
@@ -10,18 +10,8 @@ export default function FindPasswordModal() {
             </div>
             <form className="flex flex-col gap-[15px]">
                 <article className="flex flex-col gap-[5px]">
-                    <FormInput
-                        isPlaceholder={true}
-                        label="학번"
-                        isError={false}
-                        disabled={false}
-                    />
-                    <FormInput
-                        isPlaceholder={true}
-                        label="샘물 비밀번호"
-                        isError={true}
-                        disabled={false}
-                    />
+                    <FormInput name="학번" />
+                    <FormInput name="샘물 비밀번호" />
                 </article>
                 <FormButton
                     text="인증"

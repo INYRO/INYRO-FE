@@ -19,7 +19,7 @@ export default function Home() {
                             isBorder={false}
                         />
                         <LinkButton
-                            url="/my_page"
+                            url="/mypage"
                             text="마이페이지"
                             bgColor="bg-white"
                             textColor="text-black"
