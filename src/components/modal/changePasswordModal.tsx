@@ -21,7 +21,12 @@ interface ChangePasswordResponse {
 export default function ChangePasswordModal() {
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
-    const { register, handleSubmit } = useForm<ChangePasswordType>({
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+        setError,
+    } = useForm<ChangePasswordType>({
         resolver: zodResolver(changePasswordSchema),
     });
     const onSubmit = handleSubmit(async (data: ChangePasswordType) => {
@@ -35,14 +40,21 @@ export default function ChangePasswordModal() {
                 await navigate("/");
             }
         } catch (err) {
-            if (axios.isAxiosError(err)) {
+            if (axios.isAxiosError<ChangePasswordResponse>(err)) {
                 console.warn(
                     "비밀번호 변경 실패",
                     err.response?.data || err.message
                 );
-                // 에러 상태 코드별 처리 가능
+                setError("root", {
+                    message:
+                        err.response?.data.message ||
+                        "요청 처리 중 오류가 발생했습니다.",
+                });
             } else {
                 console.warn("알 수 없는 에러", err);
+                setError("root", {
+                    message: "알 수 없는 오류가 발생했습니다.",
+                });
             }
         } finally {
             setIsLoading(false);
@@ -62,9 +74,20 @@ export default function ChangePasswordModal() {
                 className="flex flex-col gap-[15px]"
             >
                 <article className="flex flex-col gap-[5px]">
-                    <FormInput required {...register("password")} />
-                    <FormInput required {...register("confirmPassword")} />
+                    <FormInput
+                        required
+                        {...register("password")}
+                        error={errors.password?.message}
+                    />
+                    <FormInput
+                        required
+                        {...register("confirmPassword")}
+                        error={errors.confirmPassword?.message}
+                    />
                 </article>
+                <span className="body-t5 text-accent">
+                    {errors.root?.message}
+                </span>
                 <FormButton
                     text="변경하기"
                     bgColor="bg-secondary"

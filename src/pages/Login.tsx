@@ -46,7 +46,12 @@ export default function Login() {
     };
 
     const navigate = useNavigate();
-    const { register, handleSubmit } = useForm<LoginType>({
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+        setError,
+    } = useForm<LoginType>({
         resolver: zodResolver(loginSchema),
     });
     const onSubmit = handleSubmit(async (data: LoginType) => {
@@ -68,28 +73,59 @@ export default function Login() {
                     expires: 7,
                     sameSite: "Lax",
                 });
-
-                const user =
-                    await axiosInstance.get<MemberResponse>("/members/my");
-                dispatch(
-                    login({
-                        sno: user.data.result.sno,
-                        name: user.data.result.name,
-                        dept: user.data.result.dept,
-                    })
-                );
-                await navigate("/");
+                try {
+                    const user =
+                        await axiosInstance.get<MemberResponse>("/members/my");
+                    if (user.data.isSuccess) {
+                        dispatch(
+                            login({
+                                sno: user.data.result.sno,
+                                name: user.data.result.name,
+                                dept: user.data.result.dept,
+                            })
+                        );
+                        await navigate("/");
+                    } else {
+                        Cookies.remove("accessToken");
+                        Cookies.remove("refreshToken");
+                        setError("root", {
+                            message: "사용자 정보를 가져올 수 없습니다.",
+                        });
+                    }
+                } catch (userErr) {
+                    Cookies.remove("accessToken");
+                    Cookies.remove("refreshToken");
+                    if (axios.isAxiosError<MemberResponse>(userErr)) {
+                        console.warn(
+                            "로그인 실패",
+                            userErr.response?.data || userErr.message
+                        );
+                        setError("root", {
+                            message:
+                                userErr.response?.data.message ||
+                                "요청 처리 중 오류가 발생했습니다.",
+                        });
+                    } else {
+                        console.warn("알 수 없는 에러", userErr);
+                        setError("root", {
+                            message: "알 수 없는 오류가 발생했습니다.",
+                        });
+                    }
+                }
             }
         } catch (err) {
-            if (axios.isAxiosError(err)) {
+            if (axios.isAxiosError<LoginResponse>(err)) {
                 console.warn("로그인 실패", err.response?.data || err.message);
-                // 에러 상태 코드별 처리 가능
-                if (err.response?.status === 401) {
-                    // 인증 실패 처리
-                    alert("학번 또는 비밀번호가 일치하지 않습니다.");
-                }
+                setError("root", {
+                    message:
+                        err.response?.data.message ||
+                        "요청 처리 중 오류가 발생했습니다.",
+                });
             } else {
                 console.warn("알 수 없는 에러", err);
+                setError("root", {
+                    message: "알 수 없는 오류가 발생했습니다.",
+                });
             }
         } finally {
             setIsLoading(false);
@@ -100,13 +136,22 @@ export default function Login() {
             <MainLogo />
             <form onSubmit={(e) => void onSubmit(e)} className="flex flex-col">
                 <article className="flex flex-col gap-2.5 mb-[15px]">
-                    <FormInput type="text" {...register("sno")} required />
+                    <FormInput
+                        type="text"
+                        {...register("sno")}
+                        required
+                        error={errors.sno?.message}
+                    />
                     <FormInput
                         type="password"
                         {...register("password")}
                         required
+                        error={errors.password?.message}
                     />
                 </article>
+                <span className="body-t5 text-accent">
+                    {errors.root?.message}
+                </span>
                 <article className="flex flex-col gap-[7px] mt-[15px]">
                     <FormButton
                         text="로그인"

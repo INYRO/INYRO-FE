@@ -35,7 +35,12 @@ export default function RegisterComplete() {
     const [isLoading, setIsLoading] = useState(false);
 
     const navigate = useNavigate();
-    const { register, handleSubmit } = useForm<RegisterCompleteType>({
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+        setError,
+    } = useForm<RegisterCompleteType>({
         resolver: zodResolver(registerCompleteSchema),
     });
     const onSubmit = handleSubmit(async (data) => {
@@ -50,17 +55,25 @@ export default function RegisterComplete() {
                     enrolled: true,
                 }
             );
-            console.log(response);
             if (response.data.isSuccess) {
                 await navigate("/login");
             }
         } catch (err) {
-            if (axios.isAxiosError(err)) {
+            if (axios.isAxiosError<RegisterResponse>(err)) {
                 console.warn(
                     "회원가입 실패",
                     err.response?.data || err.message
                 );
-                // 에러 상태 코드별 처리 가능
+                setError("root", {
+                    message:
+                        err.response?.data.message ||
+                        "요청 처리 중 오류가 발생했습니다.",
+                });
+            } else {
+                console.warn("알 수 없는 에러", err);
+                setError("root", {
+                    message: "알 수 없는 오류가 발생했습니다.",
+                });
             }
         } finally {
             setIsLoading(false);
@@ -84,11 +97,17 @@ export default function RegisterComplete() {
                         {...register("sno")}
                         value={userData!.sno}
                         required
+                        error={errors.sno?.message}
                     />
-                    <FormInput type="text" required {...register("password")} />
+                    <FormInput
+                        type="password"
+                        required
+                        {...register("password")}
+                        error={errors.password?.message}
+                    />
                 </article>
                 <span className="body-t5 text-accent">
-                    비밀번호는 필수 입력입니다.
+                    {errors.root?.message}
                 </span>
                 <article className="flex flex-col gap-[7px] mt-[15px]">
                     <FormButton
