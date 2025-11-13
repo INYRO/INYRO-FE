@@ -16,6 +16,7 @@ const _Input = (
         if (name === "password") {
             return "비밀번호";
         }
+        return name;
     };
     return (
         <div className="flex flex-col">
@@ -27,7 +28,7 @@ const _Input = (
                 className={`h-[35px] ring-1  rounded-[10px] body-t6 px-[15px] bg-white read-only:bg-background-200 ${error ? "ring-accent" : "ring-background-200"} `}
             />
             <span
-                className={`${!error && "hidden"} flex flex-col body-t5 text-accent mt-[5px]`}
+                className={`${error ? "flex" : "hidden"} flex-col body-t5 text-accent mt-[5px]`}
             >
                 {error}
             </span>
