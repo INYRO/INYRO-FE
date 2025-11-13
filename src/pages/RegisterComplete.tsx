@@ -106,7 +106,9 @@ export default function RegisterComplete() {
                         error={errors.password?.message}
                     />
                 </article>
-                <span className="body-t5 text-accent">
+                <span
+                    className={`${errors.root?.message ? "flex" : "hidden"} body-t5 text-accent`}
+                >
                     {errors.root?.message}
                 </span>
                 <article className="flex flex-col gap-[7px] mt-[15px]">

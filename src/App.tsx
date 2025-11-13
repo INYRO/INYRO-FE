@@ -1,10 +1,10 @@
 import axios from "axios";
 import Cookies from "js-cookie";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import axiosInstance from "./api/axiosInstance";
 import ModalLayout from "./components/modal/modalLayout";
-import { logout } from "./store/authSlice";
+import { login, logout } from "./store/authSlice";
 import { useAppDispatch, useAppSelector } from "./store/hooks";
 
 interface LogoutResponse {
@@ -12,6 +12,19 @@ interface LogoutResponse {
     code: string;
     message: string;
     result: string;
+}
+
+interface MemberResponse {
+    isSuccess: boolean;
+    code: string;
+    message: string;
+    result: {
+        id: number;
+        sno: string;
+        name: string;
+        dept: string;
+        status: string;
+    };
 }
 
 function App() {
@@ -47,6 +60,44 @@ function App() {
             setIsLoading(false);
         }
     };
+
+    const getUserData = useCallback(async () => {
+        setIsLoading(true);
+        try {
+            const accessToken = Cookies.get("accessToken");
+            if (!accessToken) {
+                return;
+            }
+            const user = await axiosInstance.get<MemberResponse>("/members/my");
+            if (user.data.isSuccess) {
+                dispatch(
+                    login({
+                        sno: user.data.result.sno,
+                        name: user.data.result.name,
+                        dept: user.data.result.dept,
+                    })
+                );
+                await navigate("/");
+            } else {
+                Cookies.remove("accessToken");
+                Cookies.remove("refreshToken");
+            }
+        } catch (err) {
+            Cookies.remove("accessToken");
+            Cookies.remove("refreshToken");
+            if (axios.isAxiosError<MemberResponse>(err)) {
+                console.warn("로그인 실패", err.response?.data || err.message);
+            } else {
+                console.warn("알 수 없는 에러", err);
+            }
+        } finally {
+            setIsLoading(false);
+        }
+    }, [dispatch, navigate]);
+
+    useEffect(() => {
+        void getUserData();
+    }, [getUserData]);
 
     return (
         <>

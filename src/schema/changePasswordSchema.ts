@@ -3,10 +3,10 @@ import { passwordValidation } from "./common";
 
 export const changePasswordSchema = z
     .object({
-        password: passwordValidation,
-        confirmPassword: z.string(),
+        newPassword: passwordValidation,
+        newPasswordConfirmation: z.string(),
     })
-    .refine((data) => data.password === data.confirmPassword, {
+    .refine((data) => data.newPassword === data.newPasswordConfirmation, {
         message: "비밀번호가 일치하지 않습니다.",
     });
 

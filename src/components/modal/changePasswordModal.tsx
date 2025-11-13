@@ -3,6 +3,8 @@ import {
     changePasswordSchema,
     type ChangePasswordType,
 } from "@/schema/changePasswordSchema";
+import { useAppDispatch } from "@/store/hooks";
+import { closeModal } from "@/store/modalSlice";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
 import { useState } from "react";
@@ -19,6 +21,7 @@ interface ChangePasswordResponse {
 }
 
 export default function ChangePasswordModal() {
+    const dispatch = useAppDispatch();
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
     const {
@@ -37,6 +40,7 @@ export default function ChangePasswordModal() {
                 data
             );
             if (response.data.isSuccess) {
+                dispatch(closeModal());
                 await navigate("/");
             }
         } catch (err) {
@@ -76,13 +80,13 @@ export default function ChangePasswordModal() {
                 <article className="flex flex-col gap-[5px]">
                     <FormInput
                         required
-                        {...register("password")}
-                        error={errors.password?.message}
+                        {...register("newPassword")}
+                        error={errors.newPassword?.message}
                     />
                     <FormInput
                         required
-                        {...register("confirmPassword")}
-                        error={errors.confirmPassword?.message}
+                        {...register("newPasswordConfirmation")}
+                        error={errors.newPasswordConfirmation?.message}
                     />
                 </article>
                 <span className="body-t5 text-accent">

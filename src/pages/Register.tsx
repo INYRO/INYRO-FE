@@ -128,7 +128,11 @@ export default function Register() {
                             다음 약관에 동의합니다.
                         </label>
                     </form>
-                    <span className="body-t5 text-accent">{agreedError}</span>
+                    <span
+                        className={`${agreedError !== "" ? "flex" : "hidden"} body-t5 text-accent`}
+                    >
+                        {agreedError}
+                    </span>
                 </article>
             </section>
             <section>
@@ -162,7 +166,9 @@ export default function Register() {
                                 error={errors.password?.message}
                             />
                         </div>
-                        <span className="body-t5 text-accent">
+                        <span
+                            className={`${errors.root?.message ? "flex" : "hidden"} body-t5 text-accent`}
+                        >
                             {errors.root?.message}
                         </span>
                         <div className="mt-[9px]">

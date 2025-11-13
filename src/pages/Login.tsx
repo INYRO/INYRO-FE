@@ -4,7 +4,6 @@ import LinkButton from "@/components/common/button/linkButton";
 import MainLogo from "@/components/common/logo/mainLogo";
 import FormInput from "@/components/input/formInput";
 import { loginSchema, type LoginType } from "@/schema/loginSchema";
-import { login } from "@/store/authSlice";
 import { useAppDispatch } from "@/store/hooks";
 import { openModal } from "@/store/modalSlice";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -21,19 +20,6 @@ interface LoginResponse {
     result: {
         accessToken: string;
         refreshToken: string;
-    };
-}
-
-interface MemberResponse {
-    isSuccess: boolean;
-    code: string;
-    message: string;
-    result: {
-        id: number;
-        sno: string;
-        name: string;
-        dept: string;
-        status: string;
     };
 }
 
@@ -73,45 +59,8 @@ export default function Login() {
                     expires: 7,
                     sameSite: "Lax",
                 });
-                try {
-                    const user =
-                        await axiosInstance.get<MemberResponse>("/members/my");
-                    if (user.data.isSuccess) {
-                        dispatch(
-                            login({
-                                sno: user.data.result.sno,
-                                name: user.data.result.name,
-                                dept: user.data.result.dept,
-                            })
-                        );
-                        await navigate("/");
-                    } else {
-                        Cookies.remove("accessToken");
-                        Cookies.remove("refreshToken");
-                        setError("root", {
-                            message: "사용자 정보를 가져올 수 없습니다.",
-                        });
-                    }
-                } catch (userErr) {
-                    Cookies.remove("accessToken");
-                    Cookies.remove("refreshToken");
-                    if (axios.isAxiosError<MemberResponse>(userErr)) {
-                        console.warn(
-                            "로그인 실패",
-                            userErr.response?.data || userErr.message
-                        );
-                        setError("root", {
-                            message:
-                                userErr.response?.data.message ||
-                                "요청 처리 중 오류가 발생했습니다.",
-                        });
-                    } else {
-                        console.warn("알 수 없는 에러", userErr);
-                        setError("root", {
-                            message: "알 수 없는 오류가 발생했습니다.",
-                        });
-                    }
-                }
+                await navigate("/");
+                window.location.reload();
             }
         } catch (err) {
             if (axios.isAxiosError<LoginResponse>(err)) {
@@ -149,7 +98,9 @@ export default function Login() {
                         error={errors.password?.message}
                     />
                 </article>
-                <span className="body-t5 text-accent">
+                <span
+                    className={`${errors.root?.message ? "flex" : "hidden"} body-t5 text-accent`}
+                >
                     {errors.root?.message}
                 </span>
                 <article className="flex flex-col gap-[7px] mt-[15px]">
