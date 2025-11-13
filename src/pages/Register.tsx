@@ -24,16 +24,27 @@ interface RegisterResponse {
 
 export default function Register() {
     const [agreed, setAgreed] = useState(false);
-
+    const [agreedError, setAgreedError] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
 
-    const { register, handleSubmit } = useForm<RegisterType>({
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+        setError,
+    } = useForm<RegisterType>({
         resolver: zodResolver(registerSchema),
     });
+
+    const handleChange = () => {
+        setAgreed((prev) => !prev);
+        setAgreedError("");
+    };
+
     const onSubmit = handleSubmit(async (data: LoginType) => {
         if (!agreed) {
-            alert("약관에 동의해주세요.");
+            setAgreedError("약관에 동의해주세요.");
             return;
         }
 
@@ -51,11 +62,21 @@ export default function Register() {
                 });
             }
         } catch (err) {
-            if (axios.isAxiosError(err)) {
+            if (axios.isAxiosError<RegisterResponse>(err)) {
                 console.warn(
                     "회원가입 실패",
                     err.response?.data || err.message
                 );
+                setError("root", {
+                    message:
+                        err.response?.data.message ||
+                        "요청 처리 중 오류가 발생했습니다.",
+                });
+            } else {
+                console.warn("알 수 없는 에러", err);
+                setError("root", {
+                    message: "알 수 없는 오류가 발생했습니다.",
+                });
             }
         } finally {
             setIsLoading(false);
@@ -97,13 +118,18 @@ export default function Register() {
                         </li>
                     </ol>
                 </article>
-                <form
-                    onChange={() => void setAgreed((prev) => !prev)}
-                    className="ml-[5px] flex gap-[3px] items-center"
-                >
-                    <input type="checkbox" className="size-2.5" />
-                    <label className="body-t7">다음 약관에 동의합니다.</label>
-                </form>
+                <article className="flex gap-1">
+                    <form
+                        onChange={handleChange}
+                        className="ml-[5px] flex gap-[3px] items-center"
+                    >
+                        <input type="checkbox" className="size-2.5" />
+                        <label className="body-t7">
+                            다음 약관에 동의합니다.
+                        </label>
+                    </form>
+                    <span className="body-t5 text-accent">{agreedError}</span>
+                </article>
             </section>
             <section>
                 <article className="bg-background-200 rounded-[10px] p-5 flex flex-col gap-2">
@@ -127,16 +153,17 @@ export default function Register() {
                                 type="text"
                                 {...register("sno")}
                                 required
+                                error={errors.sno?.message}
                             />
                             <FormInput
                                 type="password"
                                 {...register("password")}
                                 required
+                                error={errors.password?.message}
                             />
                         </div>
-                        <span className="body-t7 text-accent">
-                            재학생 인증에 실패하였습니다. 정확한 정보를
-                            입력해주세요.
+                        <span className="body-t5 text-accent">
+                            {errors.root?.message}
                         </span>
                         <div className="mt-[9px]">
                             <FormButton
