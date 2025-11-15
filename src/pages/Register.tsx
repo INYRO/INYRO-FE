@@ -2,25 +2,16 @@ import axiosInstance from "@/api/axiosInstance";
 import FormButton from "@/components/common/button/formButton";
 import SubLogo from "@/components/common/logo/subLogo";
 import FormInput from "@/components/input/formInput";
-import type { LoginType } from "@/schema/loginSchema";
 import { type RegisterType, registerSchema } from "@/schema/registerSchema";
+import type { ApiResponse } from "@/types/api";
+import type { RegisterResult } from "@/types/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 
-interface RegisterResponse {
-    isSuccess: boolean;
-    code: string;
-    message: string;
-    result: {
-        sno: string;
-        name: string;
-        dept: string;
-        registered: boolean;
-    };
-}
+type RegisterResponse = ApiResponse<RegisterResult>;
 
 export default function Register() {
     const [agreed, setAgreed] = useState(false);
@@ -37,12 +28,7 @@ export default function Register() {
         resolver: zodResolver(registerSchema),
     });
 
-    const handleChange = () => {
-        setAgreed((prev) => !prev);
-        setAgreedError("");
-    };
-
-    const onSubmit = handleSubmit(async (data: LoginType) => {
+    const onSubmit = handleSubmit(async (data: RegisterType) => {
         if (!agreed) {
             setAgreedError("약관에 동의해주세요.");
             return;
@@ -119,16 +105,25 @@ export default function Register() {
                     </ol>
                 </article>
                 <article className="flex gap-1">
-                    <form
-                        onChange={handleChange}
-                        className="ml-[5px] flex gap-[3px] items-center"
-                    >
-                        <input type="checkbox" className="size-2.5" />
+                    <form className="ml-[5px] flex gap-[3px] items-center">
+                        <input
+                            type="checkbox"
+                            checked={agreed}
+                            onChange={(e) => {
+                                setAgreed(e.target.checked);
+                                setAgreedError("");
+                            }}
+                            className="size-2.5"
+                        />
                         <label className="body-t7">
                             다음 약관에 동의합니다.
                         </label>
                     </form>
-                    <span className="body-t5 text-accent">{agreedError}</span>
+                    <span
+                        className={`${agreedError !== "" ? "flex" : "hidden"} body-t5 text-accent`}
+                    >
+                        {agreedError}
+                    </span>
                 </article>
             </section>
             <section>
@@ -154,15 +149,19 @@ export default function Register() {
                                 {...register("sno")}
                                 required
                                 error={errors.sno?.message}
+                                isPlaceholder={false}
                             />
                             <FormInput
                                 type="password"
                                 {...register("password")}
                                 required
                                 error={errors.password?.message}
+                                isPlaceholder={false}
                             />
                         </div>
-                        <span className="body-t5 text-accent">
+                        <span
+                            className={`${errors.root?.message ? "flex" : "hidden"} body-t5 text-accent`}
+                        >
                             {errors.root?.message}
                         </span>
                         <div className="mt-[9px]">

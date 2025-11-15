@@ -1,18 +1,14 @@
 import axios from "axios";
-import Cookies from "js-cookie";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import axiosInstance from "./api/axiosInstance";
 import ModalLayout from "./components/modal/modalLayout";
-import { logout } from "./store/authSlice";
+import { login, logout } from "./store/authSlice";
 import { useAppDispatch, useAppSelector } from "./store/hooks";
+import type { ApiResponse } from "./types/api";
+import { clearAuthToken, fetchAndStoreUser } from "./utils/auth";
 
-interface LogoutResponse {
-    isSuccess: boolean;
-    code: string;
-    message: string;
-    result: string;
-}
+type LogoutResponse = ApiResponse<string>;
 
 function App() {
     const dispatch = useAppDispatch(); // isLogin 상태를 업데이트하기 위한 dispatch 선언
@@ -28,8 +24,7 @@ function App() {
                 await axiosInstance.post<LogoutResponse>("/auth/logout");
 
             if (response.data.isSuccess) {
-                Cookies.remove("accessToken");
-                Cookies.remove("refreshToken");
+                clearAuthToken();
                 dispatch(logout());
                 await navigate("/");
             }
@@ -48,6 +43,24 @@ function App() {
         }
     };
 
+    useEffect(() => {
+        const loadUser = async () => {
+            setIsLoading(true);
+            const user = await fetchAndStoreUser(dispatch);
+            if (user) {
+                dispatch(
+                    login({
+                        dept: user.data.result.dept,
+                        name: user.data.result.name,
+                        sno: user.data.result.sno,
+                    })
+                );
+            }
+            setIsLoading(false);
+        };
+        void loadUser();
+    }, [dispatch]);
+
     return (
         <>
             <main className="relative v-stack max-w-sm mx-auto items-center justify-center gap-5 min-h-screen p-9">
@@ -56,7 +69,7 @@ function App() {
                     <button
                         onClick={() => void handleLogout()}
                         disabled={isLoading}
-                        className="top-0 right-0 absolute btn-sub2 m-5 px-2 py-1 border border-background-200 rounded-md"
+                        className="cursor-pointer top-0 right-0 absolute btn-sub2 m-5 px-2 py-1 border border-background-200 rounded-md"
                     >
                         로그아웃
                     </button>

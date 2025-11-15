@@ -4,9 +4,11 @@ import LinkButton from "@/components/common/button/linkButton";
 import MainLogo from "@/components/common/logo/mainLogo";
 import FormInput from "@/components/input/formInput";
 import { loginSchema, type LoginType } from "@/schema/loginSchema";
-import { login } from "@/store/authSlice";
 import { useAppDispatch } from "@/store/hooks";
 import { openModal } from "@/store/modalSlice";
+import type { ApiResponse } from "@/types/api";
+import type { LoginResult } from "@/types/auth";
+import { fetchAndStoreUser } from "@/utils/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
 import Cookies from "js-cookie";
@@ -14,37 +16,12 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 
-interface LoginResponse {
-    isSuccess: boolean;
-    code: string;
-    message: string;
-    result: {
-        accessToken: string;
-        refreshToken: string;
-    };
-}
-
-interface MemberResponse {
-    isSuccess: boolean;
-    code: string;
-    message: string;
-    result: {
-        id: number;
-        sno: string;
-        name: string;
-        dept: string;
-        status: string;
-    };
-}
+type LoginResponse = ApiResponse<LoginResult>;
 
 export default function Login() {
     const [isLoading, setIsLoading] = useState(false);
 
     const dispatch = useAppDispatch();
-    const handleModalOpen = () => {
-        dispatch(openModal("findPassword"));
-    };
-
     const navigate = useNavigate();
     const {
         register,
@@ -73,45 +50,8 @@ export default function Login() {
                     expires: 7,
                     sameSite: "Lax",
                 });
-                try {
-                    const user =
-                        await axiosInstance.get<MemberResponse>("/members/my");
-                    if (user.data.isSuccess) {
-                        dispatch(
-                            login({
-                                sno: user.data.result.sno,
-                                name: user.data.result.name,
-                                dept: user.data.result.dept,
-                            })
-                        );
-                        await navigate("/");
-                    } else {
-                        Cookies.remove("accessToken");
-                        Cookies.remove("refreshToken");
-                        setError("root", {
-                            message: "사용자 정보를 가져올 수 없습니다.",
-                        });
-                    }
-                } catch (userErr) {
-                    Cookies.remove("accessToken");
-                    Cookies.remove("refreshToken");
-                    if (axios.isAxiosError<MemberResponse>(userErr)) {
-                        console.warn(
-                            "로그인 실패",
-                            userErr.response?.data || userErr.message
-                        );
-                        setError("root", {
-                            message:
-                                userErr.response?.data.message ||
-                                "요청 처리 중 오류가 발생했습니다.",
-                        });
-                    } else {
-                        console.warn("알 수 없는 에러", userErr);
-                        setError("root", {
-                            message: "알 수 없는 오류가 발생했습니다.",
-                        });
-                    }
-                }
+                await fetchAndStoreUser(dispatch);
+                await navigate("/");
             }
         } catch (err) {
             if (axios.isAxiosError<LoginResponse>(err)) {
@@ -141,15 +81,19 @@ export default function Login() {
                         {...register("sno")}
                         required
                         error={errors.sno?.message}
+                        isPlaceholder={false}
                     />
                     <FormInput
                         type="password"
                         {...register("password")}
                         required
                         error={errors.password?.message}
+                        isPlaceholder={false}
                     />
                 </article>
-                <span className="body-t5 text-accent">
+                <span
+                    className={`${errors.root?.message ? "flex" : "hidden"} body-t5 text-accent`}
+                >
                     {errors.root?.message}
                 </span>
                 <article className="flex flex-col gap-[7px] mt-[15px]">
@@ -170,7 +114,7 @@ export default function Login() {
                 </article>
             </form>
             <button
-                onClick={handleModalOpen}
+                onClick={() => dispatch(openModal("findPassword"))}
                 className="-m-5 body-t6 underline underline-offset-2 cursor-pointer"
             >
                 비밀번호 찾기

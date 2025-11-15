@@ -10,8 +10,8 @@ export default function FindPasswordModal() {
             </div>
             <form className="flex flex-col gap-[15px]">
                 <article className="flex flex-col gap-[5px]">
-                    <FormInput name="학번" />
-                    <FormInput name="샘물 비밀번호" />
+                    <FormInput name="sno" isPlaceholder />
+                    <FormInput name="password" isPlaceholder />
                 </article>
                 <FormButton
                     text="인증"

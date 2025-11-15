@@ -6,6 +6,7 @@ import {
     registerCompleteSchema,
     type RegisterCompleteType,
 } from "@/schema/registerCompleteSchema";
+import type { ApiResponse } from "@/types/api";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
 import { useEffect, useState } from "react";
@@ -21,12 +22,7 @@ interface LocationState {
     };
 }
 
-interface RegisterResponse {
-    isSuccess: boolean;
-    code: string;
-    message: string;
-    result: string;
-}
+type RegisterResponse = ApiResponse<string>;
 
 export default function RegisterComplete() {
     const location = useLocation();
@@ -98,15 +94,19 @@ export default function RegisterComplete() {
                         value={userData!.sno}
                         required
                         error={errors.sno?.message}
+                        isPlaceholder={false}
                     />
                     <FormInput
                         type="password"
                         required
                         {...register("password")}
                         error={errors.password?.message}
+                        isPlaceholder={false}
                     />
                 </article>
-                <span className="body-t5 text-accent">
+                <span
+                    className={`${errors.root?.message ? "flex" : "hidden"} body-t5 text-accent`}
+                >
                     {errors.root?.message}
                 </span>
                 <article className="flex flex-col gap-[7px] mt-[15px]">
