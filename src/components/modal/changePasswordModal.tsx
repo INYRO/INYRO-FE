@@ -5,25 +5,19 @@ import {
 } from "@/schema/changePasswordSchema";
 import { useAppDispatch } from "@/store/hooks";
 import { closeModal } from "@/store/modalSlice";
+import type { ApiResponse } from "@/types/api";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
 import FormButton from "../common/button/formButton";
 import FormInput from "../input/formInput";
 
-interface ChangePasswordResponse {
-    isSuccess: boolean;
-    code: string;
-    message: string;
-    result: string;
-}
+type ChangePasswordResponse = ApiResponse<string>;
 
 export default function ChangePasswordModal() {
     const dispatch = useAppDispatch();
     const [isLoading, setIsLoading] = useState(false);
-    const navigate = useNavigate();
     const {
         register,
         handleSubmit,
@@ -41,7 +35,6 @@ export default function ChangePasswordModal() {
             );
             if (response.data.isSuccess) {
                 dispatch(closeModal());
-                await navigate("/");
             }
         } catch (err) {
             if (axios.isAxiosError<ChangePasswordResponse>(err)) {
@@ -82,14 +75,20 @@ export default function ChangePasswordModal() {
                         required
                         {...register("newPassword")}
                         error={errors.newPassword?.message}
+                        type="password"
+                        isPlaceholder
                     />
                     <FormInput
                         required
                         {...register("newPasswordConfirmation")}
                         error={errors.newPasswordConfirmation?.message}
+                        type="password"
+                        isPlaceholder
                     />
                 </article>
-                <span className="body-t5 text-accent">
+                <span
+                    className={`${errors.root?.message ? "flex" : "hidden"} body-t5 text-accent`}
+                >
                     {errors.root?.message}
                 </span>
                 <FormButton

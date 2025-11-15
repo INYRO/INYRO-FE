@@ -8,6 +8,7 @@ export const changePasswordSchema = z
     })
     .refine((data) => data.newPassword === data.newPasswordConfirmation, {
         message: "비밀번호가 일치하지 않습니다.",
+        path: ["newPasswordConfirmation"],
     });
 
 export type ChangePasswordType = z.infer<typeof changePasswordSchema>;

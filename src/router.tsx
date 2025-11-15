@@ -1,5 +1,6 @@
 import { createBrowserRouter, Outlet } from "react-router-dom";
 import App from "./App";
+import { ProtectedRoute } from "./components/route/ProtectedRoute";
 import AdminHome from "./pages/AdminHome";
 import AdminReserveManagement from "./pages/AdminReserveManagement";
 import AdminUserManagement from "./pages/AdminUserManagement";
@@ -42,17 +43,29 @@ export const router = createBrowserRouter([
             },
             {
                 path: "reserve",
-                element: <Reserve />,
+                element: (
+                    <ProtectedRoute>
+                        <Reserve />
+                    </ProtectedRoute>
+                ),
             },
             {
                 path: "mypage",
-                element: <MyPage />,
+                element: (
+                    <ProtectedRoute>
+                        <MyPage />
+                    </ProtectedRoute>
+                ),
             },
 
             // 관리자 페이지
             {
                 path: "admin",
-                element: <Outlet />,
+                element: (
+                    <ProtectedRoute>
+                        <Outlet />
+                    </ProtectedRoute>
+                ),
                 children: [
                     {
                         index: true, // path: '/admin'

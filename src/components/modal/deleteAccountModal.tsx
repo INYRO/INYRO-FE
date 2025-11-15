@@ -1,17 +1,15 @@
 import axiosInstance from "@/api/axiosInstance";
+import { logout } from "@/store/authSlice";
 import { useAppDispatch } from "@/store/hooks";
 import { closeModal } from "@/store/modalSlice";
+import type { ApiResponse } from "@/types/api";
+import { clearAuthToken } from "@/utils/auth";
 import axios from "axios";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import FormButton from "../common/button/formButton";
 
-interface DeleteAccountResponse {
-    isSuccess: boolean;
-    code: string;
-    message: string;
-    result: string;
-}
+type DeleteAccountResponse = ApiResponse<string>;
 
 export default function DeleteAccountModal() {
     const dispatch = useAppDispatch();
@@ -26,14 +24,15 @@ export default function DeleteAccountModal() {
             const response =
                 await axiosInstance.delete<DeleteAccountResponse>("/members");
             if (response.data.isSuccess) {
+                clearAuthToken();
+                dispatch(logout());
                 dispatch(closeModal());
                 await navigate("/");
-                window.location.reload();
             }
         } catch (err) {
             if (axios.isAxiosError(err)) {
                 console.warn(
-                    "비밀번호 변경 실패",
+                    "계정 삭제 실패",
                     err.response?.data || err.message
                 );
                 // 에러 상태 코드별 처리 가능

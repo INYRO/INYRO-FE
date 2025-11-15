@@ -1,31 +1,14 @@
 import axios from "axios";
-import Cookies from "js-cookie";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import axiosInstance from "./api/axiosInstance";
 import ModalLayout from "./components/modal/modalLayout";
 import { login, logout } from "./store/authSlice";
 import { useAppDispatch, useAppSelector } from "./store/hooks";
+import type { ApiResponse } from "./types/api";
+import { clearAuthToken, fetchAndStoreUser } from "./utils/auth";
 
-interface LogoutResponse {
-    isSuccess: boolean;
-    code: string;
-    message: string;
-    result: string;
-}
-
-interface MemberResponse {
-    isSuccess: boolean;
-    code: string;
-    message: string;
-    result: {
-        id: number;
-        sno: string;
-        name: string;
-        dept: string;
-        status: string;
-    };
-}
+type LogoutResponse = ApiResponse<string>;
 
 function App() {
     const dispatch = useAppDispatch(); // isLogin 상태를 업데이트하기 위한 dispatch 선언
@@ -41,8 +24,7 @@ function App() {
                 await axiosInstance.post<LogoutResponse>("/auth/logout");
 
             if (response.data.isSuccess) {
-                Cookies.remove("accessToken");
-                Cookies.remove("refreshToken");
+                clearAuthToken();
                 dispatch(logout());
                 await navigate("/");
             }
@@ -61,43 +43,23 @@ function App() {
         }
     };
 
-    const getUserData = useCallback(async () => {
-        setIsLoading(true);
-        try {
-            const accessToken = Cookies.get("accessToken");
-            if (!accessToken) {
-                return;
-            }
-            const user = await axiosInstance.get<MemberResponse>("/members/my");
-            if (user.data.isSuccess) {
+    useEffect(() => {
+        const loadUser = async () => {
+            setIsLoading(true);
+            const user = await fetchAndStoreUser(dispatch);
+            if (user) {
                 dispatch(
                     login({
-                        sno: user.data.result.sno,
-                        name: user.data.result.name,
                         dept: user.data.result.dept,
+                        name: user.data.result.name,
+                        sno: user.data.result.sno,
                     })
                 );
-                await navigate("/");
-            } else {
-                Cookies.remove("accessToken");
-                Cookies.remove("refreshToken");
             }
-        } catch (err) {
-            Cookies.remove("accessToken");
-            Cookies.remove("refreshToken");
-            if (axios.isAxiosError<MemberResponse>(err)) {
-                console.warn("로그인 실패", err.response?.data || err.message);
-            } else {
-                console.warn("알 수 없는 에러", err);
-            }
-        } finally {
             setIsLoading(false);
-        }
-    }, [dispatch, navigate]);
-
-    useEffect(() => {
-        void getUserData();
-    }, [getUserData]);
+        };
+        void loadUser();
+    }, [dispatch]);
 
     return (
         <>
@@ -107,7 +69,7 @@ function App() {
                     <button
                         onClick={() => void handleLogout()}
                         disabled={isLoading}
-                        className="top-0 right-0 absolute btn-sub2 m-5 px-2 py-1 border border-background-200 rounded-md"
+                        className="cursor-pointer top-0 right-0 absolute btn-sub2 m-5 px-2 py-1 border border-background-200 rounded-md"
                     >
                         로그아웃
                     </button>

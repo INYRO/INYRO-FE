@@ -3,8 +3,13 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 // modal state Type
 interface ModalState {
     isOpen: boolean;
-    modalType: string | null; // 어떤 모달을 띄울지 식별 (ex: 'login', 'confirmDelete')
+    modalType: ModalType | null; // 어떤 모달을 띄울지 식별 (ex: 'login', 'confirmDelete')
 }
+type ModalType =
+    | "findPassword"
+    | "changePassword"
+    | "deleteAccount"
+    | "reserveComplete";
 
 // state의 초기값 설정
 const initialState: ModalState = {
@@ -18,8 +23,8 @@ export const modalSlice = createSlice({
     // state를 변경하는 함수(리듀서)들을 reducers 객체 안에 정의
     reducers: {
         // openModal 액션
-        // PayloadAction<string>은 action.payload의 타입이 string임을 의미
-        openModal: (state, action: PayloadAction<string>) => {
+        // PayloadAction<modalType>은 action.payload의 타입이 modalType임을 의미
+        openModal: (state, action: PayloadAction<ModalType>) => {
             state.isOpen = true;
             state.modalType = action.payload; // payload로 받은 모달 타입을 state에 저장
         },

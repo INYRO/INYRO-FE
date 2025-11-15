@@ -1,24 +1,55 @@
+import axiosInstance from "@/api/axiosInstance";
 import MainLogo from "@/components/common/logo/mainLogo";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { openModal } from "@/store/modalSlice";
+import type { ApiResponse } from "@/types/api";
+import type { Reservation, ReservationsResult } from "@/types/reservation";
+import axios from "axios";
+import { useEffect, useState } from "react";
+
+type ReservationsResponse = ApiResponse<ReservationsResult>;
+
+/*
+[todo]
+1. 예약 변경 버튼 핸들러
+2. 예약 취소 버튼 핸들러
+3. 에러 상태 UI
+ */
 
 export default function MyPage() {
+    const [isLoading, setIsLoading] = useState(false);
+    const [reservations, setReservations] = useState<Reservation[]>([]);
+
     const dispatch = useAppDispatch();
-    const handleModalOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
-        const id = event.currentTarget.id;
-        if (id === "change") dispatch(openModal("changePassword"));
-        if (id === "delete") dispatch(openModal("deleteAccount"));
-    };
 
     const { sno, dept, name } = useAppSelector((state) => state.authState);
 
-    const dummy = [
-        { date: "2025.10.04 (토)", time: "12:00 ~ 14:00" },
-        { date: "2025.10.05 (토)", time: "22:00 ~ 13:00" },
-        { date: "2025.10.06 (토)", time: "11:00 ~ 12:00" },
-        { date: "2025.10.07 (토)", time: "14:00 ~ 15:00" },
-        { date: "2025.10.08 (토)", time: "10:00 ~ 9:00" },
-    ];
+    const getReservations = async () => {
+        setIsLoading(true);
+        try {
+            const response =
+                await axiosInstance.get<ReservationsResponse>(
+                    "/reservations/my"
+                );
+            if (response.data.isSuccess)
+                setReservations(response.data.result.content);
+        } catch (err) {
+            if (axios.isAxiosError<ReservationsResponse>(err)) {
+                console.warn(
+                    "예약 목록 불러오기 실패",
+                    err.response?.data || err.message
+                );
+            } else {
+                console.warn("알 수 없는 에러", err);
+            }
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        void getReservations();
+    }, []);
 
     return (
         <div className="v-stack w-full">
@@ -27,61 +58,109 @@ export default function MyPage() {
             </div>
             <div className="flex flex-col gap-[30px]">
                 <section className="flex flex-col gap-[15px]">
-                    <p className="body-t1">{}</p>
+                    <p className="body-t1">내 정보</p>
                     <article className="flex flex-col gap-[5px]">
-                        <p className="body-t1">김수뭉</p>
-                        <div className="flex gap-2 body-t3">
+                        <p className="body-t1">{name}</p>
+                        <div className="flex gap-1.5 body-t3">
                             <div className="flex gap-1">
-                                <span>{name}</span>
+                                <span className="text-background-300">
+                                    학번
+                                </span>
                                 <span>{sno}</span>
                             </div>
-                            <span>&#183;</span>
+                            <span className="text-background-300">&#183;</span>
                             <div className="flex gap-1">
-                                <span>학과</span>
+                                <span className="text-background-300">
+                                    학과
+                                </span>
                                 <span>{dept}</span>
                             </div>
                         </div>
                     </article>
                 </section>
-                <section className="flex flex-col gap-[15px]">
-                    <p className="body-t1">예약 기록</p>
-                    <table className="w-full rounded-[5px]">
-                        <thead className="bg-background-200 border">
-                            <tr className="*:py-1.5 *:text-center body-t5">
-                                <td className="">날짜</td>
-                                <td className="border-r border-l">시간대</td>
-                                <td>상태</td>
-                            </tr>
-                        </thead>
-                        <tbody className="border-x border-b">
-                            {dummy.map((data, idx) => (
-                                <tr
-                                    key={idx}
-                                    className=" body-t6 text-center *:py-1.5 border-b"
-                                >
-                                    <td>{data.date}</td>
-                                    <td className="border-r border-l">
-                                        {data.time}
-                                    </td>
-                                    <td className="flex items-center justify-evenly">
-                                        <button className="btn-sub2 px-1.5 py-[1.5px] border rounded-[5px] border-background-200 bg-background-[#f5f5f5]">
-                                            변경
-                                        </button>
-                                        <button className="btn-sub2 px-1.5 py-[1.5px] border rounded-[5px] border-background-200 bg-background-[#f5f5f5]">
-                                            취소
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </section>
+                {!isLoading && (
+                    <section className="flex flex-col gap-[15px]">
+                        <p className="body-t1">예약 기록</p>
+                        <article className="w-full rounded-[5px] border overflow-hidden border-background-300">
+                            <table className="w-full">
+                                <thead className="bg-background-200">
+                                    <tr className="border-b border-background-300 *:py-1.5 text-center body-t5">
+                                        <th scope="col">날짜</th>
+                                        <th
+                                            scope="col"
+                                            className="border-r border-l border-background-300"
+                                        >
+                                            시간대
+                                        </th>
+                                        <th scope="col">상태</th>
+                                    </tr>
+                                </thead>
+                                {reservations.length > 0 ? (
+                                    <tbody className="w-full">
+                                        {reservations.map((data) => (
+                                            <tr
+                                                key={data.reservationId}
+                                                className="body-t6 *:py-1.5 text-center border-b border-background-300 last:border-none"
+                                            >
+                                                <td>{data.date}</td>
+                                                <td className="border-r border-l border-background-300">
+                                                    <span>
+                                                        {data.startTime}
+                                                    </span>
+                                                    <span>{" ~ "}</span>
+                                                    <span>{data.endTime}</span>
+                                                </td>
+                                                <td className="flex items-center justify-evenly">
+                                                    {data.reservationStatus ===
+                                                        "COMPLETED" && (
+                                                        <div className="btn-sub2 px-1.5 py-[1.5px] border rounded-[5px] bg-background-200">
+                                                            완료
+                                                        </div>
+                                                    )}
+                                                    {data.reservationStatus ===
+                                                        "CANCELLED" && (
+                                                        <div className="btn-sub2 px-1.5 py-[1.5px] border rounded-[5px] bg-background-200">
+                                                            취소됨
+                                                        </div>
+                                                    )}
+                                                    {data.reservationStatus ===
+                                                        "UPCOMING" && (
+                                                        <>
+                                                            <button className="btn-sub2 px-1.5 py-[1.5px] border rounded-[5px] border-background-200">
+                                                                변경
+                                                            </button>
+                                                            <button className="btn-sub2 px-1.5 py-[1.5px] border rounded-[5px] border-background-200">
+                                                                취소
+                                                            </button>
+                                                        </>
+                                                    )}
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                ) : (
+                                    <tbody className="w-full h-[145px]">
+                                        <tr>
+                                            <td
+                                                colSpan={3}
+                                                className="text-center body-t5 text-background-300"
+                                            >
+                                                예약된 기록이 없습니다
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                )}
+                            </table>
+                        </article>
+                    </section>
+                )}
+
                 <section className="flex justify-between">
                     <span className="body-t1">비밀번호 변경</span>
                     <button
                         id="change"
-                        onClick={handleModalOpen}
-                        className="btn-sub2 px-1.5 py-[1.5px] border rounded-[5px] border-background-200 bg-background-[#f5f5f5]"
+                        onClick={() => dispatch(openModal("changePassword"))}
+                        className="cursor-pointer btn-sub2 px-1.5 py-[1.5px] border rounded-[5px] border-background-200 "
                     >
                         변경하기
                     </button>
@@ -90,8 +169,8 @@ export default function MyPage() {
                     <span className="body-t1">회원 탈퇴</span>
                     <button
                         id="delete"
-                        onClick={handleModalOpen}
-                        className="btn-sub2 px-1.5 py-[1.5px] border rounded-[5px] border-background-200 bg-background-[#f5f5f5]"
+                        onClick={() => dispatch(openModal("deleteAccount"))}
+                        className="cursor-pointer btn-sub2 px-1.5 py-[1.5px] border rounded-[5px] border-background-200 "
                     >
                         탈퇴하기
                     </button>

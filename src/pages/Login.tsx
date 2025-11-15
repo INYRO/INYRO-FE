@@ -6,6 +6,9 @@ import FormInput from "@/components/input/formInput";
 import { loginSchema, type LoginType } from "@/schema/loginSchema";
 import { useAppDispatch } from "@/store/hooks";
 import { openModal } from "@/store/modalSlice";
+import type { ApiResponse } from "@/types/api";
+import type { LoginResult } from "@/types/auth";
+import { fetchAndStoreUser } from "@/utils/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
 import Cookies from "js-cookie";
@@ -13,24 +16,12 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 
-interface LoginResponse {
-    isSuccess: boolean;
-    code: string;
-    message: string;
-    result: {
-        accessToken: string;
-        refreshToken: string;
-    };
-}
+type LoginResponse = ApiResponse<LoginResult>;
 
 export default function Login() {
     const [isLoading, setIsLoading] = useState(false);
 
     const dispatch = useAppDispatch();
-    const handleModalOpen = () => {
-        dispatch(openModal("findPassword"));
-    };
-
     const navigate = useNavigate();
     const {
         register,
@@ -59,8 +50,8 @@ export default function Login() {
                     expires: 7,
                     sameSite: "Lax",
                 });
+                await fetchAndStoreUser(dispatch);
                 await navigate("/");
-                window.location.reload();
             }
         } catch (err) {
             if (axios.isAxiosError<LoginResponse>(err)) {
@@ -90,12 +81,14 @@ export default function Login() {
                         {...register("sno")}
                         required
                         error={errors.sno?.message}
+                        isPlaceholder={false}
                     />
                     <FormInput
                         type="password"
                         {...register("password")}
                         required
                         error={errors.password?.message}
+                        isPlaceholder={false}
                     />
                 </article>
                 <span
@@ -121,7 +114,7 @@ export default function Login() {
                 </article>
             </form>
             <button
-                onClick={handleModalOpen}
+                onClick={() => dispatch(openModal("findPassword"))}
                 className="-m-5 body-t6 underline underline-offset-2 cursor-pointer"
             >
                 비밀번호 찾기
