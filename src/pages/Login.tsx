@@ -4,19 +4,19 @@ import LinkButton from "@/components/common/button/linkButton";
 import MainLogo from "@/components/common/logo/mainLogo";
 import FormInput from "@/components/input/formInput";
 import { loginSchema, type LoginType } from "@/schema/loginSchema";
+import { login } from "@/store/authSlice";
 import { useAppDispatch } from "@/store/hooks";
 import { openModal } from "@/store/modalSlice";
 import type { ApiResponse } from "@/types/api";
-import type { LoginResult } from "@/types/auth";
-import { fetchAndStoreUser } from "@/utils/auth";
+import type { LoginResult, MemberResult } from "@/types/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
-import Cookies from "js-cookie";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 
 type LoginResponse = ApiResponse<LoginResult>;
+type MemberResponse = ApiResponse<MemberResult>;
 
 export default function Login() {
     const [isLoading, setIsLoading] = useState(false);
@@ -41,16 +41,17 @@ export default function Login() {
             );
             if (response.data.isSuccess && response.data.code === "200") {
                 const accessToken = response.data.result.accessToken;
-                const refreshToken = response.data.result.refreshToken;
-                Cookies.set("accessToken", accessToken, {
-                    expires: 1 / 48,
-                    sameSite: "Lax",
-                });
-                Cookies.set("refreshToken", refreshToken, {
-                    expires: 7,
-                    sameSite: "Lax",
-                });
-                await fetchAndStoreUser(dispatch);
+                localStorage.setItem("accessToken", accessToken);
+                const user =
+                    await axiosInstance.get<MemberResponse>("/members/my");
+                dispatch(
+                    login({
+                        accessToken: accessToken || "",
+                        sno: user.data.result.sno,
+                        name: user.data.result.name,
+                        dept: user.data.result.dept,
+                    })
+                );
                 await navigate("/");
             }
         } catch (err) {

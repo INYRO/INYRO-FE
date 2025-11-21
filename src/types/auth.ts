@@ -17,3 +17,7 @@ export interface RegisterResult {
     dept: string;
     registered: boolean;
 }
+
+export interface ReissueResult {
+    accessToken: "string";
+}

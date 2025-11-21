@@ -3,10 +3,10 @@ import { useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import axiosInstance from "./api/axiosInstance";
 import ModalLayout from "./components/modal/modalLayout";
-import { login, logout } from "./store/authSlice";
+import { login, logout, setAccessToken } from "./store/authSlice";
 import { useAppDispatch, useAppSelector } from "./store/hooks";
 import type { ApiResponse } from "./types/api";
-import { clearAuthToken, fetchAndStoreUser } from "./utils/auth";
+import { fetchAndStoreUser } from "./utils/auth";
 
 type LogoutResponse = ApiResponse<string>;
 
@@ -24,7 +24,7 @@ function App() {
                 await axiosInstance.post<LogoutResponse>("/auth/logout");
 
             if (response.data.isSuccess) {
-                clearAuthToken();
+                localStorage.removeItem("accessToken"); // 추가
                 dispatch(logout());
                 await navigate("/");
             }
@@ -46,16 +46,22 @@ function App() {
     useEffect(() => {
         const loadUser = async () => {
             setIsLoading(true);
-            const user = await fetchAndStoreUser(dispatch);
-            if (user) {
-                dispatch(
-                    login({
-                        dept: user.data.result.dept,
-                        name: user.data.result.name,
-                        sno: user.data.result.sno,
-                    })
-                );
+            const storedToken = localStorage.getItem("accessToken");
+            if (storedToken) {
+                dispatch(setAccessToken(storedToken)); // Redux에 토큰 먼저 저장
+                const user = await fetchAndStoreUser(dispatch);
+                if (user) {
+                    dispatch(
+                        login({
+                            accessToken: storedToken,
+                            dept: user.data.result.dept,
+                            name: user.data.result.name,
+                            sno: user.data.result.sno,
+                        })
+                    );
+                }
             }
+
             setIsLoading(false);
         };
         void loadUser();

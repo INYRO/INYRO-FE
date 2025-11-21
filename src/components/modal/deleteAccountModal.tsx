@@ -3,7 +3,6 @@ import { logout } from "@/store/authSlice";
 import { useAppDispatch } from "@/store/hooks";
 import { closeModal } from "@/store/modalSlice";
 import type { ApiResponse } from "@/types/api";
-import { clearAuthToken } from "@/utils/auth";
 import axios from "axios";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -24,7 +23,7 @@ export default function DeleteAccountModal() {
             const response =
                 await axiosInstance.delete<DeleteAccountResponse>("/members");
             if (response.data.isSuccess) {
-                clearAuthToken();
+                localStorage.removeItem("accessToken");
                 dispatch(logout());
                 dispatch(closeModal());
                 await navigate("/");
