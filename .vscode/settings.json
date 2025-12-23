@@ -3,7 +3,8 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode", // prettier 포멧터
     // eslint
     "editor.codeActionsOnSave": {
-        "source.fixAll.eslint": "explicit"
+        "source.fixAll.eslint": "explicit",
+        "source.organizeImports": "never"
     },
     // eslint 형식 지정
     "eslint.validate": [

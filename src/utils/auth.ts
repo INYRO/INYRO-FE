@@ -1,36 +1,23 @@
 import axiosInstance from "@/api/axiosInstance";
-import { login } from "@/store/authSlice";
-import type { AppDispatch } from "@/store/store";
 import type { ApiResponse } from "@/types/api";
 import type { MemberResult } from "@/types/auth";
 import axios from "axios";
-import Cookies from "js-cookie";
-
-export const clearAuthToken = () => {
-    Cookies.remove("accessToken");
-    Cookies.remove("refreshToken");
-};
 
 type MemberResponse = ApiResponse<MemberResult>;
 
-export const fetchAndStoreUser = async (dispatch: AppDispatch) => {
-    const accessToken = Cookies.get("accessToken");
-    if (!accessToken) return null;
-
+export const fetchUser = async (): Promise<MemberResult | null> => {
     try {
-        const user = await axiosInstance.get<MemberResponse>("/members/my");
-        if (user.data.isSuccess) {
-            dispatch(
-                login({
-                    sno: user.data.result.sno,
-                    name: user.data.result.name,
-                    dept: user.data.result.dept,
-                })
-            );
-        }
-        return user;
+        // 유저 정보 요청
+        const response = await axiosInstance.get<MemberResponse>("/members/my");
+
+        // 실패시 null 반환
+        if (!response.data.isSuccess) return null;
+
+        // 성공시 유저 정보 반환
+        return response.data.result;
     } catch (err) {
-        if (axios.isAxiosError<MemberResponse>(err)) {
+        // axios-error 처리
+        if (axios.isAxiosError(err)) {
             console.warn(
                 "유저 데이터 불러오기 실패",
                 err.response?.data || err.message

@@ -26,11 +26,12 @@ type RegisterResponse = ApiResponse<string>;
 
 export default function RegisterComplete() {
     const location = useLocation();
-    const state = location.state as LocationState;
+    const state = location.state as LocationState | null;
     const userData = state?.userData;
-    const [isLoading, setIsLoading] = useState(false);
 
+    const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
+
     const {
         register,
         handleSubmit,
@@ -39,6 +40,18 @@ export default function RegisterComplete() {
     } = useForm<RegisterCompleteType>({
         resolver: zodResolver(registerCompleteSchema),
     });
+
+    useEffect(() => {
+        if (!userData || userData.registered) {
+            void navigate("/", { replace: true });
+        }
+    }, [userData, navigate]);
+
+    // 첫 렌더에서도 userData 없으면 아예 렌더 중단 (크래시 방지)
+    if (!userData || userData.registered) {
+        return null;
+    }
+
     const onSubmit = handleSubmit(async (data) => {
         setIsLoading(true);
         try {
@@ -46,14 +59,22 @@ export default function RegisterComplete() {
                 "/auth/signup",
                 {
                     ...data,
-                    dept: userData!.dept,
-                    name: userData!.name,
+                    sno: userData.sno,
+                    dept: userData.dept,
+                    name: userData.name,
                     enrolled: true,
                 }
             );
-            if (response.data.isSuccess) {
-                await navigate("/login");
+
+            // 회원가입 실패 처리
+            if (!response.data.isSuccess) {
+                setError("root", {
+                    message: response.data.message || "회원가입 실패",
+                });
+                return;
             }
+
+            void navigate("/login");
         } catch (err) {
             if (axios.isAxiosError<RegisterResponse>(err)) {
                 console.warn(
@@ -76,12 +97,6 @@ export default function RegisterComplete() {
         }
     });
 
-    useEffect(() => {
-        if (!userData || userData.registered) {
-            void navigate("/", { replace: true });
-        }
-    }, [userData, navigate]);
-
     return (
         <div className="v-stack w-full gap-10">
             <MainLogo />
@@ -91,7 +106,7 @@ export default function RegisterComplete() {
                         type="text"
                         readOnly
                         {...register("sno")}
-                        value={userData!.sno}
+                        value={userData.sno}
                         required
                         error={errors.sno?.message}
                         isPlaceholder={false}
