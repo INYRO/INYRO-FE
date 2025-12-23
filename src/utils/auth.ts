@@ -1,29 +1,22 @@
 import axiosInstance from "@/api/axiosInstance";
-import { login } from "@/store/authSlice";
-import { store, type AppDispatch } from "@/store/store";
 import type { ApiResponse } from "@/types/api";
 import type { MemberResult } from "@/types/auth";
 import axios from "axios";
 
 type MemberResponse = ApiResponse<MemberResult>;
 
-export const fetchAndStoreUser = async (dispatch: AppDispatch) => {
+export const fetchUser = async (): Promise<MemberResult | null> => {
     try {
+        // 유저 정보 요청
         const response = await axiosInstance.get<MemberResponse>("/members/my");
-        if (response.data.isSuccess) {
-            const currentAccessToken = store.getState().authState.accessToken;
 
-            dispatch(
-                login({
-                    accessToken: currentAccessToken || "",
-                    sno: response.data.result.sno,
-                    name: response.data.result.name,
-                    dept: response.data.result.dept,
-                })
-            );
-        }
-        return response;
+        // 실패시 null 반환
+        if (!response.data.isSuccess) return null;
+
+        // 성공시 유저 정보 반환
+        return response.data.result;
     } catch (err) {
+        // axios-error 처리
         if (axios.isAxiosError(err)) {
             console.warn(
                 "유저 데이터 불러오기 실패",

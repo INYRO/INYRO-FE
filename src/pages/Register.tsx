@@ -40,8 +40,19 @@ export default function Register() {
                 "/auth/smul",
                 data
             );
+
+            // 회원가입 실패 처리
+            if (!response.data.isSuccess) {
+                setError("root", {
+                    message:
+                        response.data.message || "회원가입에 실패했습니다.",
+                });
+                return;
+            }
+
+            // 회원가입 성공 처리
             if (response.data.isSuccess) {
-                await navigate("/register/complete", {
+                void navigate("/register/complete", {
                     state: {
                         userData: response.data.result,
                     },
