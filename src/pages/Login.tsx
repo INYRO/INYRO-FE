@@ -11,12 +11,26 @@ import type { ApiResponse } from "@/types/api";
 import type { LoginResult, MemberResult } from "@/types/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
+<<<<<<< HEAD
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useLocation, useNavigate, type Location } from "react-router-dom";
+=======
+import Cookies from "js-cookie";
+import { useMemo, useState } from "react";
+import { useForm } from "react-hook-form";
+import { useLocation, useNavigate } from "react-router-dom";
+>>>>>>> 94a6c42 (Fix admin login routing and UI)
 
 type LoginResponse = ApiResponse<LoginResult>;
 type MemberResponse = ApiResponse<MemberResult>;
+
+function sanitizeRedirect(value: string | null): string | null {
+    if (!value) return null;
+    if (!value.startsWith("/")) return null;
+    if (value.startsWith("//")) return null;
+    return value;
+}
 
 export default function Login() {
     const [isLoading, setIsLoading] = useState(false);
@@ -25,6 +39,14 @@ export default function Login() {
     const navigate = useNavigate();
     const location = useLocation();
 
+<<<<<<< HEAD
+=======
+    const redirect = useMemo(() => {
+        const params = new URLSearchParams(location.search);
+        return sanitizeRedirect(params.get("redirect"));
+    }, [location.search]);
+
+>>>>>>> 94a6c42 (Fix admin login routing and UI)
     const {
         register,
         handleSubmit,
@@ -34,19 +56,55 @@ export default function Login() {
         resolver: zodResolver(loginSchema),
     });
 
+<<<<<<< HEAD
     const onSubmit = handleSubmit(async (form: LoginType) => {
         setIsLoading(true);
         try {
             /* 로그인 요청 */
             // fetch-POST('/api/v1/auth/login', data) [데이터를 로그인 검증 API로 전송]
             const loginRes = await axiosInstance.post<LoginResponse>(
+=======
+    const onSubmit = handleSubmit(async (data: LoginType) => {
+        setIsLoading(true);
+        try {
+            const response = await axiosInstance.post<LoginResponse>(
+>>>>>>> 94a6c42 (Fix admin login routing and UI)
                 "/auth/login",
                 form
             );
 
+<<<<<<< HEAD
             // 로그인 요청 실패시 처리
             if (!loginRes.data.isSuccess) {
                 throw new Error(loginRes.data.message || "로그인 실패");
+=======
+            if (response.data.isSuccess && response.data.code === "200") {
+                const accessToken = response.data.result.accessToken;
+                const refreshToken = response.data.result.refreshToken;
+
+                Cookies.set("accessToken", accessToken, {
+                    expires: 1 / 48,
+                    sameSite: "Lax",
+                });
+                Cookies.set("refreshToken", refreshToken, {
+                    expires: 7,
+                    sameSite: "Lax",
+                });
+
+                await fetchAndStoreUser(dispatch);
+
+                if (data.sno === "Bossisme") {
+                    void navigate("/admin");
+                    return;
+                }
+
+                if (redirect) {
+                    void navigate(redirect);
+                    return;
+                }
+
+                void navigate("/");
+>>>>>>> 94a6c42 (Fix admin login routing and UI)
             }
 
             // 로그인 응답에서 accessToken을 받아 Redux에 저장
@@ -80,14 +138,12 @@ export default function Login() {
         } catch (err) {
             /* 에러 처리 */
             if (axios.isAxiosError<LoginResponse>(err)) {
-                console.warn("로그인 실패", err.response?.data || err.message);
                 setError("root", {
                     message:
                         err.response?.data.message ||
                         "요청 처리 중 오류가 발생했습니다.",
                 });
             } else {
-                console.warn("알 수 없는 에러", err);
                 setError("root", {
                     message: "알 수 없는 오류가 발생했습니다.",
                 });
@@ -117,11 +173,13 @@ export default function Login() {
                         isPlaceholder={false}
                     />
                 </article>
+
                 <span
                     className={`${errors.root?.message ? "flex" : "hidden"} body-t5 text-accent`}
                 >
                     {errors.root?.message}
                 </span>
+
                 <article className="flex flex-col gap-[7px] mt-[15px]">
                     <FormButton
                         text="로그인"
@@ -139,6 +197,7 @@ export default function Login() {
                     />
                 </article>
             </form>
+
             <button
                 onClick={() => dispatch(openModal("findPassword"))}
                 className="-m-5 body-t6 underline underline-offset-2 cursor-pointer"

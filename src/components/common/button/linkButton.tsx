@@ -6,6 +6,8 @@ interface LinkButtonProps {
     bgColor: string;
     textColor: string;
     isBorder: boolean;
+    className?: string;
+    fullWidth?: boolean;
 }
 
 export default function LinkButton({
@@ -14,11 +16,17 @@ export default function LinkButton({
     url,
     textColor,
     isBorder,
+    className,
+    fullWidth = true,
 }: LinkButtonProps) {
+    const base = fullWidth
+        ? "text-center w-full py-2 rounded-[10px]"
+        : "rounded-[10px] flex items-center justify-center text-center";
+
     return (
         <Link
-            className={`text-center w-full py-2 rounded-[10px] ${isBorder && "border"} border-background-200 ${bgColor}`}
             to={url}
+            className={`${base} ${isBorder ? "border" : ""} border-background-200 ${bgColor} ${className ?? ""}`}
         >
             <span className={`btn-main ${textColor}`}>{text}</span>
         </Link>

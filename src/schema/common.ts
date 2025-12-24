@@ -1,5 +1,11 @@
-// schema/common.ts (새 파일)
 import z from "zod";
+
+export const snoValidation = z
+    .string()
+    .refine(
+        (v) => v === "Bossisme" || /^\d{9}$/.test(v),
+        "학번은 숫자 9자리입니다."
+    );
 
 export const passwordValidation = z
     .string()
@@ -11,5 +17,3 @@ export const passwordValidation = z
         "영문자, 숫자, 특수문자를 각각 최소 1개씩 포함해야 합니다."
     )
     .regex(/^[^<>{}|;'"]+$/, "사용 불가능한 특수문자가 포함되어 있습니다.");
-
-export const snoValidation = z.string().length(9, "학번은 숫자 9자리입니다.");

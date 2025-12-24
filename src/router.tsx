@@ -81,6 +81,11 @@ export const router = createBrowserRouter([
                     },
                 ],
             },
+            // 관리자 페이지 밑에 그대로 두고, 이거 추가
+            {
+                path: "admin-preview",
+                element: <AdminHome />,
+            },
         ],
     },
 ]);
