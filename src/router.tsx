@@ -10,6 +10,7 @@ import MyPage from "./pages/MyPage";
 import Register from "./pages/Register";
 import RegisterComplete from "./pages/RegisterComplete";
 import Reserve from "./pages/Reserve";
+import ReserveComplete from "./pages/ReserveComplete";
 
 // 라우트 정의
 export const router = createBrowserRouter([
@@ -43,11 +44,25 @@ export const router = createBrowserRouter([
             },
             {
                 path: "reserve",
-                element: (
-                    <ProtectedRoute>
-                        <Reserve />
-                    </ProtectedRoute>
-                ),
+                element: <Outlet />,
+                children: [
+                    {
+                        index: true,
+                        element: (
+                            <ProtectedRoute>
+                                <Reserve />
+                            </ProtectedRoute>
+                        ),
+                    },
+                    {
+                        path: "complete",
+                        element: (
+                            <ProtectedRoute>
+                                <ReserveComplete />
+                            </ProtectedRoute>
+                        ),
+                    },
+                ],
             },
             {
                 path: "mypage",

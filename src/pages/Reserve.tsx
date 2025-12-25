@@ -1,45 +1,191 @@
 import FormButton from "@/components/common/button/formButton";
 import SubLogo from "@/components/common/logo/subLogo";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import "@/styles/customCalendar.css";
-import type { _ } from "node_modules/tailwindcss/dist/colors-b_6i0Oi7";
-import { formatToMonthYear } from "@/utils/utils";
+import { formatDate, formatToMonthYear } from "@/utils/utils";
+import { useForm } from "react-hook-form";
+import axiosInstance from "@/api/axiosInstance";
+import { useNavigate } from "react-router-dom";
 
 type DatePiece = Date | null;
 type SelectedDate = DatePiece | [DatePiece, DatePiece];
 
-export default function Reserve() {
-    const [date, setDate] = useState<SelectedDate>(new Date());
+type FormValues = {
+    time: string[];
+};
 
+interface AvailableTimesResponse {
+    result: {
+        available: Record<string, boolean>; // "09:00": true/false
+    };
+}
+
+export default function Reserve() {
+    const navigate = useNavigate();
+    const [hasPickedDate, setHasPickedDate] = useState(false);
+
+    // 전체 타임슬롯 (09:00~21:30)
+    const timeSlots = useMemo(() => {
+        const slots: string[] = [];
+        for (let hour = 9; hour < 22; hour++) {
+            for (let minute = 0; minute < 60; minute += 30) {
+                const h = String(hour).padStart(2, "0");
+                const m = String(minute).padStart(2, "0");
+                slots.push(`${h}:${m}`);
+            }
+        }
+        return slots;
+    }, []);
+
+    // 폼
+    const { register, setValue, watch, handleSubmit } = useForm<FormValues>({
+        defaultValues: { time: [] },
+    });
+    const selectedTimes = watch("time", []);
+
+    // 날짜 / 가능시간 맵 / 로딩
+    const [date, setDate] = useState<SelectedDate>(null);
+    const [availableMap, setAvailableMap] = useState<Record<string, boolean>>(
+        {}
+    );
+    const [loading, setLoading] = useState(false);
+
+    // date를 항상 Date로 정규화
+    const normalizedDate = useMemo(() => {
+        const d = Array.isArray(date) ? date[0] : date;
+        return d ?? null;
+    }, [date]);
+
+    // 날짜 바뀔 때마다 가능시간 조회
+    useEffect(() => {
+        const fetchAvailable = async () => {
+            if (!normalizedDate) return;
+
+            try {
+                setLoading(true);
+                const res = await axiosInstance.get<AvailableTimesResponse>(
+                    "/reservations/available",
+                    { params: { date: formatDate(normalizedDate) } }
+                );
+                setAvailableMap(res.data.result.available ?? {});
+            } catch (e) {
+                console.error("가능 시간 조회 실패:", e);
+                setAvailableMap({});
+            } finally {
+                setLoading(false);
+            }
+        };
+        void fetchAvailable();
+    }, [normalizedDate]);
+
+    const onSubmit = (data: FormValues) => {
+        void navigate("/reserve/complete", {
+            state: { data },
+        });
+    };
     return (
         <div className="v-stack w-full gap-[35px]">
             <SubLogo />
             <Calendar
-                formatDay={(_, date) =>
-                    date.toLocaleString("en", { day: "numeric" })
-                }
-                onChange={setDate}
+                formatDay={(_, d) => d.toLocaleString("en", { day: "numeric" })}
+                onChange={(nextDate) => {
+                    setDate(nextDate);
+                    setValue("time", [], { shouldValidate: true }); // 날짜 바뀌면 선택 초기화
+                    setHasPickedDate(true);
+                }}
                 locale="ko-KR"
                 value={date}
-                formatMonthYear={(_, date) => formatToMonthYear(date)}
+                formatMonthYear={(_, d) => formatToMonthYear(d)}
             />
-            <form className="flex flex-col gap-[30px]">
-                <form className="grid w-full grid-cols-4 *:border *:rounded-[5px] *:border-background-200 body-t7 gap-[5px] *:w-[55px] *:h-[25px] *:place-self-center">
-                    <button>09:30</button>
-                    <button>10:00</button>
-                    <button>10:30</button>
-                    <button>11:00</button>
-                    <button>11:30</button>
+            {hasPickedDate && (
+                <form
+                    className="flex flex-col gap-[30px]"
+                    onSubmit={(e) => void handleSubmit(onSubmit)(e)}
+                >
+                    <input
+                        type="hidden"
+                        {...register("time", { required: true })}
+                    />
+
+                    <div className="grid grid-cols-[repeat(auto-fit,minmax(55px,1fr))] gap-2">
+                        {timeSlots.map((time) => {
+                            const isSelected = selectedTimes.includes(time);
+
+                            // availableMap[time] === true 일 때만 가능
+                            const isAvailable = availableMap[time] === true;
+
+                            // 로딩 중이거나 불가능이면 disabled
+                            const isDisabled = loading || !isAvailable;
+
+                            return (
+                                <button
+                                    key={time}
+                                    type="button"
+                                    disabled={isDisabled}
+                                    onClick={() => {
+                                        if (isDisabled) return;
+                                        if (!normalizedDate) return;
+
+                                        const prev = selectedTimes;
+                                        const next = isSelected
+                                            ? prev.filter((t) => t !== time)
+                                            : [...prev, time];
+
+                                        // optimistic UI
+                                        setValue("time", next, {
+                                            shouldValidate: true,
+                                        });
+
+                                        const url = isSelected
+                                            ? "/reservations/time/return"
+                                            : "/reservations/time";
+
+                                        axiosInstance
+                                            .post(url, {
+                                                date: formatDate(
+                                                    normalizedDate
+                                                ),
+                                                time,
+                                            })
+                                            .catch((error) => {
+                                                console.error(
+                                                    "예약 요청 실패:",
+                                                    error
+                                                );
+
+                                                // 실패 시 정확한 롤백: 이전 상태로 복구
+                                                setValue("time", prev, {
+                                                    shouldValidate: true,
+                                                });
+
+                                                // (옵션) 실패한 시간은 즉시 막아버리기 원하면:
+                                                // setAvailableMap((m) => ({ ...m, [time]: false }));
+                                            });
+                                    }}
+                                    className={`border rounded-[5px] body-t7 w-[55px] h-[25px]
+                  ${
+                      isSelected
+                          ? "bg-secondary text-white border-secondary"
+                          : "border-background-200"
+                  }
+                  ${isDisabled ? "opacity-40 cursor-not-allowed" : ""}`}
+                                >
+                                    {time}
+                                </button>
+                            );
+                        })}
+                    </div>
+
+                    <FormButton
+                        text="다음"
+                        textColor="text-white"
+                        bgColor="bg-secondary"
+                        isBorder={false}
+                    />
                 </form>
-                <FormButton
-                    text="다음"
-                    textColor="text-white"
-                    bgColor="bg-secondary"
-                    isBorder={false}
-                />
-            </form>
+            )}
         </div>
     );
 }

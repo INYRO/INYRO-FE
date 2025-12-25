@@ -9,13 +9,6 @@ import { useEffect, useState } from "react";
 
 type ReservationsResponse = ApiResponse<ReservationsResult>;
 
-/*
-[todo]
-1. 예약 변경 버튼 핸들러
-2. 예약 취소 버튼 핸들러
-3. 에러 상태 UI
- */
-
 export default function MyPage() {
     const [isLoading, setIsLoading] = useState(false);
     const [reservations, setReservations] = useState<Reservation[]>([]);
