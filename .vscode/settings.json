@@ -1,0 +1,16 @@
+{
+    "editor.formatOnSave": true, // 파일 저장시 코드 정리
+    "editor.defaultFormatter": "esbenp.prettier-vscode", // prettier 포멧터
+    // eslint
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": "explicit",
+        "source.organizeImports": "never"
+    },
+    // eslint 형식 지정
+    "eslint.validate": [
+        "javascript",
+        "javascriptreact",
+        "typescript",
+        "typescriptreact"
+    ]
+}

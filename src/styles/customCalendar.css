@@ -1,0 +1,66 @@
+/* 달력 전체 컨테이너 */
+.react-calendar {
+    border: 0px;
+    .react-calendar__navigation {
+        display: block;
+        text-align: center;
+        height: auto;
+    }
+}
+
+.react-calendar__viewContainer {
+    .react-calendar__month-view__weekdays {
+        font-size: 13px;
+        font-weight: 500;
+        color: #1a1f1e;
+        font-family: "Pretendard-Medium";
+    }
+    .react-calendar__month-view__days {
+        font-size: 13px;
+        font-weight: 400;
+        color: #1a1f1e;
+        font-family: "Pretendard-Light";
+    }
+    .react-calendar__month-view__days__day--neighboringMonth {
+        color: #d9d9d9;
+    }
+    .react-calendar__tile {
+        padding-left: 13px;
+        padding-right: 13px;
+        padding-bottom: 6px;
+        padding-top: 6px;
+    }
+    .react-calendar__tile:hover {
+        border-radius: 5px;
+    }
+    .react-calendar__tile--now {
+        background-color: white;
+    }
+    .react-calendar__tile--now:enabled:hover {
+        background-color: #d9d9d9;
+    }
+    .react-calendar__tile--active {
+        background-color: #1c4f46;
+        border-radius: 5px;
+    }
+    .react-calendar__tile--active:hover {
+        background-color: #1c4f46;
+        border-radius: 5px;
+    }
+    .react-calendar__tile--active:enabled:focus {
+        background-color: #1c4f46;
+        border-radius: 5px;
+    }
+}
+
+.react-calendar__navigation__prev2-button {
+    display: none;
+}
+
+.react-calendar__navigation__next2-button {
+    display: none;
+}
+
+abbr {
+    text-decoration: none;
+}

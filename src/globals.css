@@ -1,7 +1,0 @@
-@import "tailwindcss";
-
-@layer components {
-    .layout {
-        @apply flex min-h-screen max-w-sm mx-auto items-center justify-center;
-    }
-}

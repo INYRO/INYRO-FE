@@ -1,0 +1,4 @@
+{
+    // ESLint 및 prettier extension 설치 추천
+    "recommendations": ["dbaeumer.vscode-eslint", "esbenp.prettier-vscode"]
+}

@@ -1,5 +1,6 @@
 import { createBrowserRouter, Outlet } from "react-router-dom";
 import App from "./App";
+import { ProtectedRoute } from "./components/route/ProtectedRoute";
 import AdminHome from "./pages/AdminHome";
 import AdminReserveManagement from "./pages/AdminReserveManagement";
 import AdminUserManagement from "./pages/AdminUserManagement";
@@ -7,7 +8,9 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import MyPage from "./pages/MyPage";
 import Register from "./pages/Register";
+import RegisterComplete from "./pages/RegisterComplete";
 import Reserve from "./pages/Reserve";
+import ReserveComplete from "./pages/ReserveComplete";
 
 // 라우트 정의
 export const router = createBrowserRouter([
@@ -27,21 +30,57 @@ export const router = createBrowserRouter([
             },
             {
                 path: "register",
-                element: <Register />,
+                element: <Outlet />,
+                children: [
+                    {
+                        index: true, // path: '/register'
+                        element: <Register />,
+                    },
+                    {
+                        path: "complete", // path: '/register/complete'
+                        element: <RegisterComplete />,
+                    },
+                ],
             },
             {
                 path: "reserve",
-                element: <Reserve />,
+                element: <Outlet />,
+                children: [
+                    {
+                        index: true,
+                        element: (
+                            <ProtectedRoute>
+                                <Reserve />
+                            </ProtectedRoute>
+                        ),
+                    },
+                    {
+                        path: "complete",
+                        element: (
+                            <ProtectedRoute>
+                                <ReserveComplete />
+                            </ProtectedRoute>
+                        ),
+                    },
+                ],
             },
             {
-                path: "my_page",
-                element: <MyPage />,
+                path: "mypage",
+                element: (
+                    <ProtectedRoute>
+                        <MyPage />
+                    </ProtectedRoute>
+                ),
             },
 
             // 관리자 페이지
             {
                 path: "admin",
-                element: <Outlet />,
+                element: (
+                    <ProtectedRoute>
+                        <Outlet />
+                    </ProtectedRoute>
+                ),
                 children: [
                     {
                         index: true, // path: '/admin'
@@ -56,6 +95,11 @@ export const router = createBrowserRouter([
                         element: <AdminReserveManagement />,
                     },
                 ],
+            },
+            // 관리자 페이지 밑에 그대로 두고, 이거 추가
+            {
+                path: "admin-preview",
+                element: <AdminHome />,
             },
         ],
     },
