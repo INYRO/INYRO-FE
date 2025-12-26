@@ -82,12 +82,14 @@ export default function FindPasswordModal() {
                     <FormInput
                         required
                         {...register("sno")}
+                        error={errors.sno?.message}
                         type="text"
                         isPlaceholder
                     />
                     <FormInput
                         required
                         {...register("password")}
+                        error={errors.password?.message}
                         type="password"
                         isPlaceholder
                     />
