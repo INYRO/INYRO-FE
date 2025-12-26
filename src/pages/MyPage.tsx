@@ -15,7 +15,11 @@ export default function MyPage() {
 
     const dispatch = useAppDispatch();
 
-    const { sno, dept, name } = useAppSelector((state) => state.authState);
+    const user = useAppSelector((state) => state.authState.user);
+
+    const sno = user?.sno ?? "";
+    const name = user?.name ?? "";
+    const dept = user?.dept ?? "";
 
     const getReservations = async () => {
         setIsLoading(true);
@@ -37,6 +41,28 @@ export default function MyPage() {
             }
         } finally {
             setIsLoading(false);
+        }
+    };
+
+    const changeReservation = async (reservationId: number) => {
+        if (!reservationId) return;
+        try {
+            await axiosInstance.patch(`/reservations/${reservationId}`, {});
+        } catch (error) {
+            console.error(error);
+        } finally {
+            void getReservations();
+        }
+    };
+
+    const deleteReservation = async (reservationId: number) => {
+        if (!reservationId) return;
+        try {
+            await axiosInstance.delete(`/reservations/${reservationId}`);
+        } catch (error) {
+            console.error(error);
+        } finally {
+            void getReservations();
         }
     };
 
@@ -119,10 +145,24 @@ export default function MyPage() {
                                                     {data.reservationStatus ===
                                                         "UPCOMING" && (
                                                         <>
-                                                            <button className="btn-sub2 px-1.5 py-[1.5px] border rounded-[5px] border-background-200">
+                                                            <button
+                                                                onClick={() =>
+                                                                    void changeReservation(
+                                                                        data.reservationId
+                                                                    )
+                                                                }
+                                                                className="btn-sub2 px-1.5 py-[1.5px] border rounded-[5px] border-background-200"
+                                                            >
                                                                 변경
                                                             </button>
-                                                            <button className="btn-sub2 px-1.5 py-[1.5px] border rounded-[5px] border-background-200">
+                                                            <button
+                                                                onClick={() =>
+                                                                    void deleteReservation(
+                                                                        data.reservationId
+                                                                    )
+                                                                }
+                                                                className="btn-sub2 px-1.5 py-[1.5px] border rounded-[5px] border-background-200"
+                                                            >
                                                                 취소
                                                             </button>
                                                         </>

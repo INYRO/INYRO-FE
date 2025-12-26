@@ -82,7 +82,7 @@ export default function Reserve() {
 
     const onSubmit = (data: FormValues) => {
         void navigate("/reserve/complete", {
-            state: { data },
+            state: { time: data.time, date: formatDate(normalizedDate) },
         });
     };
     return (
