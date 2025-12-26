@@ -1,23 +1,21 @@
 import axiosInstance from "@/api/axiosInstance";
-import FormButton from "../common/button/formButton";
-import FormInput from "../input/formInput";
-import { useAppDispatch } from "@/store/hooks";
+import {
+    changePasswordSchema,
+    type ChangePasswordType,
+} from "@/schema/changePasswordSchema";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { closeModal } from "@/store/modalSlice";
+import type { ApiResponse } from "@/types/api";
 import { zodResolver } from "@hookform/resolvers/zod";
+import axios from "axios";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { closeModal, openModal } from "@/store/modalSlice";
-import axios from "axios";
-import {
-    findPasswordSchema,
-    type FindPasswordType,
-} from "@/schema/findPasswordSchema";
-import type { ApiResponse } from "@/types/api";
-import { login } from "@/store/authSlice";
-import type { RegisterResult } from "@/types/auth";
+import FormButton from "../common/button/formButton";
+import FormInput from "../input/formInput";
 
-type FindPasswordResponse = ApiResponse<RegisterResult>;
+type ChangePasswordResponse = ApiResponse<string>;
 
-export default function FindPasswordModal() {
+export default function ChangePasswordResetModal() {
     const dispatch = useAppDispatch();
     const [isLoading, setIsLoading] = useState(false);
     const {
@@ -25,31 +23,30 @@ export default function FindPasswordModal() {
         handleSubmit,
         formState: { errors },
         setError,
-    } = useForm<FindPasswordType>({
-        resolver: zodResolver(findPasswordSchema),
+    } = useForm<ChangePasswordType>({
+        resolver: zodResolver(changePasswordSchema),
     });
-    const onSubmit = handleSubmit(async (data: FindPasswordType) => {
+    const user = useAppSelector((state) => state.authState.user);
+
+    const onSubmit = handleSubmit(async (data: ChangePasswordType) => {
+        if (!user) return;
         try {
             setIsLoading(true);
-            const response = await axiosInstance.post<FindPasswordResponse>(
-                "/auth/smul",
-                data
+            const response = await axiosInstance.post<ChangePasswordResponse>(
+                "/auth/password/reset/smul",
+                {
+                    sno: user.sno,
+                    newPassword: data.newPassword,
+                    newPasswordConfirmation: data.newPasswordConfirmation,
+                }
             );
             if (response.data.isSuccess) {
                 dispatch(closeModal());
-                dispatch(openModal("changePasswordReset"));
-                dispatch(
-                    login({
-                        sno: response.data.result.sno,
-                        name: response.data.result.name,
-                        dept: response.data.result.dept,
-                    })
-                );
             }
         } catch (err) {
-            if (axios.isAxiosError<FindPasswordResponse>(err)) {
+            if (axios.isAxiosError<ChangePasswordResponse>(err)) {
                 console.warn(
-                    "비밀번호 찾기 실패",
+                    "비밀번호 변경 실패",
                     err.response?.data || err.message
                 );
                 setError("root", {
@@ -71,31 +68,38 @@ export default function FindPasswordModal() {
     return (
         <>
             <div className="flex items-end gap-[5px]">
-                <span className="body-t2">비밀번호 찾기</span>
-                <span className="body-t3 text-background-300">재학생 인증</span>
+                <span className="body-t2">비밀번호 변경</span>
+                <span className="body-t3 text-background-300">
+                    4자 이상 입력
+                </span>
             </div>
             <form
-                className="flex flex-col gap-[15px]"
                 onSubmit={(e) => void onSubmit(e)}
+                className="flex flex-col gap-[15px]"
             >
                 <article className="flex flex-col gap-[5px]">
                     <FormInput
                         required
-                        {...register("sno")}
-                        error={errors.sno?.message}
-                        type="text"
+                        {...register("newPassword")}
+                        error={errors.newPassword?.message}
+                        type="password"
                         isPlaceholder
                     />
                     <FormInput
                         required
-                        {...register("password")}
-                        error={errors.password?.message}
+                        {...register("newPasswordConfirmation")}
+                        error={errors.newPasswordConfirmation?.message}
                         type="password"
                         isPlaceholder
                     />
                 </article>
+                <span
+                    className={`${errors.root?.message ? "flex" : "hidden"} body-t5 text-accent`}
+                >
+                    {errors.root?.message}
+                </span>
                 <FormButton
-                    text="인증"
+                    text="변경하기"
                     bgColor="bg-secondary"
                     isBorder={false}
                     textColor="text-white"

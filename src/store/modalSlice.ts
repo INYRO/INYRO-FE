@@ -9,7 +9,8 @@ type ModalType =
     | "findPassword"
     | "changePassword"
     | "deleteAccount"
-    | "reserveComplete";
+    | "reserveComplete"
+    | "changePasswordReset";
 
 // state의 초기값 설정
 const initialState: ModalState = {
