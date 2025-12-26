@@ -4,6 +4,7 @@ import ChangePasswordModal from "./changePasswordModal";
 import DeleteAccountModal from "./deleteAccountModal";
 import FindPasswordModal from "./findPasswordModal";
 import ReserveCompleteModal from "./reserveCompleteModal";
+import ChangePasswordResetModal from "./changePasswordResetModal";
 
 export default function ModalLayout() {
     const dispatch = useAppDispatch();
@@ -25,6 +26,9 @@ export default function ModalLayout() {
                 {modalType === "changePassword" && <ChangePasswordModal />}
                 {modalType === "deleteAccount" && <DeleteAccountModal />}
                 {modalType === "reserveComplete" && <ReserveCompleteModal />}
+                {modalType === "changePasswordReset" && (
+                    <ChangePasswordResetModal />
+                )}
             </div>
         </div>
     );

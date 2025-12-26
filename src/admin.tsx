@@ -1,4 +1,4 @@
-import AdminHome from "./AdminHome";
+import AdminHome from "./pages/AdminHome";
 
 export default function Admin() {
     return (
