@@ -61,6 +61,11 @@
     display: none;
 }
 
+.react-calendar__navigation__label {
+    pointer-events: none;
+    cursor: default;
+}
+
 abbr {
     text-decoration: none;
 }

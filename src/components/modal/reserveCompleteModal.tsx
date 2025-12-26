@@ -2,21 +2,26 @@ import { useAppDispatch } from "@/store/hooks";
 import { closeModal } from "@/store/modalSlice";
 import FormButton from "../common/button/formButton";
 import { useNavigate } from "react-router-dom";
+import checkIcon from "@/assets/icons/icon_check.svg";
 
 export default function ReserveCompleteModal() {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
-    const handleClose = () => dispatch(closeModal());
-    const handleSubmit = () => {
+    const onSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
         void navigate("/mypage");
-        void handleClose;
+        dispatch(closeModal());
     };
 
     return (
         <>
-            <div className="size-9 rounded-full bg-background-200 mx-auto" />
+            <img
+                src={checkIcon}
+                alt="check"
+                className="size-9 rounded-full bg-background-200 mx-auto"
+            />
             <p className="body-t2 text-center">예약 되었습니다.</p>
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={onSubmit}>
                 <FormButton
                     text="확인"
                     bgColor="bg-secondary"

@@ -80,6 +80,25 @@ export default function Reserve() {
         void fetchAvailable();
     }, [normalizedDate]);
 
+    // 오늘 이전 시각 막기
+    const isSameDay = (a: Date, b: Date) =>
+        a.getFullYear() === b.getFullYear() &&
+        a.getMonth() === b.getMonth() &&
+        a.getDate() === b.getDate();
+
+    const isPastTimeSlotToday = (time: string, selectedDate: Date) => {
+        // time: "HH:mm"
+        const [hh, mm] = time.split(":").map(Number);
+
+        const slot = new Date(selectedDate);
+        slot.setHours(hh, mm, 0, 0);
+
+        const now = new Date();
+
+        // "지금보다 이전"이면 막기 (원하면 <= 로 바꿔서 '지금과 동일'도 막을 수 있음)
+        return slot < now;
+    };
+
     const onSubmit = (data: FormValues) => {
         void navigate("/reserve/complete", {
             state: { time: data.time, date: formatDate(normalizedDate) },
@@ -98,6 +117,18 @@ export default function Reserve() {
                 locale="ko-KR"
                 value={date}
                 formatMonthYear={(_, d) => formatToMonthYear(d)}
+                tileDisabled={({ date, view }) => {
+                    if (view !== "month") return false;
+
+                    // 오늘 00:00 기준으로 "오늘 이전" 막기
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+
+                    const d = new Date(date);
+                    d.setHours(0, 0, 0, 0);
+
+                    return d < today;
+                }}
             />
             {hasPickedDate && (
                 <form
@@ -116,8 +147,19 @@ export default function Reserve() {
                             // availableMap[time] === true 일 때만 가능
                             const isAvailable = availableMap[time] === true;
 
-                            // 로딩 중이거나 불가능이면 disabled
-                            const isDisabled = loading || !isAvailable;
+                            // 오늘 이전 시간 막는 로직
+                            const now = new Date();
+                            const isToday = normalizedDate
+                                ? isSameDay(normalizedDate, now)
+                                : false;
+                            const isPastTime = normalizedDate
+                                ? isToday &&
+                                  isPastTimeSlotToday(time, normalizedDate)
+                                : false;
+
+                            // 로딩 중이거나 오늘 또는 현재시간 이전이면 disabled
+                            const isDisabled =
+                                loading || !isAvailable || isPastTime;
 
                             return (
                                 <button
