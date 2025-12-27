@@ -16,7 +16,7 @@ export default function ModalLayout() {
     return (
         <div
             onClick={handleClose}
-            className="z-10 absolute w-full h-full top-0 flex items-center justify-center bg-black/20"
+            className="z-10 absolute w-full h-full top-0 flex items-center justify-center bg-black/20 animate-fade-in-out"
         >
             <div
                 onClick={(e) => e.stopPropagation()}
