@@ -21,8 +21,28 @@
         color: #1a1f1e;
         font-family: "Pretendard-Light";
     }
-    .react-calendar__month-view__days__day--neighboringMonth {
+    .react-calendar__tile--active,
+    .react-calendar__tile--active:enabled,
+    .react-calendar__tile--active:enabled:hover,
+    .react-calendar__tile--active:enabled:focus {
+        color: #ffffff !important;
+    }
+    /* 토요일(주말) 색상 기본색으로 덮어쓰기 */
+    .react-calendar__month-view__days__day:nth-child(7n) {
+        color: #1a1f1e; /* 파랑 */
+    }
+    /* 이웃달은 주말이어도 회색 유지 */
+    .react-calendar__month-view__days__day--neighboringMonth,
+    .react-calendar__month-view__days__day--neighboringMonth.react-calendar__month-view__days__day--weekend {
         color: #d9d9d9;
+    }
+    /* disabled 날짜는 요일 상관없이 무조건 회색 */
+    .react-calendar__tile:disabled,
+    .react-calendar__tile--weekend:disabled {
+        color: #d9d9d9 !important;
+    }
+    .react-calendar__tile:disabled {
+        background: transparent !important;
     }
     .react-calendar__tile {
         padding-left: 13px;

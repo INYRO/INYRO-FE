@@ -99,6 +99,19 @@ export default function Reserve() {
         return slot < now;
     };
 
+    const returnTimes = async (dateToReturn: Date, timesToReturn: string[]) => {
+        if (timesToReturn.length === 0) return;
+
+        await Promise.allSettled(
+            timesToReturn.map((time) =>
+                axiosInstance.post("/reservations/time/return", {
+                    date: formatDate(dateToReturn),
+                    time,
+                })
+            )
+        );
+    };
+
     const onSubmit = (data: FormValues) => {
         void navigate("/reserve/complete", {
             state: { time: data.time, date: formatDate(normalizedDate) },
@@ -108,8 +121,13 @@ export default function Reserve() {
         <div className="v-stack w-full gap-[35px]">
             <SubLogo />
             <Calendar
+                calendarType="gregory"
                 formatDay={(_, d) => d.toLocaleString("en", { day: "numeric" })}
                 onChange={(nextDate) => {
+                    // 날짜 바꾸기 전에, 이전 날짜에 잡아둔 시간들 반납
+                    if (normalizedDate && selectedTimes.length > 0) {
+                        void returnTimes(normalizedDate, selectedTimes);
+                    }
                     setDate(nextDate);
                     setValue("time", [], { shouldValidate: true }); // 날짜 바뀌면 선택 초기화
                     setHasPickedDate(true);
@@ -201,18 +219,15 @@ export default function Reserve() {
                                                 setValue("time", prev, {
                                                     shouldValidate: true,
                                                 });
-
-                                                // (옵션) 실패한 시간은 즉시 막아버리기 원하면:
-                                                // setAvailableMap((m) => ({ ...m, [time]: false }));
                                             });
                                     }}
-                                    className={`border rounded-[5px] body-t7 w-[55px] h-[25px]
+                                    className={`active:scale-[0.98] hover:bg-background-200 hover:border-none hover:text-inherit border rounded-[5px] body-t7 w-[55px] h-[25px]
                   ${
                       isSelected
                           ? "bg-secondary text-white border-secondary"
                           : "border-background-200"
                   }
-                  ${isDisabled ? "opacity-40 cursor-not-allowed" : ""}`}
+                  ${isDisabled ? "opacity-40 cursor-not-allowed" : ""} transition-all ease-in-out`}
                                 >
                                     {time}
                                 </button>

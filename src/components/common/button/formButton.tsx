@@ -15,7 +15,7 @@ export default function FormButton({
 }: LinkButtonProps) {
     return (
         <button
-            className={`text-center w-full py-2 rounded-[10px] ${isBorder && "border"} border-background-200 ${bgColor}`}
+            className={`text-center w-full py-2 rounded-[10px] ${isBorder && "border"} border-background-200 ${bgColor} transition-all duration-150 ease-out hover:brightness-75 active:scale-[0.98]`}
             disabled={isLoading}
         >
             <span className={`btn-main ${textColor}`}>

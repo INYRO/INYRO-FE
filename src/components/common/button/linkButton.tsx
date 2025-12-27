@@ -26,7 +26,7 @@ export default function LinkButton({
     return (
         <Link
             to={url}
-            className={`${base} ${isBorder ? "border" : ""} border-background-200 ${bgColor} ${className ?? ""}`}
+            className={`${base} ${isBorder ? "border" : ""} border-background-200 ${bgColor} ${className ?? ""} transition-all duration-150 ease-out hover:brightness-75 active:scale-[0.98]`}
         >
             <span className={`btn-main ${textColor}`}>{text}</span>
         </Link>
