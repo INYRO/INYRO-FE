@@ -39,7 +39,7 @@ export default function Reserve() {
         return slots;
     }, []);
 
-    // 폼
+    // RHF
     const { register, setValue, watch, handleSubmit } = useForm<FormValues>({
         defaultValues: { time: [] },
     });
@@ -95,7 +95,7 @@ export default function Reserve() {
 
         const now = new Date();
 
-        // "지금보다 이전"이면 막기 (원하면 <= 로 바꿔서 '지금과 동일'도 막을 수 있음)
+        // 지금보다 이전이면 막기
         return slot < now;
     };
 
@@ -221,10 +221,10 @@ export default function Reserve() {
                                                 });
                                             });
                                     }}
-                                    className={`active:scale-[0.98] hover:bg-background-200 hover:border-none hover:text-inherit border rounded-[5px] body-t7 w-[55px] h-[25px]
+                                    className={`active:scale-[0.95] hover:bg-background-200 hover:border-none hover:text-inherit border rounded-[5px] body-t7 w-[55px] h-[25px] 
                   ${
                       isSelected
-                          ? "bg-secondary text-white border-secondary"
+                          ? "bg-secondary text-white border-none"
                           : "border-background-200"
                   }
                   ${isDisabled ? "opacity-40 cursor-not-allowed" : ""} transition-all ease-in-out`}
@@ -234,7 +234,6 @@ export default function Reserve() {
                             );
                         })}
                     </div>
-
                     <FormButton
                         text="다음"
                         textColor="text-white"
