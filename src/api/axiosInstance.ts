@@ -7,7 +7,7 @@ import axios, { type InternalAxiosRequestConfig } from "axios";
 type ReissueResponse = ApiResponse<ReissueResult>;
 
 const axiosInstance = axios.create({
-    baseURL: "/api/v1",
+    baseURL: "https://api.inyro.com/api/v1",
     withCredentials: true, // 쿠키 전송
     timeout: 10000, // 10초 넘어가면 timeouts
 });
@@ -22,8 +22,14 @@ axiosInstance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
     // redux에 저장된 accessToken 불러옴
     const { accessToken } = store.getState().authState;
 
+    const url = config.url ?? "";
+    const isAuthEndpoint =
+        url.includes("/auth/login") ||
+        url.includes("/auth/reissue") ||
+        url.includes("/auth/logout");
+
     // 토큰이 있는 경우 요청 헤더에 토큰 삽입
-    if (accessToken) {
+    if (accessToken && !isAuthEndpoint) {
         config.headers.Authorization = `Bearer ${accessToken}`;
     }
 
@@ -75,11 +81,11 @@ axiosInstance.interceptors.response.use(
                 // 이미 reissue 진행 중이면 그 Promise를 기다림
                 if (!refreshPromise) {
                     refreshPromise = (async () => {
-                        const response = await axios.post<ReissueResponse>(
-                            "/api/v1/auth/reissue",
-                            {},
-                            { withCredentials: true }
-                        );
+                        const response =
+                            await axiosInstance.post<ReissueResponse>(
+                                "/auth/reissue",
+                                {}
+                            );
 
                         // response data가 없을 시
                         if (!response.data.isSuccess) {
