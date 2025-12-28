@@ -24,9 +24,7 @@ axiosInstance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
 
     const url = config.url ?? "";
     const isAuthEndpoint =
-        url.includes("/auth/login") ||
-        url.includes("/auth/reissue") ||
-        url.includes("/auth/logout");
+        url.includes("/auth/login") || url.includes("/auth/reissue");
 
     // 토큰이 있는 경우 요청 헤더에 토큰 삽입
     if (accessToken && !isAuthEndpoint) {
