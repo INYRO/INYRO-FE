@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import axiosInstance from "@/api/axiosInstance";
 import MainLogo from "@/components/common/logo/mainLogo";
+import sortIcon from "@/assets/icons/lsicon_sort-filter-filled.svg";
 
 type MemberStatus = "ENROLLED" | "LEAVE" | "WITHDRAWN";
 
@@ -30,7 +31,7 @@ export default function AdminUserManagement() {
     const [members, setMembers] = useState<Member[]>([]);
     const [selected, setSelected] = useState<string[]>([]);
     const [sortType, setSortType] = useState("NAME");
-    const [order, setOrder] = useState("ASC");
+    const [order, setOrder] = useState<"ASC" | "DESC">("ASC");
     const [page, setPage] = useState(0);
     const [lastPage, setLastPage] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
@@ -81,14 +82,17 @@ export default function AdminUserManagement() {
             await axiosInstance.patch(
                 `/admin/members/${id}/status`,
                 {},
-                {
-                    params: { status },
-                }
+                { params: { status } }
             );
             await fetchMembers();
         },
         [fetchMembers]
     );
+
+    const toggleOrder = useCallback(() => {
+        setOrder((prev) => (prev === "ASC" ? "DESC" : "ASC"));
+        setPage(0);
+    }, []);
 
     useEffect(() => {
         void fetchMembers();
@@ -99,40 +103,66 @@ export default function AdminUserManagement() {
             <MainLogo />
 
             <div className="flex items-center justify-between">
-                <span className="body-t2 text-primary">유저 리스트</span>
+                <h2 className="inline-block body-t2 font-bold text-main underline underline-offset-[6px]">
+                    유저 리스트
+                </h2>
+
                 <div className="flex items-center gap-2 body-t6 text-background-300">
                     <span>정렬</span>
+
                     <select
                         className="border border-background-200 rounded-[5px] px-2 py-1 body-t6 bg-background-100"
                         value={sortType}
-                        onChange={(e) => setSortType(e.target.value)}
+                        onChange={(e) => {
+                            setSortType(e.target.value);
+                            setPage(0);
+                        }}
                     >
                         <option value="NAME">이름</option>
                         <option value="DEPARTMENT">학과</option>
                         <option value="SNO">학번</option>
                     </select>
-                    <select
-                        className="border border-background-200 rounded-[5px] px-2 py-1 body-t6 bg-background-100"
-                        value={order}
-                        onChange={(e) => setOrder(e.target.value)}
+
+                    <button
+                        type="button"
+                        onClick={toggleOrder}
+                        className="p-0 bg-transparent border-0 outline-none"
+                        aria-label={order === "ASC" ? "오름차순" : "내림차순"}
+                        title={order === "ASC" ? "오름차순" : "내림차순"}
                     >
-                        <option value="ASC">오름차순</option>
-                        <option value="DESC">내림차순</option>
-                    </select>
+                        <img
+                            src={sortIcon}
+                            alt=""
+                            className={`w-[15px] h-[15px] ${
+                                order === "DESC" ? "rotate-180" : ""
+                            }`}
+                        />
+                    </button>
                 </div>
             </div>
 
             <div className="border border-background-200 rounded-[10px] bg-background-100 overflow-hidden">
-                <table className="w-full text-left">
+                <table className="w-full text-center table-fixed">
                     <thead className="bg-background-200">
                         <tr className="body-t6 text-main">
-                            <th className="w-10 px-3 py-2"></th>
-                            <th className="px-3 py-2">이름</th>
-                            <th className="px-3 py-2">학번</th>
-                            <th className="px-3 py-2">전공</th>
-                            <th className="px-3 py-2 text-center">상태</th>
+                            <th className="w-[44px] px-3 py-2"></th>
+
+                            <th className="w-[64px] px-3 py-2 text-center">
+                                이름
+                            </th>
+
+                            <th className="w-[86px] px-3 py-2 text-center">
+                                학번
+                            </th>
+
+                            <th className="px-3 py-2 text-center">전공</th>
+
+                            <th className="w-[76px] px-3 py-2 text-center pr-6">
+                                상태
+                            </th>
                         </tr>
                     </thead>
+
                     <tbody>
                         {isLoading ? (
                             <tr>
@@ -165,18 +195,22 @@ export default function AdminUserManagement() {
                                             onChange={() => toggleSelect(m.sno)}
                                         />
                                     </td>
+
                                     <td className="px-3 py-2 body-t3">
                                         {m.name}
                                     </td>
+
                                     <td className="px-3 py-2 body-t3">
                                         {m.sno}
                                     </td>
+
                                     <td className="px-3 py-2 body-t3">
                                         {m.dept}
                                     </td>
-                                    <td className="px-3 py-2 text-center">
+
+                                    <td className="px-3 py-2 text-center pr-6">
                                         <select
-                                            className="border border-background-200 rounded-[5px] px-2 py-[3px] body-t6 bg-background-100"
+                                            className="border border-background-200 rounded-[5px] px-2 py-[3px] body-t6 bg-background-100 mr-2"
                                             value={m.status}
                                             onChange={(e) =>
                                                 void updateStatus(
