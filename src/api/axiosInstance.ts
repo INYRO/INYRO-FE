@@ -24,7 +24,10 @@ axiosInstance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
 
     const url = config.url ?? "";
     const isAuthEndpoint =
-        url.includes("/auth/login") || url.includes("/auth/reissue");
+        url.includes("/auth/login") ||
+        url.includes("/auth/reissue") ||
+        url.includes("/auth/signup") ||
+        url.includes("/auth/smul");
 
     // 토큰이 있는 경우 요청 헤더에 토큰 삽입
     if (accessToken && !isAuthEndpoint) {
@@ -68,7 +71,9 @@ axiosInstance.interceptors.response.use(
         const isAuthEndpoint =
             url.includes("/auth/login") ||
             url.includes("/auth/reissue") ||
-            url.includes("/auth/logout");
+            url.includes("/auth/logout") ||
+            url.includes("/auth/smul") ||
+            url.includes("/auth/signup");
 
         // status가 401이고, 재시도 안 한 요청이며, login/reissue/logout이 아닌 경우
         if (status === 401 && !originalRequest._retry && !isAuthEndpoint) {
