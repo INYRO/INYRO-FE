@@ -42,12 +42,7 @@ export default function AdminUserManagement() {
             const res = await axiosInstance.get<MemberPageResponse>(
                 "/admin/members",
                 {
-                    params: {
-                        sortType,
-                        order,
-                        page,
-                        size: 15,
-                    },
+                    params: { sortType, order, page, size: 15 },
                 }
             );
 
@@ -142,20 +137,22 @@ export default function AdminUserManagement() {
             </div>
 
             <div className="border border-background-200 rounded-[10px] bg-background-100 overflow-hidden">
-                <table className="w-full text-center table-fixed">
+                <table className="w-full text-center table-fixed border-collapse">
                     <thead className="bg-background-200">
                         <tr className="body-t6 text-main">
-                            <th className="w-[44px] px-3 py-2"></th>
+                            <th className="w-[44px] px-3 py-2 border-r border-background-200"></th>
 
-                            <th className="w-[64px] px-3 py-2 text-center">
+                            <th className="w-[64px] px-3 py-2 text-center border-r border-background-200">
                                 이름
                             </th>
 
-                            <th className="w-[86px] px-3 py-2 text-center">
+                            <th className="w-[86px] px-3 py-2 text-center border-r border-background-200">
                                 학번
                             </th>
 
-                            <th className="px-3 py-2 text-center">전공</th>
+                            <th className="px-3 py-2 text-center border-r border-background-200">
+                                전공
+                            </th>
 
                             <th className="w-[76px] px-3 py-2 text-center pr-6">
                                 상태
@@ -188,7 +185,7 @@ export default function AdminUserManagement() {
                                     key={m.id}
                                     className="border-t border-background-200 hover:bg-stroke"
                                 >
-                                    <td className="px-3 py-2 text-center">
+                                    <td className="px-3 py-2 text-center border-r border-background-200">
                                         <input
                                             type="checkbox"
                                             checked={selected.includes(m.sno)}
@@ -196,21 +193,21 @@ export default function AdminUserManagement() {
                                         />
                                     </td>
 
-                                    <td className="px-3 py-2 body-t3">
+                                    <td className="px-3 py-2 body-t3 border-r border-background-200">
                                         {m.name}
                                     </td>
 
-                                    <td className="px-3 py-2 body-t3">
+                                    <td className="px-3 py-2 body-t3 border-r border-background-200">
                                         {m.sno}
                                     </td>
 
-                                    <td className="px-3 py-2 body-t3">
+                                    <td className="px-3 py-2 body-t3 border-r border-background-200">
                                         {m.dept}
                                     </td>
 
                                     <td className="px-3 py-2 text-center pr-6">
                                         <select
-                                            className="border border-background-200 rounded-[5px] px-2 py-[3px] body-t6 bg-background-100 mr-2"
+                                            className="border border-background-200 rounded-[5px] px-2 py-[3px] pr-7 body-t6 bg-background-100 mr-2 appearance-none"
                                             value={m.status}
                                             onChange={(e) =>
                                                 void updateStatus(
@@ -219,6 +216,14 @@ export default function AdminUserManagement() {
                                                         .value as MemberStatus
                                                 )
                                             }
+                                            style={{
+                                                backgroundImage:
+                                                    "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23737373' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E\")",
+                                                backgroundRepeat: "no-repeat",
+                                                backgroundPosition:
+                                                    "right 8px center",
+                                                backgroundSize: "12px 12px",
+                                            }}
                                         >
                                             <option value="ENROLLED">
                                                 재학
