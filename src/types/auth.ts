@@ -21,3 +21,19 @@ export interface RegisterResult {
 export interface ReissueResult {
     accessToken: "string";
 }
+
+export interface MemberListResponse {
+    isSuccess: boolean;
+    code: string;
+    message: string;
+    result: {
+        content: MemberResult[];
+        pageNumber: number;
+        pageSize: number;
+        totalElements: number;
+        totalPages: number;
+        last: boolean;
+    };
+}
+
+export type MemberStatus = "ENROLLED" | "LEAVE" | "WITHDRAWN";
