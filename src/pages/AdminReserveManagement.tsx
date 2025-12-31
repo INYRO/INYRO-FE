@@ -51,7 +51,10 @@ export default function AdminReserveManagement() {
     return (
         <div className="v-stack w-full gap-6">
             <MainLogo />
-            <span className="body-t2 text-primary">예약 리스트</span>
+            <h2 className="inline-block body-t2 font-bold text-main underline underline-offset-[6px] decoration-[2px]">
+                예약 리스트
+            </h2>
+
             <table className="border border-background-200 w-full text-left">
                 <thead className="bg-background-200">
                     <tr className="body-t6 text-main text-center">

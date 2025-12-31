@@ -86,9 +86,10 @@ export default function AdminUserManagement() {
         <div className="v-stack w-full gap-6">
             <MainLogo />
             <section className="flex items-center justify-between">
-                <h2 className="inline-block body-t2 font-bold text-main underline underline-offset-[6px]">
+                <h2 className="inline-block body-t2 font-bold text-main underline underline-offset-[6px] decoration-[2px]">
                     유저 리스트
                 </h2>
+
                 <div className="flex items-center gap-2 body-t6 text-background-300">
                     <select
                         className="border border-background-200 rounded-[5px] px-2 py-1 body-t6 bg-background-100"
