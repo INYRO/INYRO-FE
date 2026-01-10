@@ -26,7 +26,7 @@ export default function AdminUserManagement() {
                     params: { sortType, order, page: 0, size: 100 },
                 }
             );
-
+            // res에 현재 id가 포함되어있지 않음.
             if (res.data.isSuccess) {
                 setMembers(res.data.result.content);
             }
@@ -44,6 +44,7 @@ export default function AdminUserManagement() {
 
     // user Status 업데이트
     const updateStatus = useCallback(
+        // 현재 id를 받아오지 못함.
         async (id: number, status: MemberStatus) => {
             await axiosInstance.patch(
                 `/admin/members/${id}/status`,
@@ -86,7 +87,7 @@ export default function AdminUserManagement() {
         <div className="v-stack w-full gap-6">
             <MainLogo />
             <section className="flex items-center justify-between">
-                <h2 className="inline-block body-t2 font-bold text-main underline underline-offset-[6px] decoration-[2px]">
+                <h2 className="inline-block body-t2 font-bold text-main underline underline-offset-[6px] decoration-2">
                     유저 리스트
                 </h2>
 
@@ -120,21 +121,21 @@ export default function AdminUserManagement() {
                     </button>
                 </div>
             </section>
-            <section className="border border-background-200 rounded-[10px] bg-background-100 overflow-hidden">
-                <table className="w-full text-center table-fixed border-collapse">
+            <section className="border border-background-300 rounded-[10px] overflow-hidden">
+                <table className="w-full rounded-xl">
                     <thead className="bg-background-200">
-                        <tr className="body-t6 text-main">
-                            <th className="w-[25px] py-2 border-r border-background-200"></th>
-                            <th className="w-[45px] py-2 text-center border-r body-t5 border-background-200">
+                        <tr className="body-t6 text-main *:border-background-300">
+                            <th className="w-[25px] py-2 border-r border-b"></th>
+                            <th className="w-[45px] py-2 border-r border-b">
                                 이름
                             </th>
-                            <th className="w-[70px] py-2 text-center border-r body-t5 border-background-200">
+                            <th className="w-[70px] py-2 border-r border-b">
                                 학번
                             </th>
-                            <th className="w-[110px] py-2 text-center border-r body-t5 border-background-200">
+                            <th className="w-[110px] py-2 border-r border-b">
                                 전공
                             </th>
-                            <th className="py-2 text-center body-t5">상태</th>
+                            <th className="py-2 border-b">상태</th>
                         </tr>
                     </thead>
 
@@ -161,9 +162,9 @@ export default function AdminUserManagement() {
                             members.map((m) => (
                                 <tr
                                     key={m.id}
-                                    className="border-t border-background-200 hover:bg-stroke"
+                                    className="hover:bg-stroke text-center body-t6 *:border-background-300 not-last:border-b not-last:border-background-300"
                                 >
-                                    <td className="py-2 border-r border-background-200 text-center">
+                                    <td className="py-2 border-r">
                                         <input
                                             type="checkbox"
                                             checked={selected.includes(m.sno)}
@@ -171,23 +172,15 @@ export default function AdminUserManagement() {
                                         />
                                     </td>
 
-                                    <td className="py-2 body-t6 border-r border-background-200 text-center">
-                                        {m.name}
-                                    </td>
+                                    <td className="py-2 border-r">{m.name}</td>
 
-                                    <td className="py-2 body-t6 border-r border-background-200 text-center">
-                                        {m.sno}
-                                    </td>
+                                    <td className="py-2 border-r">{m.sno}</td>
 
-                                    <td className="py-2 body-t6 border-r border-background-200 text-center">
-                                        {m.dept}
-                                    </td>
-                                    <td className="py-2 text-center">
+                                    <td className="py-2 border-r">{m.dept}</td>
+                                    <td className="py-2">
                                         <select
                                             className="border w-11 h-4 border-background-200 rounded-[5px] px-1 body-t7 bg-background-100 appearance-none"
-                                            value={m.status}
                                             onChange={(e) => {
-                                                console.log(m.id);
                                                 void updateStatus(
                                                     m.id,
                                                     e.target
