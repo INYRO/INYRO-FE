@@ -1,7 +1,13 @@
 {
     "name": "inyro_fe",
+    "description": "INYRO 동아리방 예약 홈페이지",
+    "author": {
+        "name": "고명은, 서현석, 신유정, 이규언, 전병훈"
+    },
+    "license": "MIT",
+    "homepage": "reserve.inyro.com",
     "private": true,
-    "version": "0.0.0",
+    "version": "1.0.0",
     "type": "module",
     "scripts": {
         "dev": "vite",
