@@ -11,6 +11,7 @@ import Register from "./pages/Register";
 import RegisterComplete from "./pages/RegisterComplete";
 import Reserve from "./pages/Reserve";
 import ReserveComplete from "./pages/ReserveComplete";
+import { ProtectedAdminRoute } from "./components/route/ProtectedAdminRoute";
 
 // 라우트 정의
 export const router = createBrowserRouter([
@@ -77,9 +78,9 @@ export const router = createBrowserRouter([
             {
                 path: "admin",
                 element: (
-                    <ProtectedRoute>
+                    <ProtectedAdminRoute>
                         <Outlet />
-                    </ProtectedRoute>
+                    </ProtectedAdminRoute>
                 ),
                 children: [
                     {
@@ -95,11 +96,6 @@ export const router = createBrowserRouter([
                         element: <AdminReserveManagement />,
                     },
                 ],
-            },
-            // 관리자 페이지 밑에 그대로 두고, 이거 추가
-            {
-                path: "admin-preview",
-                element: <AdminHome />,
             },
         ],
     },
