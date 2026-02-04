@@ -14,6 +14,13 @@ type DatePiece = Date | null;
 type SelectedDate = DatePiece | [DatePiece, DatePiece];
 
 export const formatDate = (value: SelectedDate): string | null => {
-    const d = Array.isArray(value) ? value[0] : value; // range면 시작일 사용
-    return d ? d.toISOString().slice(0, 10) : null;
+    const d = Array.isArray(value) ? value[0] : value;
+    if (!d) return null;
+
+    const year = d.getFullYear();
+    // getMonth()는 0부터 시작하므로 +1 필요, padStart로 두 자리 맞춤
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
 };

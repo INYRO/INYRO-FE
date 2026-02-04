@@ -4,18 +4,32 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 interface ModalState {
     isOpen: boolean;
     modalType: ModalType | null; // 어떤 모달을 띄울지 식별 (ex: 'login', 'confirmDelete')
+    reservationId?: number | null;
+    isChangeCompleted: boolean;
 }
+
+// 모달 타입
 type ModalType =
     | "findPassword"
     | "changePassword"
     | "deleteAccount"
     | "reserveComplete"
-    | "changePasswordReset";
+    | "changePasswordReset"
+    | "deleteReservation"
+    | "changeReservation";
 
 // state의 초기값 설정
 const initialState: ModalState = {
     isOpen: false,
     modalType: null,
+    reservationId: null,
+    isChangeCompleted: false,
+};
+
+type OpenModalPayload = {
+    modalType: ModalType;
+    reservationId?: number;
+    onDeleted?: () => void;
 };
 
 export const modalSlice = createSlice({
@@ -24,22 +38,38 @@ export const modalSlice = createSlice({
     // state를 변경하는 함수(리듀서)들을 reducers 객체 안에 정의
     reducers: {
         // openModal 액션
-        // PayloadAction<modalType>은 action.payload의 타입이 modalType임을 의미
-        openModal: (state, action: PayloadAction<ModalType>) => {
+        // payload로 modalType, reservationId를 받음
+        // reservationId가 없으면 null
+        openModal: (state, action: PayloadAction<OpenModalPayload>) => {
             state.isOpen = true;
-            state.modalType = action.payload; // payload로 받은 모달 타입을 state에 저장
+            state.modalType = action.payload.modalType;
+            state.reservationId = action.payload.reservationId ?? null;
         },
         // closeModal 액션
         closeModal: (state) => {
             state.isOpen = false;
             state.modalType = null;
+            state.reservationId = null;
+        },
+        // 작업이 성공했을 때 호출할 액션
+        notifyChangeSuccess: (state) => {
+            state.isChangeCompleted = true;
+        },
+        // 데이터를 다시 불러왔으면 플래그 초기화
+        resetChangeSuccess: (state) => {
+            state.isChangeCompleted = false;
         },
     },
 });
 
 // 생성된 액션 생성자(action creators)들을 export
 // 컴포넌트에서 이 액션들을 dispatch(실행)할 수 있음
-export const { openModal, closeModal } = modalSlice.actions;
+export const {
+    openModal,
+    closeModal,
+    notifyChangeSuccess,
+    resetChangeSuccess,
+} = modalSlice.actions;
 
 // store.ts에서 reducer를 등록할 수 있도록 default로 export
 export default modalSlice.reducer;

@@ -5,10 +5,14 @@ import DeleteAccountModal from "./deleteAccountModal";
 import FindPasswordModal from "./findPasswordModal";
 import ReserveCompleteModal from "./reserveCompleteModal";
 import ChangePasswordResetModal from "./changePasswordResetModal";
+import DeleteReservationModal from "./deleteReservationModa";
+import ChangeReservationModal from "./changeReservationModal";
 
 export default function ModalLayout() {
     const dispatch = useAppDispatch();
-    const { isOpen, modalType } = useAppSelector((state) => state.modal);
+    const { isOpen, modalType, reservationId } = useAppSelector(
+        (state) => state.modal
+    );
     const handleClose = () => dispatch(closeModal());
 
     if (!isOpen) return null;
@@ -28,6 +32,14 @@ export default function ModalLayout() {
                 {modalType === "reserveComplete" && <ReserveCompleteModal />}
                 {modalType === "changePasswordReset" && (
                     <ChangePasswordResetModal />
+                )}
+                {modalType === "deleteReservation" && (
+                    <DeleteReservationModal
+                        reservationId={reservationId ?? undefined}
+                    />
+                )}
+                {modalType === "changeReservation" && (
+                    <ChangeReservationModal />
                 )}
             </div>
         </div>
