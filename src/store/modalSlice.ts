@@ -5,6 +5,7 @@ interface ModalState {
     isOpen: boolean;
     modalType: ModalType | null; // 어떤 모달을 띄울지 식별 (ex: 'login', 'confirmDelete')
     reservationId?: number | null;
+    reservationDate?: string | null;
     isChangeCompleted: boolean;
 }
 
@@ -16,19 +17,22 @@ type ModalType =
     | "reserveComplete"
     | "changePasswordReset"
     | "deleteReservation"
-    | "changeReservation";
+    | "changeReservation"
+    | "changeComplete";
 
 // state의 초기값 설정
 const initialState: ModalState = {
     isOpen: false,
     modalType: null,
     reservationId: null,
+    reservationDate: null,
     isChangeCompleted: false,
 };
 
 type OpenModalPayload = {
     modalType: ModalType;
     reservationId?: number;
+    reservationDate?: string;
     onDeleted?: () => void;
 };
 
@@ -44,12 +48,14 @@ export const modalSlice = createSlice({
             state.isOpen = true;
             state.modalType = action.payload.modalType;
             state.reservationId = action.payload.reservationId ?? null;
+            state.reservationDate = action.payload.reservationDate ?? null;
         },
         // closeModal 액션
         closeModal: (state) => {
             state.isOpen = false;
             state.modalType = null;
             state.reservationId = null;
+            state.reservationDate = null;
         },
         // 작업이 성공했을 때 호출할 액션
         notifyChangeSuccess: (state) => {

@@ -48,18 +48,6 @@ export default function MyPage() {
         }
     };
 
-    // 예약 변경 함수
-    const changeReservation = async (reservationId: number) => {
-        if (!reservationId) return;
-        try {
-            await axiosInstance.patch(`/reservations/${reservationId}`, {});
-        } catch (error) {
-            console.error(error);
-        } finally {
-            void getReservations();
-        }
-    };
-
     // 페이지 입장시 예약정보를 불러옴
     useEffect(() => {
         void getReservations();
@@ -156,6 +144,8 @@ export default function MyPage() {
                                                                             {
                                                                                 modalType:
                                                                                     "changeReservation",
+                                                                                reservationId:
+                                                                                    data.reservationId,
                                                                             }
                                                                         )
                                                                     )
@@ -173,6 +163,8 @@ export default function MyPage() {
                                                                                     "deleteReservation",
                                                                                 reservationId:
                                                                                     data.reservationId,
+                                                                                reservationDate:
+                                                                                    data.date,
                                                                             }
                                                                         )
                                                                     )
