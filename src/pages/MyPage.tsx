@@ -1,7 +1,7 @@
 import axiosInstance from "@/api/axiosInstance";
 import MainLogo from "@/components/common/logo/mainLogo";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { openModal } from "@/store/modalSlice";
+import { openModal, resetChangeSuccess } from "@/store/modalSlice";
 import type { ApiResponse } from "@/types/api";
 import type { Reservation, ReservationsResult } from "@/types/reservation";
 import axios from "axios";
@@ -10,17 +10,21 @@ import { useEffect, useState } from "react";
 type ReservationsResponse = ApiResponse<ReservationsResult>;
 
 export default function MyPage() {
+    // 로딩, 예약 배열 변수
     const [isLoading, setIsLoading] = useState(false);
     const [reservations, setReservations] = useState<Reservation[]>([]);
 
+    // redux 선언 및 user 데이터 저장
     const dispatch = useAppDispatch();
-
     const user = useAppSelector((state) => state.authState.user);
+    const { isChangeCompleted } = useAppSelector((state) => state.modal);
 
+    // 학번, 이름, 학과 변수 선언
     const sno = user?.sno ?? "";
     const name = user?.name ?? "";
     const dept = user?.dept ?? "";
 
+    // 예약정보 불러오는 함수
     const getReservations = async () => {
         setIsLoading(true);
         try {
@@ -44,31 +48,19 @@ export default function MyPage() {
         }
     };
 
-    const changeReservation = async (reservationId: number) => {
-        if (!reservationId) return;
-        try {
-            await axiosInstance.patch(`/reservations/${reservationId}`, {});
-        } catch (error) {
-            console.error(error);
-        } finally {
-            void getReservations();
-        }
-    };
-
-    const deleteReservation = async (reservationId: number) => {
-        if (!reservationId) return;
-        try {
-            await axiosInstance.delete(`/reservations/${reservationId}`);
-        } catch (error) {
-            console.error(error);
-        } finally {
-            void getReservations();
-        }
-    };
-
+    // 페이지 입장시 예약정보를 불러옴
     useEffect(() => {
         void getReservations();
     }, []);
+
+    // 예약에 변경사항 있을시 예약 정보 갱신
+    useEffect(() => {
+        if (isChangeCompleted) {
+            void getReservations().then(() => {
+                dispatch(resetChangeSuccess());
+            });
+        }
+    }, [isChangeCompleted, dispatch]);
 
     return (
         <div className="v-stack w-full">
@@ -132,13 +124,13 @@ export default function MyPage() {
                                                 <td className="flex items-center justify-evenly">
                                                     {data.reservationStatus ===
                                                         "COMPLETED" && (
-                                                        <div className="btn-sub2 px-1.5 py-[1.5px] border rounded-[5px] bg-background-200">
+                                                        <div className="btn-sub2 px-1.5 py-[1.5px] border rounded-[5px] bg-background-200 cursor-not-allowed">
                                                             완료
                                                         </div>
                                                     )}
                                                     {data.reservationStatus ===
                                                         "CANCELLED" && (
-                                                        <div className="btn-sub2 px-1.5 py-[1.5px] border rounded-[5px] bg-background-200">
+                                                        <div className="btn-sub2 px-1.5 py-[1.5px] border rounded-[5px] bg-background-200 cursor-not-allowed">
                                                             취소됨
                                                         </div>
                                                     )}
@@ -147,21 +139,37 @@ export default function MyPage() {
                                                         <>
                                                             <button
                                                                 onClick={() =>
-                                                                    void changeReservation(
-                                                                        data.reservationId
+                                                                    dispatch(
+                                                                        openModal(
+                                                                            {
+                                                                                modalType:
+                                                                                    "changeReservation",
+                                                                                reservationId:
+                                                                                    data.reservationId,
+                                                                            }
+                                                                        )
                                                                     )
                                                                 }
-                                                                className="btn-sub2 px-1.5 py-[1.5px] border rounded-[5px] border-background-200"
+                                                                className="btn-sub2 px-1.5 py-[1.5px] border rounded-[5px] border-background-200 cursor-pointer"
                                                             >
                                                                 변경
                                                             </button>
                                                             <button
                                                                 onClick={() =>
-                                                                    void deleteReservation(
-                                                                        data.reservationId
+                                                                    dispatch(
+                                                                        openModal(
+                                                                            {
+                                                                                modalType:
+                                                                                    "deleteReservation",
+                                                                                reservationId:
+                                                                                    data.reservationId,
+                                                                                reservationDate:
+                                                                                    data.date,
+                                                                            }
+                                                                        )
                                                                     )
                                                                 }
-                                                                className="btn-sub2 px-1.5 py-[1.5px] border rounded-[5px] border-background-200"
+                                                                className="btn-sub2 px-1.5 py-[1.5px] border rounded-[5px] border-background-200 cursor-pointer"
                                                             >
                                                                 취소
                                                             </button>
@@ -192,7 +200,9 @@ export default function MyPage() {
                     <span className="body-t1">비밀번호 변경</span>
                     <button
                         id="change"
-                        onClick={() => dispatch(openModal("changePassword"))}
+                        onClick={() =>
+                            dispatch(openModal({ modalType: "changePassword" }))
+                        }
                         className="cursor-pointer btn-sub2 px-1.5 py-[1.5px] border rounded-[5px] border-background-200 "
                     >
                         변경하기
@@ -202,7 +212,9 @@ export default function MyPage() {
                     <span className="body-t1">회원 탈퇴</span>
                     <button
                         id="delete"
-                        onClick={() => dispatch(openModal("deleteAccount"))}
+                        onClick={() =>
+                            dispatch(openModal({ modalType: "deleteAccount" }))
+                        }
                         className="cursor-pointer btn-sub2 px-1.5 py-[1.5px] border rounded-[5px] border-background-200 "
                     >
                         탈퇴하기

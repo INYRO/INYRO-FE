@@ -37,7 +37,7 @@ export default function FindPasswordModal() {
             );
             if (response.data.isSuccess) {
                 dispatch(closeModal());
-                dispatch(openModal("changePasswordReset"));
+                dispatch(openModal({ modalType: "changePasswordReset" }));
                 dispatch(
                     login({
                         sno: response.data.result.sno,
