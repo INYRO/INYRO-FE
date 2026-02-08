@@ -140,7 +140,9 @@ export default function Login() {
             </form>
 
             <button
-                onClick={() => dispatch(openModal("findPassword"))}
+                onClick={() =>
+                    dispatch(openModal({ modalType: "findPassword" }))
+                }
                 className="-m-5 body-t6 underline underline-offset-2 cursor-pointer"
             >
                 비밀번호 찾기

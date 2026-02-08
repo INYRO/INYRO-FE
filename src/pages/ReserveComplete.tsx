@@ -36,7 +36,7 @@ export default function ReserveComplete() {
         } catch (error) {
             console.error(error);
         } finally {
-            dispatch(openModal("reserveComplete"));
+            dispatch(openModal({ modalType: "reserveComplete" }));
             setIsLoading(false);
         }
     };
