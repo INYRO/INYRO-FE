@@ -1,6 +1,6 @@
 import axiosInstance from "@/api/axiosInstance";
 import FormButton from "@/components/common/button/formButton";
-import MainLogo from "@/components/common/logo/mainLogo";
+import Logo from "@/components/common/logo/Logo";
 import FormInput from "@/components/input/formInput";
 import {
     registerCompleteSchema,
@@ -99,7 +99,7 @@ export default function RegisterComplete() {
 
     return (
         <div className="v-stack w-full gap-10">
-            <MainLogo />
+            <Logo />
             <form onSubmit={(e) => void onSubmit(e)} className="flex flex-col">
                 <article className="flex flex-col gap-2.5 mb-[15px]">
                     <FormInput

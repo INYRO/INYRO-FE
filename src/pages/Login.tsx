@@ -1,7 +1,7 @@
 import axiosInstance from "@/api/axiosInstance";
 import FormButton from "@/components/common/button/formButton";
 import LinkButton from "@/components/common/button/linkButton";
-import MainLogo from "@/components/common/logo/mainLogo";
+import Logo from "@/components/common/logo/Logo";
 import FormInput from "@/components/input/formInput";
 import { loginSchema, type LoginType } from "@/schema/loginSchema";
 import { login, setAccessToken } from "@/store/authSlice";
@@ -96,7 +96,7 @@ export default function Login() {
 
     return (
         <div className="v-stack w-full gap-10">
-            <MainLogo />
+            <Logo />
             <form onSubmit={(e) => void onSubmit(e)} className="flex flex-col">
                 <article className="flex flex-col gap-2.5 mb-[15px]">
                     <FormInput
@@ -131,9 +131,7 @@ export default function Login() {
                     />
                     <LinkButton
                         text="회원가입"
-                        bgColor="bg-white"
-                        isBorder={true}
-                        textColor="text-black"
+                        variant="outline"
                         url="/register"
                     />
                 </article>

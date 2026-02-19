@@ -1,5 +1,5 @@
 import axiosInstance from "@/api/axiosInstance";
-import MainLogo from "@/components/common/logo/mainLogo";
+import Logo from "@/components/common/logo/Logo";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { openModal, resetChangeSuccess } from "@/store/modalSlice";
 import type { ApiResponse } from "@/types/api";
@@ -65,7 +65,7 @@ export default function MyPage() {
     return (
         <div className="v-stack w-full">
             <div className="mb-11">
-                <MainLogo />
+                <Logo />
             </div>
             <div className="flex flex-col gap-[30px]">
                 <section className="flex flex-col gap-[15px]">

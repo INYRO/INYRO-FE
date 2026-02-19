@@ -1,6 +1,6 @@
 import axiosInstance from "@/api/axiosInstance";
 import FormButton from "@/components/common/button/formButton";
-import SubLogo from "@/components/common/logo/subLogo";
+import Logo from "@/components/common/logo/Logo";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { openModal } from "@/store/modalSlice";
 import { useState } from "react";
@@ -43,7 +43,7 @@ export default function ReserveComplete() {
 
     return (
         <div className="v-stack w-full gap-[35px]">
-            <SubLogo />
+            <Logo variant="sub" />
             <form
                 onSubmit={(e) => void handleSubmit(e)}
                 className="flex flex-col gap-[30px]"

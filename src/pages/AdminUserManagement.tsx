@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
 import axiosInstance from "@/api/axiosInstance";
-import MainLogo from "@/components/common/logo/mainLogo";
 import sortIcon from "@/assets/icons/lsicon_sort-filter-filled.svg";
 import FormButton from "@/components/common/button/formButton";
 import type {
@@ -8,6 +7,7 @@ import type {
     MemberResult,
     MemberStatus,
 } from "@/types/auth";
+import Logo from "@/components/common/logo/Logo";
 
 export default function AdminUserManagement() {
     const [members, setMembers] = useState<MemberResult[]>([]);
@@ -85,7 +85,7 @@ export default function AdminUserManagement() {
 
     return (
         <div className="v-stack w-full gap-6">
-            <MainLogo />
+            <Logo />
             <section className="flex items-center justify-between">
                 <h2 className="inline-block body-t2 font-bold text-main underline underline-offset-[6px] decoration-2">
                     유저 리스트

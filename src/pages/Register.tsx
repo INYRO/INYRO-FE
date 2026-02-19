@@ -1,6 +1,6 @@
 import axiosInstance from "@/api/axiosInstance";
 import FormButton from "@/components/common/button/formButton";
-import SubLogo from "@/components/common/logo/subLogo";
+import Logo from "@/components/common/logo/Logo";
 import FormInput from "@/components/input/formInput";
 import { type RegisterType, registerSchema } from "@/schema/registerSchema";
 import type { ApiResponse } from "@/types/api";
@@ -82,7 +82,7 @@ export default function Register() {
 
     return (
         <div className="v-stack w-full gap-9">
-            <SubLogo />
+            <Logo variant="sub" />
             <section className="flex flex-col gap-[5px]">
                 <article className="bg-background-200 rounded-[10px] p-5 flex flex-col gap-2">
                     <h2 className="underline underline-offset-4 body-t1">

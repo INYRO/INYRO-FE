@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
 import axiosInstance from "@/api/axiosInstance";
-import MainLogo from "@/components/common/logo/mainLogo";
 import type { Reservation, ReservationListResponse } from "@/types/reservation";
 import FormButton from "@/components/common/button/formButton";
+import Logo from "@/components/common/logo/Logo";
 
 export default function AdminReserveManagement() {
     const [reservations, setReservations] = useState<Reservation[]>([]);
@@ -50,7 +50,7 @@ export default function AdminReserveManagement() {
 
     return (
         <div className="v-stack w-full gap-6">
-            <MainLogo />
+            <Logo />
             <h2 className="inline-block body-t2 font-bold text-main underline underline-offset-[6px] decoration-2">
                 예약 리스트
             </h2>
