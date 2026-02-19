@@ -185,6 +185,7 @@ export default function Reserve() {
                                     type="button"
                                     disabled={isDisabled}
                                     onClick={() => {
+                                        // 예외처리(비활성, 날짜없음)
                                         if (isDisabled) return;
                                         if (!normalizedDate) return;
 
