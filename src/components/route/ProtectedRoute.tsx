@@ -1,3 +1,8 @@
+/*
+ * ProtectedRoute는 로그인하지 않은 사용자의 접근을 제한하는 라우트 컴포넌트입니다.
+ *
+ */
+
 import { useAppSelector } from "@/store/hooks";
 import { Navigate, useLocation } from "react-router-dom";
 
@@ -7,7 +12,7 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     );
     const location = useLocation();
 
-    // 부팅(인증 복구) 중이면 판단하지 말고 잠깐 대기(깜빡임 방지)
+    // 부팅 중이면 로딩(깜빡임 방지)
     if (!authInitialized) {
         return (
             <div className="min-h-screen flex items-center justify-center">
