@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import axiosInstance from "@/api/axiosInstance";
 import sortIcon from "@/assets/icons/lsicon_sort-filter-filled.svg";
-import FormButton from "@/components/common/button/formButton";
+import FormButton from "@/components/common/button/FormButton";
 import type {
     MemberListResponse,
     MemberResult,
@@ -212,13 +212,7 @@ export default function AdminUserManagement() {
                 </table>
             </section>
             <form onSubmit={(e) => void deleteSelectedUser(e)}>
-                <FormButton
-                    text="선택삭제"
-                    bgColor="bg-accent"
-                    isBorder={false}
-                    textColor="text-white"
-                    isLoading={isLoading}
-                />
+                <FormButton text="선택삭제" isLoading={isLoading} />
             </form>
         </div>
     );

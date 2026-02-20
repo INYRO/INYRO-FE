@@ -1,5 +1,5 @@
 import axiosInstance from "@/api/axiosInstance";
-import FormButton from "@/components/common/button/formButton";
+import FormButton from "@/components/common/button/FormButton";
 import Logo from "@/components/common/logo/Logo";
 import FormInput from "@/components/input/formInput";
 import {
@@ -125,13 +125,7 @@ export default function RegisterComplete() {
                     {errors.root?.message}
                 </span>
                 <article className="flex flex-col gap-[7px] mt-[15px]">
-                    <FormButton
-                        text="회원가입"
-                        bgColor="bg-secondary"
-                        isBorder={false}
-                        textColor="text-white"
-                        isLoading={isLoading}
-                    />
+                    <FormButton text="회원가입" isLoading={isLoading} />
                 </article>
             </form>
         </div>

@@ -6,7 +6,7 @@ import type { ApiResponse } from "@/types/api";
 import axios from "axios";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import FormButton from "../common/button/formButton";
+import FormButton from "../common/button/FormButton";
 
 type DeleteAccountResponse = ApiResponse<string>;
 

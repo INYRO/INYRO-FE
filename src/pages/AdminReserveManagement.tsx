@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import axiosInstance from "@/api/axiosInstance";
 import type { Reservation, ReservationListResponse } from "@/types/reservation";
-import FormButton from "@/components/common/button/formButton";
+import FormButton from "@/components/common/button/FormButton";
 import Logo from "@/components/common/logo/Logo";
 
 export default function AdminReserveManagement() {
@@ -124,13 +124,7 @@ export default function AdminReserveManagement() {
             </div>
 
             <form onSubmit={(e) => void deleteReservation(e)}>
-                <FormButton
-                    text="선택삭제"
-                    bgColor="bg-accent"
-                    isBorder={false}
-                    textColor="text-white"
-                    isLoading={isLoading}
-                />
+                <FormButton text="선택삭제" isLoading={isLoading} />
             </form>
         </div>
     );

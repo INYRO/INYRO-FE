@@ -1,5 +1,5 @@
 import axiosInstance from "@/api/axiosInstance";
-import FormButton from "@/components/common/button/formButton";
+import FormButton from "@/components/common/button/FormButton";
 import Logo from "@/components/common/logo/Logo";
 import FormInput from "@/components/input/formInput";
 import { type RegisterType, registerSchema } from "@/schema/registerSchema";
@@ -176,13 +176,7 @@ export default function Register() {
                             {errors.root?.message}
                         </span>
                         <div className="mt-[9px]">
-                            <FormButton
-                                text="회원가입"
-                                bgColor="bg-secondary"
-                                isBorder={false}
-                                textColor="text-white"
-                                isLoading={isLoading}
-                            />
+                            <FormButton text="회원가입" isLoading={isLoading} />
                         </div>
                     </form>
                 </article>

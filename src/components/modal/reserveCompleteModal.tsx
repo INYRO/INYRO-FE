@@ -1,6 +1,6 @@
 import { useAppDispatch } from "@/store/hooks";
 import { closeModal } from "@/store/modalSlice";
-import FormButton from "../common/button/formButton";
+import FormButton from "../common/button/FormButton";
 import { useNavigate } from "react-router-dom";
 import checkIcon from "@/assets/icons/icon_check.svg";
 

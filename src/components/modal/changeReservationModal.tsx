@@ -1,6 +1,6 @@
 import { useAppDispatch } from "@/store/hooks";
 import { useState } from "react";
-import FormButton from "../common/button/formButton";
+import FormButton from "../common/button/FormButton";
 import type { ApiResponse } from "@/types/api";
 import axiosInstance from "@/api/axiosInstance";
 import { notifyChangeSuccess, closeModal, openModal } from "@/store/modalSlice";

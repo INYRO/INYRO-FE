@@ -5,7 +5,7 @@
  * 비 로그인 시 '로그인' 버튼만 보입니다.
  */
 
-import LinkButton from "@/components/common/button/linkButton";
+import LinkButton from "@/components/common/button/LinkButton";
 import Logo from "@/components/common/logo/Logo";
 import { useAppSelector } from "@/store/hooks";
 

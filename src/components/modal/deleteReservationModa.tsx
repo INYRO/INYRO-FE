@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import FormButton from "../common/button/formButton";
+import FormButton from "../common/button/FormButton";
 import axiosInstance from "@/api/axiosInstance";
 import axios from "axios";
 import { closeModal, notifyChangeSuccess } from "@/store/modalSlice";

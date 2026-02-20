@@ -1,6 +1,6 @@
 import axiosInstance from "@/api/axiosInstance";
-import FormButton from "@/components/common/button/formButton";
-import LinkButton from "@/components/common/button/linkButton";
+import FormButton from "@/components/common/button/FormButton";
+import LinkButton from "@/components/common/button/LinkButton";
 import Logo from "@/components/common/logo/Logo";
 import FormInput from "@/components/input/formInput";
 import { loginSchema, type LoginType } from "@/schema/loginSchema";
@@ -122,13 +122,7 @@ export default function Login() {
                 </span>
 
                 <article className="flex flex-col gap-[7px] mt-[15px]">
-                    <FormButton
-                        text="로그인"
-                        bgColor="bg-secondary"
-                        isBorder={false}
-                        textColor="text-white"
-                        isLoading={isLoading}
-                    />
+                    <FormButton text="로그인" isLoading={isLoading} />
                     <LinkButton
                         text="회원가입"
                         variant="outline"

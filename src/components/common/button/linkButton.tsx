@@ -1,6 +1,8 @@
 /*
  * Link의 url 이동을 담당하는 공용 버튼 컴포넌트 입니다.
  *
+ * FormButton과 동일한 디자인 방식(variant)를 공유합니다.
+ *
  * 버튼의 추가 스타일 레이아웃인 variant는 'primary'와 'outline'으로 정의됩니다.
  * - 'primary'는 초록 색상과 흰색 텍스트를 사용하는 시그니처 버튼이며,
  * - 'outline'은 흰 배경에 검은색 글씨, border를 쓰는 secondary 버튼입니다.

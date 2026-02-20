@@ -1,4 +1,4 @@
-import LinkButton from "@/components/common/button/linkButton";
+import LinkButton from "@/components/common/button/LinkButton";
 import Logo from "@/components/common/logo/Logo";
 
 export default function AdminHome() {

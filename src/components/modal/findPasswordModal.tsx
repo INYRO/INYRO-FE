@@ -1,5 +1,5 @@
 import axiosInstance from "@/api/axiosInstance";
-import FormButton from "../common/button/formButton";
+import FormButton from "../common/button/FormButton";
 import FormInput from "../input/formInput";
 import { useAppDispatch } from "@/store/hooks";
 import { zodResolver } from "@hookform/resolvers/zod";

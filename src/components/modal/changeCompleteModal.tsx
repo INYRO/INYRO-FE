@@ -1,6 +1,6 @@
 import { useAppDispatch } from "@/store/hooks";
 import { closeModal } from "@/store/modalSlice";
-import FormButton from "../common/button/formButton";
+import FormButton from "../common/button/FormButton";
 import checkIcon from "@/assets/icons/icon_check.svg";
 
 export default function ChangeCompleteModal() {

@@ -10,7 +10,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import FormButton from "../common/button/formButton";
+import FormButton from "../common/button/FormButton";
 import FormInput from "../input/formInput";
 
 type ChangePasswordResponse = ApiResponse<string>;

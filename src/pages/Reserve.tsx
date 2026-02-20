@@ -1,4 +1,4 @@
-import FormButton from "@/components/common/button/formButton";
+import FormButton from "@/components/common/button/FormButton";
 import { useEffect, useMemo, useState } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
@@ -235,12 +235,7 @@ export default function Reserve() {
                             );
                         })}
                     </div>
-                    <FormButton
-                        text="다음"
-                        textColor="text-white"
-                        bgColor="bg-secondary"
-                        isBorder={false}
-                    />
+                    <FormButton text="다음" isLoading={loading} />
                 </form>
             )}
         </div>
