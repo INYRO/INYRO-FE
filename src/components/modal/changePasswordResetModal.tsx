@@ -11,7 +11,7 @@ import axios from "axios";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import FormButton from "../common/button/FormButton";
-import FormInput from "../input/formInput";
+import FormInput from "../common/input/formInput";
 
 type ChangePasswordResponse = ApiResponse<string>;
 

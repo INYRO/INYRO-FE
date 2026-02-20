@@ -1,6 +1,8 @@
 /*
  * ProtectedRoute는 로그인하지 않은 사용자의 접근을 제한하는 라우트 컴포넌트입니다.
  *
+ * 앱이 로딩되지 않은 상태에선 로딩 화면을 띄워 불쾌한 깜빡임을 방지하며,
+ * 비 로그인 상태의 유저가 접근 시 '/login' 페이지로 리디렉션 시킵니다.
  */
 
 import { useAppSelector } from "@/store/hooks";

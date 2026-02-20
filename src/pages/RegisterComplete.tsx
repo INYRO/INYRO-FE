@@ -1,7 +1,7 @@
 import axiosInstance from "@/api/axiosInstance";
 import FormButton from "@/components/common/button/FormButton";
 import Logo from "@/components/common/logo/Logo";
-import FormInput from "@/components/input/formInput";
+import FormInput from "@/components/common/input/formInput";
 import {
     registerCompleteSchema,
     type RegisterCompleteType,
