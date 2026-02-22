@@ -73,8 +73,6 @@ npm run prepare
 
 ## 📜 프로젝트 규약 (Conventions)
 
-**우리 팀은 일관성 있는 코드를 위해 아래 규칙을 준수합니다.**
-
 - **Git 협업 전략**
 
 ```bash
@@ -126,11 +124,9 @@ src/
     2. 그 외 (훅, 유틸, 변수): camelCase (예: useMyHook.ts, formatDate.ts)
 
 - **절대 경로**
-    1. '지옥의 상대경로'(../../...)를 방지하기 위해 절대 경로를 사용합니다.
+    1. '상대경로 중첩'(../../...)을 방지하기 위해 절대 경로를 사용합니다.
     2. @/는 src/ 폴더를 가리킵니다.
     3. 예시: `import Button from '@/components/common/Button';`
-    4. **설정 완료**: tsconfig.app.json과 vite.config.ts에 이미 설정되어 있습니다.
-    5. **주의**: VS Code를 처음 열면 TypeScript 서버 재시작 필요 (Ctrl+Shift+P → "TypeScript: Restart TS Server")
 
 ## 🗂️ Redux 상태 관리
 
@@ -164,20 +160,160 @@ src/
 - 처음 clone 후 `npm install` 실행 시 Husky가 자동 설치됨
 - 커밋 전 자동 검사는 코드 품질 유지를 위한 필수 과정
 
-## 🔧 트러블슈팅
+## 🔧 각 파일 및 코드 설명
 
-### 절대 경로(@/)가 인식되지 않아요
+- **main.tsx**
 
-→ VS Code 명령 팔레트(`Ctrl+Shift+P`)에서 "TypeScript: Restart TS Server" 실행
+* Inyro 앱의 entry point인 main.tsx 입니다.
+*
+* main.tsx는 앱 구동에 필요한 최상위 전역 설정들을 초기화하며,
+* DOM(root)에 렌더링 됩니다.
+*
+* 주요 설정 사항:
+*   - Provider에 redux store를 연결해 앱 전체에 전역 상태(유저 정보 등)를 사용하게 합니다.
+*   - RouteProvider에 router.tsx를 연결해 해당 라우팅 규칙을 사용합니다.
+*   - global.css를 연결해 전역 스타일을 앱 전체에 적용합니다.
+*   - StrictMode를 연결해 개발 환경의 잠재적인 버그를 탐색합니다.
 
-### ESLint 에러가 너무 많이 떠요
+-
+- **router.tsx**
 
-→ 파일 저장(`Ctrl+S`)하면 자동으로 수정됩니다
+* router.tsx는 홈페이지의 라우팅을 총괄하는 라우팅 코드입니다.
+* 여기서 정의된 router는 main.tsx의 RouterProvider의 router로 적용됩니다.
+*
+* Inyro 동아리방 예약 홈페이지의 라우트 url은 다음으로 구성되어 있습니다.
+*   - '/': 메인 랜딩 페이지
+*   - '/login': 로그인 페이지
+*   - '/register': 회원가입 중 재학생 인증 페이지
+*   - '/register/complete': 회원가입 중 실질 계정 생성 페이지
+*   - '/reserve': 동아리방 예약 날짜 선택 페이지
+*   - '/reserve/complete': 동아리 방 예약 확정 페이지
+*   - '/mypage': 마이(유저정보) 페이지
+*   - '/admin': 어드민 랜딩 페이지
+*   - '/admin/user': 어드민 유저 관리 페이지
+*   - '/admin/reserve': 어드민 예약 관리 페이지
+*
+* 'ProtectedRoute'는 부팅중이거나 로그인 상태가 아닌 유저의 접근을 막는 라우팅 페이지입니다.
+* 이 중 다음 페이지들은 'ProtectedRoute'로 보호됩니다.
+*   - '/mypage'
+*   - '/reserve'
+*   - '/reserve/complete'
+*
+* 'ProtectedAdminRoute'는 부팅중이거나 'Bossisme'가 아닌 유저의 접근을 막는 라우팅 페이지입니다.
+*   - '/admin'
+*   - '/admin/user'
+*   - '/admin/reserve'
 
-### Husky git hooks가 작동하지 않아요
+- **ProtectedRoute.tsx**
 
-→ `npm install` 또는 `npm run prepare` 실행
+* ProtectedRoute는 로그인하지 않은 사용자의 접근을 제한하는 라우트 컴포넌트입니다.
+*
+* 앱이 로딩되지 않은 상태에선 로딩 화면을 띄워 불쾌한 깜빡임을 방지하며,
+* 비 로그인 상태의 유저가 접근 시 '/login' 페이지로 리디렉션 시킵니다.
 
-### 타입 에러가 발생해요
+- **ProtectedAdminRoute.tsx**
 
-→ `npm run build`로 TypeScript 에러 확인
+* ProtectedAdminRoute는 관리자 권한이 없는 사용자의 접근을 제한하는 라우트 컴포넌트입니다.
+* ProtectedRoute와 다르게 유저가 'Bossisme'가 아닌 경우 접근을 제한합니다.
+*
+* 앱이 로딩되지 않은 상태에선 로딩 화면을 띄워 불쾌한 깜빡임을 방지하며,
+* 비 로그인 상태의 유저가 접근 시 '/login' 페이지로 리디렉션 시킵니다.
+* 또한, 로그인 상태여도 유저의 이름이 'Bossisme'가 아닌 경우 '/' 메인 랜딩 페이지로 리디렉션 시킵니다.
+
+- **store.ts**
+
+* 앱 전체의 전역 상태를 관리하는 Redux Store 설정 파일입니다.
+*
+* 주요 전역 상태:
+*   - modal: 전역 modal 창의 열림/닫힘 및 내부 데이터 상태를 관리합니다.
+*   - authState: 유저의 로그인 여부, 토큰 상태를 관리합니다.
+*
+* store 자체에서 RootState와 AppDispatch 타입을 추론해 그 결과를 hooks.ts에서 참조합니다.
+* 따라서 useSelector와 useDispatch 대신 hooks.ts에 있는 useAppDispatch과 useAppSelector를 사용합니다.
+
+- **hook.ts**
+
+* Redux Store에 접근하기 위한 Custom Hooks 설정 파일입니다.
+*
+* 기본 useDispatch와 useSelector 대신, 타입이 지정된 이 훅들을 사용합니다.
+* 이를 통해 각 컴포넌트에서 매번 RootState나 AppDispatch 타입을 불러올 필요 없이,
+* 타입 추론과 자동 완성 기능을 사용할 수 있습니다.
+
+- **modalSlice.ts**
+
+* 전역 모달(Modal)의 상태를 관리하는 Redux Slice 파일입니다.
+*
+* 모달의 열림/닫힘, 예약 ID, 예약 날짜, 변경 토글의 상태를 통합 관리합니다.
+* 컨텍스트 데이터도 함께 관리하여 어떤 컴포넌트에서든 쉽게 모달을 띄울 수 있게 합니다.
+
+- **Logo.tsx**
+
+* 서비스의 로고를 렌더링하는 공용 컴포넌트입니다.
+*
+* variant prop을 통해 로고의 크기를 결정합니다.
+*   - 'main': 메인 페이지용 (h1, h3 사용)
+*   - 'sub': 서브 페이지용 (h2, h4 사용)
+*
+* 기본값은 'main'입니다.
+
+- **FormButton.tsx**
+
+* Form의 submit을 담당하는 공용 버튼 컴포넌트 입니다.
+*
+* LinkButton과 동일한 디자인 방식(variant)를 공유합니다.
+*
+* 버튼의 추가 스타일 레이아웃인 variant는 'primary'와 'outline'으로 정의됩니다.
+*   - 'primary'는 초록 색상과 흰색 텍스트를 사용하는 시그니처 버튼이며,
+*   - 'outline'은 흰 배경에 검은색 글씨, border를 쓰는 secondary 버튼입니다.
+*
+* 버튼의 variant 기본값은 'primary'이며,
+* 처음에 정의된 commonStyle + variant + 추가 className으로 버튼의 스타일이 결정됩니다.
+*
+* FormButton은 다음과 같은 props를 받습니다.
+*   - text: 버튼 속 글자
+*   - variant: 버튼의 타입
+*   - isLoading: 로딩 판별 boolean
+*   - type: button의 HTML type('button', 'submit', 'reset' 타입을 받음)
+*   - onClick: 클릭 이벤트
+*   - className: 추가 className
+
+- **LinkButton.tsx**
+
+* Link의 url 이동을 담당하는 공용 버튼 컴포넌트 입니다.
+*
+* FormButton과 동일한 디자인 방식(variant)를 공유합니다.
+*
+* 버튼의 추가 스타일 레이아웃인 variant는 'primary'와 'outline'으로 정의됩니다.
+*   - 'primary'는 초록 색상과 흰색 텍스트를 사용하는 시그니처 버튼이며,
+*   - 'outline'은 흰 배경에 검은색 글씨, border를 쓰는 secondary 버튼입니다.
+*
+* 버튼의 variant 기본값은 'primary'이며,
+* 처음에 정의된 commonStyle + variant + 추가 className으로 버튼의 스타일이 결정됩니다.
+
+- **global.css**
+
+* 홈페이지 전체의 기반 스타일을 정의하는 global.css 파일입니다.
+*
+* Inyro 홈페이지는 tailwind v4.2를 사용합니다.
+*
+* global.css에서는 테마와 베이스, 유틸리티를 정의합니다.
+*   - 테마에서는 색상들과 폰트, 애니메이션을 정의합니다.
+*   - 베이스에서는 테마 리셋과 전체 스타일, h1 ~ h4, p(본문) 스타일을 정의합니다.
+*   - 유틸리티에서는 figma에서 설정된 body-t1 ~ body-t7 그리고 btn의 스타일 조합을 정의합니다.
+
+- **Home.tsx**
+
+* Home.tsx 파일은 reserve.inyro.com의 메인 랜딩 페이지를 담고 있습니다.
+*
+* 로그인 시 '동방 예약'과 '마이페이지' 버튼이 보이며,
+* 비 로그인 시 '로그인' 버튼만 보입니다.
+
+- **authSlice.ts**
+
+* 앱의 유저 인증 상태와 정보를 관리하는 Redux Slice 파일입니다.
+*
+* 이니로 앱의 핵심 인증 방식은 다음과 같습니다.
+*   1. accessToken은 XSS 공격 방지를 위해 메모리(Redux state)에만 저장합니다.
+*   2. refreshToken은 서버에서 HttpOnly 쿠키로 관리하며 프론트에서 직접 접근하지 않습니다.
+*   3. isLogin 여부는 유저 정보 조회가 완전히 성공한 시점에만 true로 전환됩니다.
+*   4. authInitialized는 앱 초기 로딩 시 인증 복구(reissue)가 끝났는지를 나타내며, 화면 깜빡임을 방지합니다.
