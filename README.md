@@ -317,3 +317,12 @@ src/
 *   2. refreshToken은 서버에서 HttpOnly 쿠키로 관리하며 프론트에서 직접 접근하지 않습니다.
 *   3. isLogin 여부는 유저 정보 조회가 완전히 성공한 시점에만 true로 전환됩니다.
 *   4. authInitialized는 앱 초기 로딩 시 인증 복구(reissue)가 끝났는지를 나타내며, 화면 깜빡임을 방지합니다.
+
+- **App.tsx**
+
+* App.tsx는 Inyro 앱의 최상위 레이아웃이자 인증 부팅(Bootstrap)을 담당하는 컴포넌트입니다.
+*
+* 앱이 처음 켜질 때(새로고침 포함) 다음의 작업들이 진행됩니다.
+*   - refreshToken(쿠키)을 기반으로 서버에 accessToken 재발급을 요청합니다.
+*   - 재발급 성공 시 유저 정보를 조회하여 Redux store에 로그인 상태를 복구합니다.
+*   - 모든 과정이 끝나면(성공/실패 무관) Redux Auth store의 authInitialized를 true로 변경하여 화면 깜박임을 방지합니다.

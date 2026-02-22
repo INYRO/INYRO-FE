@@ -118,6 +118,7 @@ export default function Register() {
                 <article className="flex gap-1">
                     <form className="ml-[5px] flex gap-[3px] items-center">
                         <input
+                            id="terms-agree"
                             type="checkbox"
                             checked={agreed}
                             onChange={(e) => {
@@ -126,7 +127,7 @@ export default function Register() {
                             }}
                             className="size-2.5"
                         />
-                        <label className="body-t7">
+                        <label htmlFor="terms-agree" className="body-t7">
                             다음 약관에 동의합니다.
                         </label>
                     </form>

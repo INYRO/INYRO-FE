@@ -122,7 +122,11 @@ export default function Login() {
                 </span>
 
                 <article className="flex flex-col gap-[7px] mt-[15px]">
-                    <FormButton text="로그인" isLoading={isLoading} />
+                    <FormButton
+                        text="로그인"
+                        type="submit"
+                        isLoading={isLoading}
+                    />
                     <LinkButton
                         text="회원가입"
                         variant="outline"
