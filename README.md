@@ -326,3 +326,48 @@ src/
 *   - refreshToken(쿠키)을 기반으로 서버에 accessToken 재발급을 요청합니다.
 *   - 재발급 성공 시 유저 정보를 조회하여 Redux store에 로그인 상태를 복구합니다.
 *   - 모든 과정이 끝나면(성공/실패 무관) Redux Auth store의 authInitialized를 true로 변경하여 화면 깜박임을 방지합니다.
+
+- **eslint.config.js**
+
+* 프로젝트의 코드 문법과 품질, 스타일 일관성을 검사하는 ESLint 설정 파일입니다.
+* 최신 ESLint 9의 Flat Config 방식을 사용하고 있습니다.
+* Flat Config 방식은 하나의 배열 안에 모든 설정을 다 때려 넣는 방식입니다.
+*
+* 주요 설정 사항은 다음과 같습니다.
+*   - TypeScript & React: 타입 안정성 검사 및 React 추천 규칙을 적용합니다.
+*   - JSX a11y: 웹 접근성 관련 필수 규칙들을 자동으로 검사합니다.
+*   - Prettier: 코드 포매터인 Prettier와 충돌하는 ESLint 스타일 규칙을 모두 비활성화합니다(마지막에 선언).
+*   - React Refresh: Vite 환경에서 빠른 화면 새로고침(HMR)이 정상 작동하도록 돕습니다.
+*
+* js.configs.recommended는 다음을 제공합니다.
+*   - no-undef: 선언하지 않은 변수를 사용하는 것
+*   - no-unreachable: return 밑에 도달할 수 없는 쓸모없는 코드를 작성하는 것
+*   - no-dupe-keys: 객체 안에 똑같은 키를 두 번 쓰는 것 (예: { name: "김철수", name: "홍길동" })
+*   - use-isnan: NaN을 오용하는 것(예: foo === NaN 처럼 잘못 비교하는 것)
+*
+* ...tseslint.configs.recommendedTypeChecked는 TypeScript 컴파일러를 빌려 타입성 체크 검사를 제공합니다.
+* 여러개의 설정 객체들의 모음이므로, '...'로 풀어야합니다.
+* ...tseslint.configs.recommendedTypeChecked는 다음을 제공합니다.
+*   - 의미없는 await 방지
+*   - 잘못된 조건문 필터링(예: if(array === true), 즉, 항상 참인 변수를 조건문에 사용할 경우 경고를 줌)
+*   - 배열이 아닌데 메서드 사용 방지
+*
+* react.configs.flat.recommended는 다음을 제공합니다.
+*   - react/jsx-key: map() 함수의 key를 빼멱은 경우 에러를 발생시킵니다.
+*   - react/no-unescaped-entities: '>'나 '""'의 일반 사용을 방지합니다(예: <div> > </div>를 &gt;로 변경 경고)
+*   - react/no-unknown-property: HTML 태그의 오사용을 고쳐줍니다(예: class="..." -> className, onclick -> onClick).
+*
+* jsxA11y.flatConfigs.recommended는 다음을 제공합니다.
+*   - <img> 태그의 alt 속성 누락
+*   - 잘못된 Form 라벨링(예: <input> 태그에 <label>이 제대로 안 붙어있을 때 경고)
+
+- **tsconfig.app.json**
+
+- Inyro 앱의 메인 소스 코드(src/)를 위한 TypeScript 컴파일러 설정 파일입니다.
+- Vite 빌드 설정 자체를 검사하는 tsconfig.node.json과 분리되어 있습니다.
+-
+- 주요 설정은 다음과 같습니다.
+-   - Target & Env: 최신 자바스크립트 문법(ES2022)과 브라우저 환경(DOM)을 기준으로 타입을 검사합니다.
+-   - Bundler Mode: 실제 코드 빌드는 Vite의 esbuild가 담당하므로, TypeScript는 코드 생성 없이 타입 검사만 수행합니다(noEmit: true).
+-   - Linting: strict 모드를 켜서 가장 엄격하게 코드를 검사합니다.
+-   - Paths: 상대 경로(../../) 대신, 절대 경로(@/components/...)를 사용할 수 있게 합니다.
