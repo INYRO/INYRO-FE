@@ -379,6 +379,8 @@ src/
 *
 * 프록시는 백엔드에서 api를 호출할 때, 주소에 '/api'를 항상 포함하기 때문에, '/api' 주소를 가로채 백엔드에 요청을 보냅니다.
 * 이는 'https://api.inyro.com/'의 백엔드 주소를 할당시킵니다.
+*
+* 타겟 백엔드 주소는 환경 변수(.env)의 VITE_API_URL 값을 최우선으로 사용합니다.
 
 - **tsconfig.json**
 
@@ -391,3 +393,7 @@ src/
 *   - tsconfig.node.json는 Node.js 환경에서 실행되는 설정 파일용 (vite.config.ts 등)
 
 - **tsconfig.node.json**
+
+* Node.js 환경에서 실행되는 설정 파일(vite.config.ts 등)을 위한 TypeScript 설정 파일입니다.
+* tsconfig.app.json는 브라우저용 코드(src/)를 검사하며,
+* tsconfig.node.json은 프로젝트 루트의 빌드/설정 파일들을 검사합니다.
