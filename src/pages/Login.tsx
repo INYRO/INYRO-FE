@@ -1,7 +1,7 @@
 import axiosInstance from "@/api/axiosInstance";
 import FormButton from "@/components/common/button/FormButton";
 import LinkButton from "@/components/common/button/LinkButton";
-import FormInput from "@/components/common/input/FormInputTemp";
+import FormInput from "@/components/common/input/FormInput";
 import Logo from "@/components/common/logo/Logo";
 import { type LoginType, loginSchema } from "@/schema/authSchema";
 import { setAccessToken, login } from "@/store/authSlice";
