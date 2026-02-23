@@ -21,7 +21,7 @@ import {
 import { useAppDispatch, useAppSelector } from "./store/hooks";
 import type { ApiResponse } from "./types/api";
 import { fetchUser } from "./utils/auth";
-import type { ReissueResult } from "./types/auth";
+import type { ReissueResult } from "./types/member";
 
 type LogoutResponse = ApiResponse<string>;
 type ReissueResponse = ApiResponse<ReissueResult>;

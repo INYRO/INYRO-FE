@@ -13,7 +13,7 @@ import {
 } from "@/schema/findPasswordSchema";
 import type { ApiResponse } from "@/types/api";
 import { login } from "@/store/authSlice";
-import type { RegisterResult } from "@/types/auth";
+import type { RegisterResult } from "@/types/member";
 
 type FindPasswordResponse = ApiResponse<RegisterResult>;
 

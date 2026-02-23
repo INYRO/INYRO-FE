@@ -1,6 +1,6 @@
 import axiosInstance from "@/api/axiosInstance";
 import type { ApiResponse } from "@/types/api";
-import type { MemberResult } from "@/types/auth";
+import type { MemberResult } from "@/types/member";
 import axios from "axios";
 
 type MemberResponse = ApiResponse<MemberResult>;

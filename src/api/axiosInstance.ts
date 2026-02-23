@@ -33,7 +33,7 @@
 import { logout, setAccessToken } from "@/store/authSlice";
 import { store } from "@/store/store";
 import type { ApiResponse } from "@/types/api";
-import type { ReissueResult } from "@/types/auth";
+import type { ReissueResult } from "@/types/member";
 import axios, { type InternalAxiosRequestConfig } from "axios";
 
 type ReissueResponse = ApiResponse<ReissueResult>;

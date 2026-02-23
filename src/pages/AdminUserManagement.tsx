@@ -6,7 +6,7 @@ import type {
     MemberListResponse,
     MemberResult,
     MemberStatus,
-} from "@/types/auth";
+} from "@/types/member";
 import Logo from "@/components/common/logo/Logo";
 
 export default function AdminUserManagement() {

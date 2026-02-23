@@ -8,7 +8,7 @@ import { login, setAccessToken } from "@/store/authSlice";
 import { useAppDispatch } from "@/store/hooks";
 import { openModal } from "@/store/modalSlice";
 import type { ApiResponse } from "@/types/api";
-import type { LoginResult, MemberResult } from "@/types/auth";
+import type { LoginResult, MemberResult } from "@/types/member";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
 import { useState } from "react";

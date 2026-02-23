@@ -4,7 +4,7 @@ import Logo from "@/components/common/logo/Logo";
 import FormInput from "@/components/common/input/formInput";
 import { type RegisterType, registerSchema } from "@/schema/registerSchema";
 import type { ApiResponse } from "@/types/api";
-import type { RegisterResult } from "@/types/auth";
+import type { RegisterResult } from "@/types/member";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
 import { useState } from "react";
