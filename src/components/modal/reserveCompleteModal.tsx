@@ -22,12 +22,7 @@ export default function ReserveCompleteModal() {
             />
             <p className="body-t2 text-center">예약 되었습니다.</p>
             <form onSubmit={onSubmit}>
-                <FormButton
-                    text="확인"
-                    bgColor="bg-secondary"
-                    textColor="text-white"
-                    isBorder={true}
-                />
+                <FormButton text="확인" type="submit" />
             </form>
         </>
     );
