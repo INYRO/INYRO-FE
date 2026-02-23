@@ -397,3 +397,35 @@ src/
 * Node.js 환경에서 실행되는 설정 파일(vite.config.ts 등)을 위한 TypeScript 설정 파일입니다.
 * tsconfig.app.json는 브라우저용 코드(src/)를 검사하며,
 * tsconfig.node.json은 프로젝트 루트의 빌드/설정 파일들을 검사합니다.
+
+- **axiosIntance.ts**
+
+* Inyro 프로젝트의 HTTP 통신 관리 axiosInstance입니다.
+* axios의 fetch 요청을 가로채 instance에서 관리 후 사용합니다.
+*
+* instance의 주요 기능은 다음과 같습니다.
+*   - BaseURL 및 타임아웃 등 공통 Axios 설정 관리
+*   - 요청 인터셉터를 통해 accessToken 관리 Redux Store에서 Access Token을 추출하여 Authorization 헤더에 자동 첨부
+*   - 응답 인터셉터: 401(Unauthorized) 에러 발생 시 토큰 재발급(Reissue) 로직 수행
+*   - 동시성 제어: 여러 API가 동시에 401을 반환할 경우, reissue 요청이 중복되지 않도록 Promise 락킹 메커니즘 적용
+*   - 인증 예외 처리: 로그인, 회원가입 등 특정 엔드포인트는 인증 헤더 첨부 및 재발급 로직에서 제외
+*
+* 요청 인터셉터는 다음과 같이 작동합니다.
+*   - axios request시 요청을 가로챕니다.
+*   - Redux Store에 저장된 accessToken을 추출합니다.
+*   - 예외 url에 해당되지 않으면, 추출한 accessToken을 요청 헤더(Authorization Header)에 자동 첨부합니다.
+*
+* 응답 인터셉터는 다음과 같이 작동합니다.
+*   - 요청 성공 시 무시합니다.
+*   - 요청 실패 시 에러처리를 합니다. 에러처리는 다음과 같이 진행됩니다.
+*   - axios 에러가 아닐 시, 경고를 띄웁니다.
+*   - 만약 axios 에러일 시, 실패한 요청의 originalRequest 속 config 추출한 후, \_retry를 boolean 형으로 삽입합니다.
+*   - 단, originalRequest가 없으면 일반 에러로 처리하고 종료합니다.
+*   - originalRequest가 존재할 경우, status와 url을 추출한 후,
+*   - 예외 url이 아닌 경우, reissue를 진행합니다.
+*
+* reissue는 다음과 같이 진행됩니다.
+*   - 이미 reissue 진행 중이면 그 Promise를 기다립니다.
+*   - refreshPromise가 진행되면, 백엔드 서버에 reissue를 요청을 하며,
+*   - 토큰을 재발급 받고, newAccessToken을 할당받습니다.
+*   - 그리고 이를 redux store에 저장해 토큰을 갱신하며 reissue를 종료합니다.
