@@ -1,5 +1,3 @@
-import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-
 /*
  * 앱의 유저 인증 상태와 정보를 관리하는 Redux Slice 파일입니다.
  *
@@ -9,6 +7,8 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
  * 3) isLogin 여부는 유저 정보 조회가 완전히 성공한 시점에만 true로 전환됩니다.
  * 4) authInitialized는 앱 초기 로딩 시 인증 복구(reissue)가 끝났는지를 나타내며, 화면 깜빡임을 방지합니다.
  */
+
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
 // 구조(설계도)는 interface 사용
 interface AuthState {

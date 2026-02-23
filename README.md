@@ -371,3 +371,23 @@ src/
 -   - Bundler Mode: 실제 코드 빌드는 Vite의 esbuild가 담당하므로, TypeScript는 코드 생성 없이 타입 검사만 수행합니다(noEmit: true).
 -   - Linting: strict 모드를 켜서 가장 엄격하게 코드를 검사합니다.
 -   - Paths: 상대 경로(../../) 대신, 절대 경로(@/components/...)를 사용할 수 있게 합니다.
+
+- **vite.config.ts**
+
+* Inyro 프론트엔드의 빌드 및 개발 서버 환경을 설정하는 Vite 설정 파일입니다.
+* 플러그인 적용, 절대 경로 매핑, 로컬 개발 시 CORS 에러 우회를 위한 프록시 등을 관리합니다.
+*
+* 프록시는 백엔드에서 api를 호출할 때, 주소에 '/api'를 항상 포함하기 때문에, '/api' 주소를 가로채 백엔드에 요청을 보냅니다.
+* 이는 'https://api.inyro.com/'의 백엔드 주소를 할당시킵니다.
+
+- **tsconfig.json**
+
+* Inyro 프로젝트의 최상위 TypeScript 설정 파일입니다.
+* Vite 템플릿의 'Solution Style'을 사용하여, 환경에 따라 설정을 두 갈래로 나눕니다.
+*
+* 자기 자신은 직접 파일을 컴파일하지 않고("files": []), 아래 두 파일로 역할을 위임합니다.
+* 따라서, 다음 두 개 파일이 할당 되어있습니다.
+*   - tsconfig.app.json는 브라우저에서 실행되는 실제 React 앱 코드용 (src/)
+*   - tsconfig.node.json는 Node.js 환경에서 실행되는 설정 파일용 (vite.config.ts 등)
+
+- **tsconfig.node.json**
