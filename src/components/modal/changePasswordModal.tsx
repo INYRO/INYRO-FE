@@ -1,8 +1,8 @@
 import axiosInstance from "@/api/axiosInstance";
 import {
-    changePasswordSchema,
     type ChangePasswordType,
-} from "@/schema/changePasswordSchema";
+    changePasswordSchema,
+} from "@/schema/authSchema";
 import { useAppDispatch } from "@/store/hooks";
 import { closeModal } from "@/store/modalSlice";
 import type { ApiResponse } from "@/types/api";
@@ -11,7 +11,7 @@ import axios from "axios";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import FormButton from "../common/button/FormButton";
-import FormInput from "../common/input/formInput";
+import FormInput from "../common/input/FormInput";
 
 type ChangePasswordResponse = ApiResponse<string>;
 
@@ -93,9 +93,7 @@ export default function ChangePasswordModal() {
                 </span>
                 <FormButton
                     text="변경하기"
-                    bgColor="bg-secondary"
-                    isBorder={false}
-                    textColor="text-white"
+                    type="submit"
                     isLoading={isLoading}
                 />
             </form>

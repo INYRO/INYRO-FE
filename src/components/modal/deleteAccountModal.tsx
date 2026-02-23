@@ -50,9 +50,7 @@ export default function DeleteAccountModal() {
             <form onSubmit={(e) => void handleSubmit(e)}>
                 <FormButton
                     text="탈퇴하기"
-                    bgColor="bg-accent"
-                    isBorder={false}
-                    textColor="text-white"
+                    type="submit"
                     isLoading={isLoading}
                 />
             </form>

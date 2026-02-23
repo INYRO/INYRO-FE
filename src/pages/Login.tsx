@@ -1,10 +1,10 @@
 import axiosInstance from "@/api/axiosInstance";
 import FormButton from "@/components/common/button/FormButton";
 import LinkButton from "@/components/common/button/LinkButton";
+import FormInput from "@/components/common/input/FormInputTemp";
 import Logo from "@/components/common/logo/Logo";
-import FormInput from "@/components/common/input/formInput";
-import { loginSchema, type LoginType } from "@/schema/loginSchema";
-import { login, setAccessToken } from "@/store/authSlice";
+import { type LoginType, loginSchema } from "@/schema/authSchema";
+import { setAccessToken, login } from "@/store/authSlice";
 import { useAppDispatch } from "@/store/hooks";
 import { openModal } from "@/store/modalSlice";
 import type { ApiResponse } from "@/types/api";
@@ -13,7 +13,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { useLocation, useNavigate, type Location } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 type LoginResponse = ApiResponse<LoginResult>;
 type MemberResponse = ApiResponse<MemberResult>;

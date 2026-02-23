@@ -1,8 +1,7 @@
 import axiosInstance from "@/api/axiosInstance";
 import FormButton from "@/components/common/button/FormButton";
 import Logo from "@/components/common/logo/Logo";
-import FormInput from "@/components/common/input/formInput";
-import { type RegisterType, registerSchema } from "@/schema/registerSchema";
+import FormInput from "@/components/common/input/FormInputTemp";
 import type { ApiResponse } from "@/types/api";
 import type { RegisterResult } from "@/types/member";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -10,6 +9,7 @@ import axios from "axios";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
+import { type RegisterType, registerSchema } from "@/schema/authSchema";
 
 type RegisterResponse = ApiResponse<RegisterResult>;
 

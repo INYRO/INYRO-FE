@@ -85,9 +85,7 @@ export default function ChangeReservationModal({
                 </section>
                 <FormButton
                     text="변경하기"
-                    bgColor="bg-secondary"
-                    isBorder={false}
-                    textColor="text-white"
+                    type="submit"
                     isLoading={isLoading}
                 />
             </form>

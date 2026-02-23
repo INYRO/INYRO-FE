@@ -54,9 +54,7 @@ export default function DeleteReservationModal({
             <form onSubmit={(e) => void handleSubmit(e)}>
                 <FormButton
                     text="삭제하기"
-                    bgColor="bg-accent"
-                    isBorder={false}
-                    textColor="text-white"
+                    type="submit"
                     isLoading={isLoading}
                 />
             </form>

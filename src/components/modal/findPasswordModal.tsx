@@ -1,19 +1,16 @@
 import axiosInstance from "@/api/axiosInstance";
-import FormButton from "../common/button/FormButton";
-import FormInput from "../common/input/formInput";
+import { type FindPasswordType, findPasswordSchema } from "@/schema/authSchema";
+import { login } from "@/store/authSlice";
 import { useAppDispatch } from "@/store/hooks";
+import { closeModal, openModal } from "@/store/modalSlice";
+import type { ApiResponse } from "@/types/api";
+import type { RegisterResult } from "@/types/member";
 import { zodResolver } from "@hookform/resolvers/zod";
+import axios from "axios";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { closeModal, openModal } from "@/store/modalSlice";
-import axios from "axios";
-import {
-    findPasswordSchema,
-    type FindPasswordType,
-} from "@/schema/findPasswordSchema";
-import type { ApiResponse } from "@/types/api";
-import { login } from "@/store/authSlice";
-import type { RegisterResult } from "@/types/member";
+import FormButton from "../common/button/FormButton";
+import FormInput from "../common/input/FormInput";
 
 type FindPasswordResponse = ApiResponse<RegisterResult>;
 
@@ -94,13 +91,7 @@ export default function FindPasswordModal() {
                         isPlaceholder
                     />
                 </article>
-                <FormButton
-                    text="인증"
-                    bgColor="bg-secondary"
-                    isBorder={false}
-                    textColor="text-white"
-                    isLoading={isLoading}
-                />
+                <FormButton text="인증" type="submit" isLoading={isLoading} />
             </form>
         </>
     );
