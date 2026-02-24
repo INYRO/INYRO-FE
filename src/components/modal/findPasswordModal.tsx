@@ -81,11 +81,13 @@ export default function FindPasswordModal() {
                         {...register("sno")}
                         error={errors.sno?.message}
                         type="text"
+                        label="학번"
                         isPlaceholder
                     />
                     <FormInput
                         required
                         {...register("password")}
+                        label="비밀번호"
                         error={errors.password?.message}
                         type="password"
                         isPlaceholder

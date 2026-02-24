@@ -235,7 +235,7 @@ export default function Reserve() {
                             );
                         })}
                     </div>
-                    <FormButton text="다음" isLoading={loading} />
+                    <FormButton text="다음" type="submit" isLoading={loading} />
                 </form>
             )}
         </div>

@@ -84,10 +84,12 @@ export default function ChangePasswordResetModal() {
                         {...register("newPassword")}
                         error={errors.newPassword?.message}
                         type="password"
+                        label="새 비밀번호 입력"
                         isPlaceholder
                     />
                     <FormInput
                         required
+                        label="비밀번호 재확인"
                         {...register("newPasswordConfirmation")}
                         error={errors.newPasswordConfirmation?.message}
                         type="password"

@@ -104,10 +104,12 @@ export default function Login() {
                         {...register("sno")}
                         required
                         error={errors.sno?.message}
+                        label="학번"
                         isPlaceholder={false}
                     />
                     <FormInput
                         type="password"
+                        label="비밀번호"
                         {...register("password")}
                         required
                         error={errors.password?.message}

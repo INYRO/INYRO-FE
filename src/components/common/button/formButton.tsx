@@ -21,7 +21,7 @@
 
 // 타입 정의
 // 버튼 종류를 타입으로 정의
-type ButtonVariant = "primary" | "outline";
+type ButtonVariant = "primary" | "outline" | "accent";
 // 버튼 Props 타입 정의
 interface FormButtonProps {
     text: string;
@@ -36,6 +36,7 @@ interface FormButtonProps {
 const variantStyles: Record<ButtonVariant, string> = {
     primary: "bg-secondary text-white", // isBorder가 false였던 스타일
     outline: "bg-white text-black border border-background-200", // isBorder가 true였던 스타일
+    accent: "bg-accent text-white",
 };
 
 export default function FormButton({

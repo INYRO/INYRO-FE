@@ -85,7 +85,11 @@ export default function ReserveComplete() {
                         className="border rounded-[10px] h-[60px] bg-stroke border-background-200 body-t6 p-2"
                     />
                 </section>
-                <FormButton text="예약하기" isLoading={isLoading} />
+                <FormButton
+                    text="예약하기"
+                    type="submit"
+                    isLoading={isLoading}
+                />
             </form>
         </div>
     );
