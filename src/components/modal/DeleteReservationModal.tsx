@@ -1,3 +1,11 @@
+/**
+ * 동아리방 예약을 삭제하는 모달 컴포넌트입니다.
+ * 예약 ID를 받아 삭제 API를 호출하고, 성공 시 전역 상태를 업데이트하여 화면을 갱신합니다.
+ *
+ * 예약 삭제가 성공했을 때, redux의 notifyChangeSuccess()를 실행해
+ * 예약 목록을 다시 불러오도록 합니다.
+ */
+
 import React, { useState } from "react";
 import FormButton from "../common/button/FormButton";
 import axiosInstance from "@/api/axiosInstance";
@@ -20,8 +28,7 @@ export default function DeleteReservationModal({
     const [isLoading, setIsLoading] = useState(false);
 
     // 예약 삭제 submit
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
+    const handleDelete = async () => {
         setIsLoading(true);
         try {
             if (!reservationId) return;
@@ -30,7 +37,7 @@ export default function DeleteReservationModal({
                     `/reservations/${reservationId}`
                 );
             if (response.data.isSuccess) {
-                dispatch(notifyChangeSuccess());
+                dispatch(notifyChangeSuccess()); // 예약 목록 갱신 트리거
                 dispatch(closeModal());
             }
         } catch (err) {
@@ -51,13 +58,13 @@ export default function DeleteReservationModal({
                 <span>삭제 버튼 선택 시,</span>
                 <span>예약은 삭제되며 복구되지 않습니다.</span>
             </div>
-            <form onSubmit={(e) => void handleSubmit(e)}>
-                <FormButton
-                    text="삭제하기"
-                    type="submit"
-                    isLoading={isLoading}
-                />
-            </form>
+            <FormButton
+                text="삭제하기"
+                type="button"
+                variant="accent"
+                onClick={() => void handleDelete()}
+                isLoading={isLoading}
+            />
         </>
     );
 }

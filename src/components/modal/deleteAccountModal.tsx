@@ -6,13 +6,6 @@
  * - '/members'에 delete 요청을 합니다.
  * - 성공 시 Redux store의 'logout'을 실행해 인증 관련 상태를 초기화 합니다.
  * - 그 후 modal을 닫고 메인 페이지('/')로 리디렉션 합니다.
- *
- * 'onClick={() => void handleDelete}'을 사용한 이유는
- * 버튼의 onClick은 반환값이 없는(void) 함수를 원하는데,
- * async 함수는 무조건 Promise를 뱉어내니까,
- * 둘이 타입(계약)이 안 맞아서 에러가 발생합니다.
- * 따라서, () => void 비동기함수() 모양의 화살표 함수를 써서
- * 함수가 뱉어내는 반환값(Promise)은 없는 셈(void) 치는 효과를 줘, 타입을 맞춰주게 됩니다.
  */
 
 import axiosInstance from "@/api/axiosInstance";

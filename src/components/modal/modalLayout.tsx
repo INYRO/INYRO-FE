@@ -10,11 +10,10 @@ import { closeModal } from "@/store/modalSlice";
 import ChangePasswordModal from "./ChangePasswordModal";
 import DeleteAccountModal from "./DeleteAccountModal";
 import FindPasswordModal from "./FindPasswordModal";
-import ReserveCompleteModal from "./ReserveCompleteModal";
 import ChangePasswordResetModal from "./ChangePasswordResetModal";
 import DeleteReservationModal from "./DeleteReservationModal";
 import ChangeReservationModal from "./ChangeReservationModal";
-import ChangeCompleteModal from "./ChangeCompleteModal";
+import CompleteModal from "./CompleteModal";
 
 export default function ModalLayout() {
     const dispatch = useAppDispatch();
@@ -33,9 +32,14 @@ export default function ModalLayout() {
             case "deleteAccount":
                 return <DeleteAccountModal />;
             case "reserveComplete":
-                return <ReserveCompleteModal />;
+                return (
+                    <CompleteModal
+                        message="예약 되었습니다."
+                        redirectPath="/mypage"
+                    />
+                );
             case "changeComplete":
-                return <ChangeCompleteModal />;
+                return <CompleteModal message="변경 되었습니다." />;
             case "changePasswordReset":
                 return <ChangePasswordResetModal />;
             case "deleteReservation":
