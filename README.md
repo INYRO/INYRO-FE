@@ -594,3 +594,9 @@ src/
 * 학생 인증을 마친 유저의 비밀번호를 초기화하는 모달입니다.
 * Redux store에 저장된 유저 정보 중 학번(sno)를 이용해 API를 호출하며,
 * 성공 시 완료 모달(CompleteModal)로 전환됩니다.
+
+- **ChangeReservationModal.tsx**
+
+* 동아리방 예약 내용을 변경하는 모달입니다.
+* React Hook Form과 Zod를 사용하여 입력값을 검증하고,
+* 완료 시 예약 목록 갱신 트리거(notifyChangeSuccess) 후 완료 모달로 스와핑합니다.
