@@ -23,8 +23,8 @@ export const loginSchema = baseAuthSchema;
 export type LoginType = z.infer<typeof loginSchema>;
 
 // 비밀번호 찾기 스키마
-export const findPasswordSchema = baseAuthSchema;
-export type FindPasswordType = z.infer<typeof findPasswordSchema>;
+export const studentVerificationSchema = baseAuthSchema;
+export type StudentVerificationType = z.infer<typeof studentVerificationSchema>;
 
 // 비밀번호 변경 스키마
 export const changePasswordSchema = z

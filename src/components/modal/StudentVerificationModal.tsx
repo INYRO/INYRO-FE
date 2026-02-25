@@ -4,21 +4,25 @@
  * 비밀번호 재설정하는 모달인 'ChangePasswordResetModal'로 스와핑합니다.
  */
 
-import axiosInstance from "@/api/axiosInstance";
-import { type FindPasswordType, findPasswordSchema } from "@/schema/authSchema";
+// Todo: catch문의 error 핸들링을 src/utils/errorHandler.ts 파일 만들어서 분리하기
+
 import { login } from "@/store/authSlice";
 import { useAppDispatch } from "@/store/hooks";
 import { openModal } from "@/store/modalSlice";
-import type { ApiResponse } from "@/types/api";
-import type { RegisterResult } from "@/types/member";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import FormButton from "../common/button/FormButton";
 import FormInput from "../common/input/FormInput";
-
-type FindPasswordResponse = ApiResponse<RegisterResult>;
+import {
+    verifyStudentApi,
+    type StudentVerificationResponse,
+} from "@/api/authApi";
+import {
+    studentVerificationSchema,
+    type StudentVerificationType,
+} from "@/schema/authSchema";
 
 export default function StudentVerificationModal() {
     const dispatch = useAppDispatch();
@@ -28,33 +32,29 @@ export default function StudentVerificationModal() {
         handleSubmit,
         formState: { errors },
         setError,
-    } = useForm<FindPasswordType>({
-        resolver: zodResolver(findPasswordSchema),
+    } = useForm<StudentVerificationType>({
+        resolver: zodResolver(studentVerificationSchema),
     });
-    const onSubmit = handleSubmit(async (data: FindPasswordType) => {
+    const onSubmit = handleSubmit(async (data: StudentVerificationType) => {
         try {
             setIsLoading(true);
-            const response = await axiosInstance.post<FindPasswordResponse>(
-                "/auth/smul",
-                data
-            );
-            if (response.data.isSuccess) {
+            const result = await verifyStudentApi(data);
+            if (result.isSuccess) {
                 dispatch(openModal({ modalType: "resetPasswordModal" }));
                 dispatch(
                     login({
-                        sno: response.data.result.sno,
-                        name: response.data.result.name,
-                        dept: response.data.result.dept,
+                        sno: result.result.sno,
+                        name: result.result.name,
+                        dept: result.result.dept,
                     })
                 );
             } else {
                 setError("root", {
-                    message:
-                        response.data.message || "학생 인증에 실패했습니다.",
+                    message: result.message || "학생 인증에 실패했습니다.",
                 });
             }
         } catch (err) {
-            if (axios.isAxiosError<FindPasswordResponse>(err)) {
+            if (axios.isAxiosError<StudentVerificationResponse>(err)) {
                 console.warn(
                     "비밀번호 찾기 실패",
                     err.response?.data || err.message
