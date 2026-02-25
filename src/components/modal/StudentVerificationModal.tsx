@@ -1,8 +1,14 @@
+/**
+ * 비밀번호 찾기를 위한 재학생 인증 모달입니다.
+ * 학교 학번으로 인증하며, 성공 시 임시 로그인 세션을 생성하고
+ * 비밀번호 재설정하는 모달인 'ChangePasswordResetModal'로 스와핑합니다.
+ */
+
 import axiosInstance from "@/api/axiosInstance";
 import { type FindPasswordType, findPasswordSchema } from "@/schema/authSchema";
 import { login } from "@/store/authSlice";
 import { useAppDispatch } from "@/store/hooks";
-import { closeModal, openModal } from "@/store/modalSlice";
+import { openModal } from "@/store/modalSlice";
 import type { ApiResponse } from "@/types/api";
 import type { RegisterResult } from "@/types/member";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -14,7 +20,7 @@ import FormInput from "../common/input/FormInput";
 
 type FindPasswordResponse = ApiResponse<RegisterResult>;
 
-export default function FindPasswordModal() {
+export default function StudentVerificationModal() {
     const dispatch = useAppDispatch();
     const [isLoading, setIsLoading] = useState(false);
     const {
@@ -33,8 +39,7 @@ export default function FindPasswordModal() {
                 data
             );
             if (response.data.isSuccess) {
-                dispatch(closeModal());
-                dispatch(openModal({ modalType: "changePasswordReset" }));
+                dispatch(openModal({ modalType: "resetPasswordModal" }));
                 dispatch(
                     login({
                         sno: response.data.result.sno,
@@ -42,6 +47,11 @@ export default function FindPasswordModal() {
                         dept: response.data.result.dept,
                     })
                 );
+            } else {
+                setError("root", {
+                    message:
+                        response.data.message || "학생 인증에 실패했습니다.",
+                });
             }
         } catch (err) {
             if (axios.isAxiosError<FindPasswordResponse>(err)) {
@@ -93,6 +103,13 @@ export default function FindPasswordModal() {
                         isPlaceholder
                     />
                 </article>
+                <span
+                    className={`${
+                        errors.root?.message ? "flex" : "hidden"
+                    } body-t5 text-accent`}
+                >
+                    {errors.root?.message}
+                </span>
                 <FormButton text="인증" type="submit" isLoading={isLoading} />
             </form>
         </>

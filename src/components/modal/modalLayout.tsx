@@ -9,11 +9,11 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { closeModal } from "@/store/modalSlice";
 import ChangePasswordModal from "./ChangePasswordModal";
 import DeleteAccountModal from "./DeleteAccountModal";
-import FindPasswordModal from "./FindPasswordModal";
-import ChangePasswordResetModal from "./ChangePasswordResetModal";
 import DeleteReservationModal from "./DeleteReservationModal";
 import ChangeReservationModal from "./ChangeReservationModal";
 import CompleteModal from "./CompleteModal";
+import StudentVerificationModal from "./StudentVerificationModal";
+import ResetPasswordModal from "./ResetPasswordModal";
 
 export default function ModalLayout() {
     const dispatch = useAppDispatch();
@@ -25,8 +25,8 @@ export default function ModalLayout() {
     // switch 사용으로 가독성 증대
     const renderModalContent = () => {
         switch (modalType) {
-            case "findPassword":
-                return <FindPasswordModal />;
+            case "studentVerificationModal":
+                return <StudentVerificationModal />;
             case "changePassword":
                 return <ChangePasswordModal />;
             case "deleteAccount":
@@ -40,8 +40,8 @@ export default function ModalLayout() {
                 );
             case "changeComplete":
                 return <CompleteModal message="변경 되었습니다." />;
-            case "changePasswordReset":
-                return <ChangePasswordResetModal />;
+            case "resetPasswordModal":
+                return <ResetPasswordModal />;
             case "deleteReservation":
                 return (
                     <DeleteReservationModal

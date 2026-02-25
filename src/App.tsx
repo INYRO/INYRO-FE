@@ -11,7 +11,6 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import axiosInstance from "./api/axiosInstance";
-import ModalLayout from "./components/modal/modalLayout";
 import {
     login,
     logout,
@@ -22,6 +21,7 @@ import { useAppDispatch, useAppSelector } from "./store/hooks";
 import type { ApiResponse } from "./types/api";
 import { fetchUser } from "./utils/auth";
 import type { ReissueResult } from "./types/member";
+import ModalLayout from "./components/modal/ModalLayout";
 
 type LogoutResponse = ApiResponse<string>;
 type ReissueResponse = ApiResponse<ReissueResult>;

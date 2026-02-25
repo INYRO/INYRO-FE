@@ -14,9 +14,9 @@ import { useAppDispatch } from "@/store/hooks";
 import { closeModal } from "@/store/modalSlice";
 import type { ApiResponse } from "@/types/api";
 import axios from "axios";
-import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import FormButton from "../common/button/FormButton";
+import { useState } from "react";
 
 type DeleteAccountResponse = ApiResponse<string>;
 

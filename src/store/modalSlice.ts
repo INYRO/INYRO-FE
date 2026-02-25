@@ -18,11 +18,11 @@ interface ModalState {
 
 // 모달 타입
 type ModalType =
-    | "findPassword"
+    | "studentVerificationModal"
     | "changePassword"
     | "deleteAccount"
     | "reserveComplete"
-    | "changePasswordReset"
+    | "resetPasswordModal"
     | "deleteReservation"
     | "changeReservation"
     | "changeComplete";

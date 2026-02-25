@@ -1,10 +1,40 @@
+/*
+ * 새 비밀번호를 입력받아 비밀번호를 변경하는 모달입니다.
+ * 변경 성공 시 완료 안내 모달(CompleteModal)로 전환합니다.
+ */
+
+// ChangePasswordModal.tsx의 RHF의 errors 객체는 다음과 같이 생겼습니다.
+/*
+{
+  // 1. newPassword 에러 (from Zod)
+  newPassword: {
+    message: "비밀번호는 4자 이상이어야 합니다.", // 우리가 화면에 띄우는 그 글자!
+    type: "too_small",                         // Zod가 분류한 에러 종류
+    ref: <input name="newPassword" ... />      // 실제 HTML input 태그 (자동 포커스용)
+  },
+
+  //  newPasswordConfirmation 에러 (from Zod)
+  newPasswordConfirmation: {
+    message: "비밀번호가 일치하지 않습니다.", 
+    type: "custom", 
+    ref: <input name="newPasswordConfirmation" ... /> 
+  },
+
+  // 서버 에러 (setError 수동 지정)
+  root: {
+    message: "기존 비밀번호와 동일하여 변경할 수 없습니다.",
+    type: "server" 
+  }
+}
+*/
+
 import axiosInstance from "@/api/axiosInstance";
 import {
     type ChangePasswordType,
     changePasswordSchema,
 } from "@/schema/authSchema";
 import { useAppDispatch } from "@/store/hooks";
-import { closeModal } from "@/store/modalSlice";
+import { openModal } from "@/store/modalSlice";
 import type { ApiResponse } from "@/types/api";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
@@ -33,8 +63,13 @@ export default function ChangePasswordModal() {
                 "/auth/password/change",
                 data
             );
+            // POST 성공/실패 처리
             if (response.data.isSuccess) {
-                dispatch(closeModal());
+                dispatch(openModal({ modalType: "changeComplete" }));
+            } else {
+                setError("root", {
+                    message: response.data.message || "인증에 실패했습니다.",
+                });
             }
         } catch (err) {
             if (axios.isAxiosError<ChangePasswordResponse>(err)) {
@@ -89,7 +124,9 @@ export default function ChangePasswordModal() {
                     />
                 </article>
                 <span
-                    className={`${errors.root?.message ? "flex" : "hidden"} body-t5 text-accent`}
+                    className={`${
+                        errors.root?.message ? "flex" : "hidden"
+                    } body-t5 text-accent`}
                 >
                     {errors.root?.message}
                 </span>

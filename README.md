@@ -551,3 +551,46 @@ src/
 *
 * 예약 삭제가 성공했을 때, redux의 notifyChangeSuccess()를 실행해
 * 예약 목록을 다시 불러오도록 합니다.
+
+- **ChangePasswordModal.tsx**
+
+* 비밀번호 찾기를 위한 재학생 인증 모달입니다.
+* 인증 성공 시 현재 모달을 닫고, 비밀번호 재설정 모달을 엽니다.
+
+* ChangePasswordModal.tsx의 RHF의 errors 객체는 다음과 같이 생겼습니다.
+
+```
+    {
+    // 1. newPassword 에러 (from Zod)
+    newPassword: {
+        message: "비밀번호는 4자 이상이어야 합니다.", // 우리가 화면에 띄우는 그 글자!
+        type: "too_small",                         // Zod가 분류한 에러 종류
+        ref: <input name="newPassword" ... />      // 실제 HTML input 태그 (자동 포커스용)
+    },
+
+    //  newPasswordConfirmation 에러 (from Zod)
+    newPasswordConfirmation: {
+        message: "비밀번호가 일치하지 않습니다.",
+        type: "custom",
+        ref: <input name="newPasswordConfirmation" ... />
+    },
+
+    // 서버 에러 (setError 수동 지정)
+    root: {
+        message: "기존 비밀번호와 동일하여 변경할 수 없습니다.",
+        type: "server"
+    }
+    }
+```
+
+- **StudentVerificationModal.tsx**
+
+* 비밀번호 찾기를 위한 재학생 인증 모달입니다.
+* 학교 학번으로 인증하며, 성공 시 임시 로그인 세션을 생성하고
+* 비밀번호 재설정하는 모달인 'ChangePasswordResetModal'로 스와핑합니다.
+
+- **ResetPasswordModal.tsx**
+
+* 학생 인증을 마친 유저의 비밀번호를 초기화하는 모달입니다.
+* Redux store에 저장된 유저 정보 중 학번(sno)를 이용해 API를 호출하며,
+* 성공 시 완료 모달(CompleteModal)로 전환됩니다.
