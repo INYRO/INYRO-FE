@@ -1,15 +1,15 @@
 import axiosInstance from "@/api/axiosInstance";
-import FormButton from "@/components/common/button/formButton";
-import SubLogo from "@/components/common/logo/subLogo";
-import FormInput from "@/components/input/formInput";
-import { type RegisterType, registerSchema } from "@/schema/registerSchema";
+import FormButton from "@/components/common/button/FormButton";
+import Logo from "@/components/common/logo/Logo";
 import type { ApiResponse } from "@/types/api";
-import type { RegisterResult } from "@/types/auth";
+import type { RegisterResult } from "@/types/member";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
+import { type RegisterType, registerSchema } from "@/schema/authSchema";
+import FormInput from "@/components/common/input/FormInput";
 
 type RegisterResponse = ApiResponse<RegisterResult>;
 
@@ -82,7 +82,7 @@ export default function Register() {
 
     return (
         <div className="v-stack w-full gap-9">
-            <SubLogo />
+            <Logo variant="sub" />
             <section className="flex flex-col gap-[5px]">
                 <article className="bg-background-200 rounded-[10px] p-5 flex flex-col gap-2">
                     <h2 className="underline underline-offset-4 body-t1">
@@ -118,6 +118,7 @@ export default function Register() {
                 <article className="flex gap-1">
                     <form className="ml-[5px] flex gap-[3px] items-center">
                         <input
+                            id="terms-agree"
                             type="checkbox"
                             checked={agreed}
                             onChange={(e) => {
@@ -126,7 +127,7 @@ export default function Register() {
                             }}
                             className="size-2.5"
                         />
-                        <label className="body-t7">
+                        <label htmlFor="terms-agree" className="body-t7">
                             다음 약관에 동의합니다.
                         </label>
                     </form>
@@ -176,13 +177,7 @@ export default function Register() {
                             {errors.root?.message}
                         </span>
                         <div className="mt-[9px]">
-                            <FormButton
-                                text="회원가입"
-                                bgColor="bg-secondary"
-                                isBorder={false}
-                                textColor="text-white"
-                                isLoading={isLoading}
-                            />
+                            <FormButton text="회원가입" isLoading={isLoading} />
                         </div>
                     </form>
                 </article>

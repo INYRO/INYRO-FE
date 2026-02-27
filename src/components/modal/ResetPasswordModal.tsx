@@ -1,21 +1,27 @@
+/**
+ * 학생 인증을 마친 유저의 비밀번호를 초기화하는 모달입니다.
+ * Redux store에 저장된 유저 정보 중 학번(sno)를 이용해 API를 호출하며,
+ * 성공 시 완료 모달(CompleteModal)로 전환됩니다.
+ */
+
 import axiosInstance from "@/api/axiosInstance";
-import {
-    changePasswordSchema,
-    type ChangePasswordType,
-} from "@/schema/changePasswordSchema";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { closeModal } from "@/store/modalSlice";
+import { openModal } from "@/store/modalSlice";
 import type { ApiResponse } from "@/types/api";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import FormButton from "../common/button/formButton";
-import FormInput from "../input/formInput";
+import FormButton from "../common/button/FormButton";
+import FormInput from "../common/input/FormInput";
+import {
+    type ChangePasswordType,
+    changePasswordSchema,
+} from "@/schema/authSchema";
 
 type ChangePasswordResponse = ApiResponse<string>;
 
-export default function ChangePasswordResetModal() {
+export default function ResetPasswordModal() {
     const dispatch = useAppDispatch();
     const [isLoading, setIsLoading] = useState(false);
     const {
@@ -41,7 +47,13 @@ export default function ChangePasswordResetModal() {
                 }
             );
             if (response.data.isSuccess) {
-                dispatch(closeModal());
+                dispatch(openModal({ modalType: "changeComplete" }));
+            } else {
+                setError("root", {
+                    message:
+                        response.data.message ||
+                        "비밀번호 재설정에 실패했습니다.",
+                });
             }
         } catch (err) {
             if (axios.isAxiosError<ChangePasswordResponse>(err)) {
@@ -68,7 +80,7 @@ export default function ChangePasswordResetModal() {
     return (
         <>
             <div className="flex items-end gap-[5px]">
-                <span className="body-t2">비밀번호 변경</span>
+                <span className="body-t2">비밀번호 재설정</span>
                 <span className="body-t3 text-background-300">
                     4자 이상 입력
                 </span>
@@ -83,10 +95,12 @@ export default function ChangePasswordResetModal() {
                         {...register("newPassword")}
                         error={errors.newPassword?.message}
                         type="password"
+                        label="새 비밀번호 입력"
                         isPlaceholder
                     />
                     <FormInput
                         required
+                        label="비밀번호 재확인"
                         {...register("newPasswordConfirmation")}
                         error={errors.newPasswordConfirmation?.message}
                         type="password"
@@ -94,15 +108,15 @@ export default function ChangePasswordResetModal() {
                     />
                 </article>
                 <span
-                    className={`${errors.root?.message ? "flex" : "hidden"} body-t5 text-accent`}
+                    className={`${
+                        errors.root?.message ? "flex" : "hidden"
+                    } body-t5 text-accent`}
                 >
                     {errors.root?.message}
                 </span>
                 <FormButton
                     text="변경하기"
-                    bgColor="bg-secondary"
-                    isBorder={false}
-                    textColor="text-white"
+                    type="submit"
                     isLoading={isLoading}
                 />
             </form>

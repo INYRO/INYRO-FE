@@ -1,18 +1,20 @@
-import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-
 /*
-- 1) accessToken은 메모리에만 저장함
-- 2) refreshToken은 서버에서 httpOnly cookie로 관리함
-- ** 프론트에서 refreshToken을 직접 접근하면 안됨
-- 3) 로그인 여부(isLogin)은 유저 정보가 확정된 시점에만 true
-- 4) authInitialized는 앱 부팅 시 인증 복구 시도가 끝났는지 여부를 나타냄
-*/
+ * 앱의 유저 인증 상태와 정보를 관리하는 Redux Slice 파일입니다.
+ *
+ * 이니로 앱의 핵심 인증 방식은 다음과 같습니다.
+ * 1) accessToken은 XSS 공격 방지를 위해 메모리(Redux state)에만 저장합니다.
+ * 2) refreshToken은 서버에서 HttpOnly 쿠키로 관리하며 프론트에서 직접 접근하지 않습니다.
+ * 3) isLogin 여부는 유저 정보 조회가 완전히 성공한 시점에만 true로 전환됩니다.
+ * 4) authInitialized는 앱 초기 로딩 시 인증 복구(reissue)가 끝났는지를 나타내며, 화면 깜빡임을 방지합니다.
+ */
+
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
 // 구조(설계도)는 interface 사용
 interface AuthState {
     accessToken: string | null;
     isLogin: boolean;
-    user: { sno: string; name: string; dept: string } | null;
+    user: UserProfile | null;
     authInitialized: boolean;
 }
 
@@ -38,11 +40,8 @@ export const authSlice = createSlice({
         // - 이 액션이 호출되는 시점을 기준으로 isLogin을 true로 설정
         login: (state, action: PayloadAction<UserProfile>) => {
             state.isLogin = true;
-            state.user = {
-                sno: action.payload.sno,
-                name: action.payload.name,
-                dept: action.payload.dept,
-            };
+            // payload 전체를 그대로 할당(user 정보를 payload로 받음)
+            state.user = action.payload;
         },
         /* 로그아웃 처리 */
         // - 인증 관련 state를 초기화

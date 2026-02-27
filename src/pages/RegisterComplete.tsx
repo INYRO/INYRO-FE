@@ -1,17 +1,17 @@
 import axiosInstance from "@/api/axiosInstance";
-import FormButton from "@/components/common/button/formButton";
-import MainLogo from "@/components/common/logo/mainLogo";
-import FormInput from "@/components/input/formInput";
-import {
-    registerCompleteSchema,
-    type RegisterCompleteType,
-} from "@/schema/registerCompleteSchema";
+import FormButton from "@/components/common/button/FormButton";
+import Logo from "@/components/common/logo/Logo";
 import type { ApiResponse } from "@/types/api";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
+import {
+    type RegisterCompleteType,
+    registerCompleteSchema,
+} from "@/schema/authSchema";
+import FormInput from "@/components/common/input/FormInput";
 
 interface LocationState {
     userData?: {
@@ -99,7 +99,7 @@ export default function RegisterComplete() {
 
     return (
         <div className="v-stack w-full gap-10">
-            <MainLogo />
+            <Logo />
             <form onSubmit={(e) => void onSubmit(e)} className="flex flex-col">
                 <article className="flex flex-col gap-2.5 mb-[15px]">
                     <FormInput
@@ -125,13 +125,7 @@ export default function RegisterComplete() {
                     {errors.root?.message}
                 </span>
                 <article className="flex flex-col gap-[7px] mt-[15px]">
-                    <FormButton
-                        text="회원가입"
-                        bgColor="bg-secondary"
-                        isBorder={false}
-                        textColor="text-white"
-                        isLoading={isLoading}
-                    />
+                    <FormButton text="회원가입" isLoading={isLoading} />
                 </article>
             </form>
         </div>
