@@ -1,19 +1,19 @@
 import axiosInstance from "@/api/axiosInstance";
-import FormButton from "@/components/common/button/formButton";
-import LinkButton from "@/components/common/button/linkButton";
-import MainLogo from "@/components/common/logo/mainLogo";
-import FormInput from "@/components/input/formInput";
-import { loginSchema, type LoginType } from "@/schema/loginSchema";
-import { login, setAccessToken } from "@/store/authSlice";
+import FormButton from "@/components/common/button/FormButton";
+import LinkButton from "@/components/common/button/LinkButton";
+import FormInput from "@/components/common/input/FormInput";
+import Logo from "@/components/common/logo/Logo";
+import { type LoginType, loginSchema } from "@/schema/authSchema";
+import { setAccessToken, login } from "@/store/authSlice";
 import { useAppDispatch } from "@/store/hooks";
 import { openModal } from "@/store/modalSlice";
 import type { ApiResponse } from "@/types/api";
-import type { LoginResult, MemberResult } from "@/types/auth";
+import type { LoginResult, MemberResult } from "@/types/member";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { useLocation, useNavigate, type Location } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 type LoginResponse = ApiResponse<LoginResult>;
 type MemberResponse = ApiResponse<MemberResult>;
@@ -96,7 +96,7 @@ export default function Login() {
 
     return (
         <div className="v-stack w-full gap-10">
-            <MainLogo />
+            <Logo />
             <form onSubmit={(e) => void onSubmit(e)} className="flex flex-col">
                 <article className="flex flex-col gap-2.5 mb-[15px]">
                     <FormInput
@@ -104,10 +104,12 @@ export default function Login() {
                         {...register("sno")}
                         required
                         error={errors.sno?.message}
+                        label="학번"
                         isPlaceholder={false}
                     />
                     <FormInput
                         type="password"
+                        label="비밀번호"
                         {...register("password")}
                         required
                         error={errors.password?.message}
@@ -124,16 +126,12 @@ export default function Login() {
                 <article className="flex flex-col gap-[7px] mt-[15px]">
                     <FormButton
                         text="로그인"
-                        bgColor="bg-secondary"
-                        isBorder={false}
-                        textColor="text-white"
+                        type="submit"
                         isLoading={isLoading}
                     />
                     <LinkButton
                         text="회원가입"
-                        bgColor="bg-white"
-                        isBorder={true}
-                        textColor="text-black"
+                        variant="outline"
                         url="/register"
                     />
                 </article>

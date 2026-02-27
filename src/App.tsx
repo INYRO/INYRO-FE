@@ -1,8 +1,16 @@
+/*
+ * App.tsx는 Inyro 앱의 최상위 레이아웃이자 인증 부팅(Bootstrap)을 담당하는 컴포넌트입니다.
+ *
+ * 앱이 처음 켜질 때(새로고침 포함) 다음의 작업들이 진행됩니다.
+ * - refreshToken(쿠키)을 기반으로 서버에 accessToken 재발급을 요청합니다.
+ * - 재발급 성공 시 유저 정보를 조회하여 Redux store에 로그인 상태를 복구합니다.
+ * - 모든 과정이 끝나면(성공/실패 무관) Redux Auth store의 authInitialized를 true로 변경하여 화면 깜박임을 방지합니다.
+ */
+
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import axiosInstance from "./api/axiosInstance";
-import ModalLayout from "./components/modal/modalLayout";
 import {
     login,
     logout,
@@ -12,7 +20,8 @@ import {
 import { useAppDispatch, useAppSelector } from "./store/hooks";
 import type { ApiResponse } from "./types/api";
 import { fetchUser } from "./utils/auth";
-import type { ReissueResult } from "./types/auth";
+import type { ReissueResult } from "./types/member";
+import ModalLayout from "./components/modal/ModalLayout";
 
 type LogoutResponse = ApiResponse<string>;
 type ReissueResponse = ApiResponse<ReissueResult>;
@@ -86,13 +95,7 @@ function App() {
                 const user = await fetchUser();
                 if (!user) throw new Error("유저 정보 불러오기 실패");
 
-                dispatch(
-                    login({
-                        sno: user.sno,
-                        name: user.name,
-                        dept: user.dept,
-                    })
-                );
+                dispatch(login(user));
             } catch (err) {
                 // 부팅 중 인증 복구 실패 시 로그아웃 상태로 정리
                 dispatch(setAccessToken(null));

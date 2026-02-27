@@ -1,23 +1,30 @@
-import axiosInstance from "@/api/axiosInstance";
-import FormButton from "../common/button/formButton";
-import FormInput from "../input/formInput";
+/**
+ * 비밀번호 찾기를 위한 재학생 인증 모달입니다.
+ * 학교 학번으로 인증하며, 성공 시 임시 로그인 세션을 생성하고
+ * 비밀번호 재설정하는 모달인 'ChangePasswordResetModal'로 스와핑합니다.
+ */
+
+// Todo: catch문의 error 핸들링을 src/utils/errorHandler.ts 파일 만들어서 분리하기
+
+import { login } from "@/store/authSlice";
 import { useAppDispatch } from "@/store/hooks";
+import { openModal } from "@/store/modalSlice";
 import { zodResolver } from "@hookform/resolvers/zod";
+import axios from "axios";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { closeModal, openModal } from "@/store/modalSlice";
-import axios from "axios";
+import FormButton from "../common/button/FormButton";
+import FormInput from "../common/input/FormInput";
 import {
-    findPasswordSchema,
-    type FindPasswordType,
-} from "@/schema/findPasswordSchema";
-import type { ApiResponse } from "@/types/api";
-import { login } from "@/store/authSlice";
-import type { RegisterResult } from "@/types/auth";
+    verifyStudentApi,
+    type StudentVerificationResponse,
+} from "@/api/authApi";
+import {
+    studentVerificationSchema,
+    type StudentVerificationType,
+} from "@/schema/authSchema";
 
-type FindPasswordResponse = ApiResponse<RegisterResult>;
-
-export default function FindPasswordModal() {
+export default function StudentVerificationModal() {
     const dispatch = useAppDispatch();
     const [isLoading, setIsLoading] = useState(false);
     const {
@@ -25,29 +32,29 @@ export default function FindPasswordModal() {
         handleSubmit,
         formState: { errors },
         setError,
-    } = useForm<FindPasswordType>({
-        resolver: zodResolver(findPasswordSchema),
+    } = useForm<StudentVerificationType>({
+        resolver: zodResolver(studentVerificationSchema),
     });
-    const onSubmit = handleSubmit(async (data: FindPasswordType) => {
+    const onSubmit = handleSubmit(async (data: StudentVerificationType) => {
         try {
             setIsLoading(true);
-            const response = await axiosInstance.post<FindPasswordResponse>(
-                "/auth/smul",
-                data
-            );
-            if (response.data.isSuccess) {
-                dispatch(closeModal());
-                dispatch(openModal({ modalType: "changePasswordReset" }));
+            const result = await verifyStudentApi(data);
+            if (result.isSuccess) {
+                dispatch(openModal({ modalType: "resetPasswordModal" }));
                 dispatch(
                     login({
-                        sno: response.data.result.sno,
-                        name: response.data.result.name,
-                        dept: response.data.result.dept,
+                        sno: result.result.sno,
+                        name: result.result.name,
+                        dept: result.result.dept,
                     })
                 );
+            } else {
+                setError("root", {
+                    message: result.message || "학생 인증에 실패했습니다.",
+                });
             }
         } catch (err) {
-            if (axios.isAxiosError<FindPasswordResponse>(err)) {
+            if (axios.isAxiosError<StudentVerificationResponse>(err)) {
                 console.warn(
                     "비밀번호 찾기 실패",
                     err.response?.data || err.message
@@ -84,23 +91,26 @@ export default function FindPasswordModal() {
                         {...register("sno")}
                         error={errors.sno?.message}
                         type="text"
+                        label="학번"
                         isPlaceholder
                     />
                     <FormInput
                         required
                         {...register("password")}
+                        label="비밀번호"
                         error={errors.password?.message}
                         type="password"
                         isPlaceholder
                     />
                 </article>
-                <FormButton
-                    text="인증"
-                    bgColor="bg-secondary"
-                    isBorder={false}
-                    textColor="text-white"
-                    isLoading={isLoading}
-                />
+                <span
+                    className={`${
+                        errors.root?.message ? "flex" : "hidden"
+                    } body-t5 text-accent`}
+                >
+                    {errors.root?.message}
+                </span>
+                <FormButton text="인증" type="submit" isLoading={isLoading} />
             </form>
         </>
     );

@@ -1,3 +1,14 @@
+/*
+ * Inyro 앱의 메인 소스 코드(src/)를 위한 TypeScript 컴파일러 설정 파일입니다.
+ * Vite 빌드 설정 자체를 검사하는 tsconfig.node.json과 분리되어 있습니다.
+ *
+ * 주요 설정은 다음과 같습니다.
+ * - Target & Env: 최신 자바스크립트 문법(ES2022)과 브라우저 환경(DOM)을 기준으로 타입을 검사합니다.
+ * - Bundler Mode: 실제 코드 빌드는 Vite의 esbuild가 담당하므로, TypeScript는 코드 생성 없이 타입 검사만 수행합니다(noEmit: true).
+ * - Linting: strict 모드를 켜서 가장 엄격하게 코드를 검사합니다.
+ * - Paths: 상대 경로(../../) 대신, 절대 경로(@/components/...)를 사용할 수 있게 합니다.
+ */
+
 {
     "compilerOptions": {
         "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
@@ -18,8 +29,9 @@
 
         /* Linting */
         "strict": true,
-        "noUnusedLocals": true,
-        "noUnusedParameters": true,
+        // 아래 둘은 esLint의 @typescript-eslint/no-unused-vars와 겹치기 때문에 비활성화
+        // "noUnusedLocals": true,
+        // "noUnusedParameters": true,
         "erasableSyntaxOnly": true,
         "noFallthroughCasesInSwitch": true,
         "noUncheckedSideEffectImports": true,

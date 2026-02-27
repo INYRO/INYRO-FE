@@ -1,7 +1,16 @@
+/*
+ * Inyro 프로젝트의 최상위 TypeScript 설정 파일입니다.
+ * Vite 템플릿의 'Solution Style'을 사용하여, 환경에 따라 설정을 두 갈래로 나눕니다.
+ *
+ * 자기 자신은 직접 파일을 컴파일하지 않고("files": []), 아래 두 파일로 역할을 위임합니다.
+ * 따라서, 다음 두 개 파일이 할당 되어있습니다.
+ * - tsconfig.app.json는 브라우저에서 실행되는 실제 React 앱 코드용 (src/)
+ * - tsconfig.node.json는 Node.js 환경에서 실행되는 설정 파일용 (vite.config.ts 등)
+ */
 {
-  "files": [],
-  "references": [
-    { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" }
-  ]
+    "files": [],
+    "references": [
+        { "path": "./tsconfig.app.json" },
+        { "path": "./tsconfig.node.json" }
+    ]
 }

@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useState } from "react";
 import axiosInstance from "@/api/axiosInstance";
-import MainLogo from "@/components/common/logo/mainLogo";
 import sortIcon from "@/assets/icons/lsicon_sort-filter-filled.svg";
-import FormButton from "@/components/common/button/formButton";
+import FormButton from "@/components/common/button/FormButton";
 import type {
     MemberListResponse,
     MemberResult,
     MemberStatus,
-} from "@/types/auth";
+} from "@/types/member";
+import Logo from "@/components/common/logo/Logo";
 
 export default function AdminUserManagement() {
     const [members, setMembers] = useState<MemberResult[]>([]);
@@ -85,7 +85,7 @@ export default function AdminUserManagement() {
 
     return (
         <div className="v-stack w-full gap-6">
-            <MainLogo />
+            <Logo />
             <section className="flex items-center justify-between">
                 <h2 className="inline-block body-t2 font-bold text-main underline underline-offset-[6px] decoration-2">
                     유저 리스트
@@ -212,13 +212,7 @@ export default function AdminUserManagement() {
                 </table>
             </section>
             <form onSubmit={(e) => void deleteSelectedUser(e)}>
-                <FormButton
-                    text="선택삭제"
-                    bgColor="bg-accent"
-                    isBorder={false}
-                    textColor="text-white"
-                    isLoading={isLoading}
-                />
+                <FormButton text="선택삭제" isLoading={isLoading} />
             </form>
         </div>
     );

@@ -1,5 +1,4 @@
-import FormButton from "@/components/common/button/formButton";
-import SubLogo from "@/components/common/logo/subLogo";
+import FormButton from "@/components/common/button/FormButton";
 import { useEffect, useMemo, useState } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
@@ -8,6 +7,7 @@ import { formatDate, formatToMonthYear } from "@/utils/utils";
 import { useForm } from "react-hook-form";
 import axiosInstance from "@/api/axiosInstance";
 import { useNavigate } from "react-router-dom";
+import Logo from "@/components/common/logo/Logo";
 
 type DatePiece = Date | null;
 type SelectedDate = DatePiece | [DatePiece, DatePiece];
@@ -119,7 +119,7 @@ export default function Reserve() {
     };
     return (
         <div className="v-stack w-full gap-[35px]">
-            <SubLogo />
+            <Logo variant="sub" />
             <Calendar
                 calendarType="gregory"
                 formatDay={(_, d) => d.toLocaleString("en", { day: "numeric" })}
@@ -185,6 +185,7 @@ export default function Reserve() {
                                     type="button"
                                     disabled={isDisabled}
                                     onClick={() => {
+                                        // 예외처리(비활성, 날짜없음)
                                         if (isDisabled) return;
                                         if (!normalizedDate) return;
 
@@ -234,12 +235,7 @@ export default function Reserve() {
                             );
                         })}
                     </div>
-                    <FormButton
-                        text="다음"
-                        textColor="text-white"
-                        bgColor="bg-secondary"
-                        isBorder={false}
-                    />
+                    <FormButton text="다음" type="submit" isLoading={loading} />
                 </form>
             )}
         </div>

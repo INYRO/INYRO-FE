@@ -1,13 +1,15 @@
-export const formatToMonthYear = (date: Date): string => {
-    const formatDate = date.toLocaleString("ko-kr", {
-        year: "numeric",
-        month: "numeric",
-    });
-    const spaceSliceFormatDate = formatDate.replace(" ", "");
-    const replaceFormatDate = spaceSliceFormatDate.replace("/", ".");
-    const finalFormatDate = replaceFormatDate.slice(0, -1);
+/*
+ * 프로젝트 전반에서 사용되는 공통 유틸리티 함수(날짜 포맷팅 등)를 모아둔 파일입니다.
+ * 해당 파일은 다음의 유틸리티 함수들을 제공합니다.
+ * - formatToMonthYear은 date 객체를 파라미터로 받아 "YYYY.MM" (예: 2026.02) 형태의 문자열로 변환합니다.
+ * - formatDate는 날짜 배열을 받아 첫 번째 날짜를 "YYYY-MM-DD" 형태로 변환합니다.
+ */
 
-    return finalFormatDate;
+export const formatToMonthYear = (date: Date): string => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+
+    return `${year}.${month}`;
 };
 
 type DatePiece = Date | null;
