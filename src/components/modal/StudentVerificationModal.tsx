@@ -40,7 +40,6 @@ export default function StudentVerificationModal() {
             setIsLoading(true);
             const result = await verifyStudentApi(data);
             if (result.isSuccess) {
-                dispatch(openModal({ modalType: "resetPasswordModal" }));
                 dispatch(
                     login({
                         sno: result.result.sno,
@@ -48,7 +47,9 @@ export default function StudentVerificationModal() {
                         dept: result.result.dept,
                     })
                 );
+                dispatch(openModal({ modalType: "resetPasswordModal" }));
             } else {
+                console.warn("학생 인증에 실패했습니다.");
                 setError("root", {
                     message: result.message || "학생 인증에 실패했습니다.",
                 });

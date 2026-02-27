@@ -6,19 +6,16 @@
  * 예약 목록을 다시 불러오도록 합니다.
  */
 
-import React, { useState } from "react";
 import FormButton from "../common/button/FormButton";
-import axiosInstance from "@/api/axiosInstance";
 import axios from "axios";
 import { closeModal, notifyChangeSuccess } from "@/store/modalSlice";
-import type { ApiResponse } from "@/types/api";
 import { useAppDispatch } from "@/store/hooks";
+import { useState } from "react";
+import { deleteReservationApi } from "@/api/reservationApi";
 
 interface DeleteReservationModalProps {
     reservationId?: number;
 }
-
-type DeleteReservationResponse = ApiResponse<string>;
 
 export default function DeleteReservationModal({
     reservationId,
@@ -29,16 +26,15 @@ export default function DeleteReservationModal({
 
     // 예약 삭제 submit
     const handleDelete = async () => {
+        if (!reservationId) return;
         setIsLoading(true);
         try {
-            if (!reservationId) return;
-            const response =
-                await axiosInstance.delete<DeleteReservationResponse>(
-                    `/reservations/${reservationId}`
-                );
-            if (response.data.isSuccess) {
+            const result = await deleteReservationApi(reservationId);
+            if (result.isSuccess) {
                 dispatch(notifyChangeSuccess()); // 예약 목록 갱신 트리거
                 dispatch(closeModal());
+            } else {
+                console.warn("예약 삭제 중 에러가 발생했습니다.");
             }
         } catch (err) {
             if (axios.isAxiosError(err)) {

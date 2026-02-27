@@ -28,7 +28,6 @@
 }
 */
 
-import axiosInstance from "@/api/axiosInstance";
 import {
     type ChangePasswordType,
     changePasswordSchema,
@@ -42,6 +41,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import FormButton from "../common/button/FormButton";
 import FormInput from "../common/input/FormInput";
+import { changePasswordApi } from "@/api/authApi";
 
 type ChangePasswordResponse = ApiResponse<string>;
 
@@ -59,16 +59,13 @@ export default function ChangePasswordModal() {
     const onSubmit = handleSubmit(async (data: ChangePasswordType) => {
         try {
             setIsLoading(true);
-            const response = await axiosInstance.post<ChangePasswordResponse>(
-                "/auth/password/change",
-                data
-            );
+            const result = await changePasswordApi(data);
             // POST 성공/실패 처리
-            if (response.data.isSuccess) {
+            if (result.isSuccess) {
                 dispatch(openModal({ modalType: "changeComplete" }));
             } else {
                 setError("root", {
-                    message: response.data.message || "인증에 실패했습니다.",
+                    message: result.message || "인증에 실패했습니다.",
                 });
             }
         } catch (err) {

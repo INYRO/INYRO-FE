@@ -8,17 +8,14 @@
  * - 그 후 modal을 닫고 메인 페이지('/')로 리디렉션 합니다.
  */
 
-import axiosInstance from "@/api/axiosInstance";
 import { logout } from "@/store/authSlice";
 import { useAppDispatch } from "@/store/hooks";
 import { closeModal } from "@/store/modalSlice";
-import type { ApiResponse } from "@/types/api";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import FormButton from "../common/button/FormButton";
 import { useState } from "react";
-
-type DeleteAccountResponse = ApiResponse<string>;
+import { deleteAccountApi } from "@/api/memberApi";
 
 export default function DeleteAccountModal() {
     const dispatch = useAppDispatch();
@@ -29,12 +26,13 @@ export default function DeleteAccountModal() {
     const handleDelete = async () => {
         setIsLoading(true);
         try {
-            const response =
-                await axiosInstance.delete<DeleteAccountResponse>("/members");
-            if (response.data.isSuccess) {
+            const result = await deleteAccountApi();
+            if (result.isSuccess) {
                 dispatch(logout()); // 로그인 상태 초기화
                 dispatch(closeModal());
                 await navigate("/");
+            } else {
+                console.warn("회원 탈퇴에 실패했습니다.");
             }
         } catch (err) {
             if (axios.isAxiosError(err)) {

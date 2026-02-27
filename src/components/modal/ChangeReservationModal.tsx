@@ -7,8 +7,6 @@
 import { useAppDispatch } from "@/store/hooks";
 import { useState } from "react";
 import FormButton from "../common/button/FormButton";
-import type { ApiResponse } from "@/types/api";
-import axiosInstance from "@/api/axiosInstance";
 import { notifyChangeSuccess, openModal } from "@/store/modalSlice";
 import axios from "axios";
 import {
@@ -18,13 +16,15 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import FormInput from "../common/input/FormInput";
+import {
+    changeReservationApi,
+    type ChangeReservationResponse,
+} from "@/api/reservationApi";
 
 interface ChangeReservationModalProps {
     reservationId?: number;
     reservationDate?: string;
 }
-
-type ChangeReservationResponse = ApiResponse<string>;
 
 export default function ChangeReservationModal({
     reservationId,
@@ -46,22 +46,19 @@ export default function ChangeReservationModal({
         if (!reservationId) return;
         try {
             setIsLoading(true);
-            const response =
-                await axiosInstance.patch<ChangeReservationResponse>(
-                    `/reservations/${reservationId}`,
-                    {
-                        participantList: data.participantList,
-                        purpose: data.purpose,
-                        timeSlots: reservationDate,
-                    }
-                );
-            if (response.data.isSuccess) {
+            const result = await changeReservationApi({
+                reservationId,
+                participantList: data.participantList,
+                purpose: data.purpose,
+                timeSlots: reservationDate,
+            });
+            if (result.isSuccess) {
                 dispatch(notifyChangeSuccess()); // 예약 내역 새로고침 트리깅
                 dispatch(openModal({ modalType: "changeComplete" }));
             } else {
+                console.warn("예약 변경에 실패했습니다.");
                 setError("root", {
-                    message:
-                        response.data.message || "예약 변경에 실패했습니다.",
+                    message: result.message || "예약 변경에 실패했습니다.",
                 });
             }
         } catch (err) {

@@ -4,10 +4,8 @@
  * 성공 시 완료 모달(CompleteModal)로 전환됩니다.
  */
 
-import axiosInstance from "@/api/axiosInstance";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { openModal } from "@/store/modalSlice";
-import type { ApiResponse } from "@/types/api";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
 import { useState } from "react";
@@ -18,8 +16,7 @@ import {
     type ChangePasswordType,
     changePasswordSchema,
 } from "@/schema/authSchema";
-
-type ChangePasswordResponse = ApiResponse<string>;
+import { resetPasswordApi, type ResetPasswordResponse } from "@/api/authApi";
 
 export default function ResetPasswordModal() {
     const dispatch = useAppDispatch();
@@ -38,27 +35,25 @@ export default function ResetPasswordModal() {
         if (!user) return;
         try {
             setIsLoading(true);
-            const response = await axiosInstance.post<ChangePasswordResponse>(
-                "/auth/password/reset/smul",
-                {
-                    sno: user.sno,
-                    newPassword: data.newPassword,
-                    newPasswordConfirmation: data.newPasswordConfirmation,
-                }
-            );
-            if (response.data.isSuccess) {
+            const result = await resetPasswordApi({
+                sno: user.sno,
+                newPassword: data.newPassword,
+                newPasswordConfirmation: data.newPasswordConfirmation,
+            });
+
+            if (result.isSuccess) {
                 dispatch(openModal({ modalType: "changeComplete" }));
             } else {
+                console.warn("비밀번호 재설정에 실패했습니다.");
                 setError("root", {
                     message:
-                        response.data.message ||
-                        "비밀번호 재설정에 실패했습니다.",
+                        result.message || "비밀번호 재설정에 실패했습니다.",
                 });
             }
         } catch (err) {
-            if (axios.isAxiosError<ChangePasswordResponse>(err)) {
+            if (axios.isAxiosError<ResetPasswordResponse>(err)) {
                 console.warn(
-                    "비밀번호 변경 실패",
+                    "비밀번호 재설정 실패",
                     err.response?.data || err.message
                 );
                 setError("root", {
