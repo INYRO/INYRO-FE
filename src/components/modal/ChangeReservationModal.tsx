@@ -8,7 +8,6 @@ import { useAppDispatch } from "@/store/hooks";
 import { useState } from "react";
 import FormButton from "../common/button/FormButton";
 import { notifyChangeSuccess, openModal } from "@/store/modalSlice";
-import axios from "axios";
 import {
     changeReservationSchema,
     type ChangeReservationType,
@@ -16,10 +15,8 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import FormInput from "../common/input/FormInput";
-import {
-    changeReservationApi,
-    type ChangeReservationResponse,
-} from "@/api/reservationApi";
+import { changeReservationApi } from "@/api/reservationApi";
+import { handleApiError } from "@/utils/errorHandler";
 
 interface ChangeReservationModalProps {
     reservationId?: number;
@@ -62,21 +59,7 @@ export default function ChangeReservationModal({
                 });
             }
         } catch (err) {
-            if (axios.isAxiosError<ChangeReservationResponse>(err)) {
-                console.warn(
-                    "예약 변경 실패",
-                    err.response?.data || err.message
-                );
-                setError("root", {
-                    message:
-                        err.response?.data.message ||
-                        "요청 처리 중 오류가 발생했습니다.",
-                });
-            } else {
-                setError("root", {
-                    message: "알 수 없는 오류가 발생했습니다.",
-                });
-            }
+            handleApiError(err, setError, "예약 변경 실패: 다시 시도해주세요.");
         } finally {
             setIsLoading(false);
         }

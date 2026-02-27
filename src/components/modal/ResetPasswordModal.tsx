@@ -7,7 +7,6 @@
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { openModal } from "@/store/modalSlice";
 import { zodResolver } from "@hookform/resolvers/zod";
-import axios from "axios";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import FormButton from "../common/button/FormButton";
@@ -16,7 +15,8 @@ import {
     type ChangePasswordType,
     changePasswordSchema,
 } from "@/schema/authSchema";
-import { resetPasswordApi, type ResetPasswordResponse } from "@/api/authApi";
+import { resetPasswordApi } from "@/api/authApi";
+import { handleApiError } from "@/utils/errorHandler";
 
 export default function ResetPasswordModal() {
     const dispatch = useAppDispatch();
@@ -51,22 +51,11 @@ export default function ResetPasswordModal() {
                 });
             }
         } catch (err) {
-            if (axios.isAxiosError<ResetPasswordResponse>(err)) {
-                console.warn(
-                    "비밀번호 재설정 실패",
-                    err.response?.data || err.message
-                );
-                setError("root", {
-                    message:
-                        err.response?.data.message ||
-                        "요청 처리 중 오류가 발생했습니다.",
-                });
-            } else {
-                console.warn("알 수 없는 에러", err);
-                setError("root", {
-                    message: "알 수 없는 오류가 발생했습니다.",
-                });
-            }
+            handleApiError(
+                err,
+                setError,
+                "비밀번호 재설정 실패: 다시 시도해주세요."
+            );
         } finally {
             setIsLoading(false);
         }

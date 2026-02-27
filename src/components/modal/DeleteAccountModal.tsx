@@ -40,7 +40,6 @@ export default function DeleteAccountModal() {
                     "계정 삭제 실패",
                     err.response?.data || err.message
                 );
-                // 에러 상태 코드별 처리 가능
             }
         } finally {
             setIsLoading(false);
