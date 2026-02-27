@@ -139,7 +139,9 @@ export default function Login() {
 
             <button
                 onClick={() =>
-                    dispatch(openModal({ modalType: "findPassword" }))
+                    dispatch(
+                        openModal({ modalType: "studentVerificationModal" })
+                    )
                 }
                 className="-m-5 body-t6 underline underline-offset-2 cursor-pointer"
             >
