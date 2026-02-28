@@ -40,12 +40,19 @@ type ReissueResponse = ApiResponse<ReissueResult>;
 
 // 인증 관련 예외 URL 목록을 상단에 배열로 분리
 // 또한, 읽기 전용 상수로 선언해 변경 불가하게 함
-const AUTH_PATHS = [
+// 즉, 토큰 첨부를 생략할 API 목록
+const NO_TOKEN_PATHS = [
     "/auth/login",
     "/auth/reissue",
     "/auth/signup",
     "/auth/smul",
-    "/auth/logout",
+] as const;
+
+// 단, logout의 경우 좀비세션을 막기 위해 분리
+// 401 에러 시 재발급(reissue) 로직을 타지 않을 API 목록
+const NO_REISSUE_PATHS = [
+    ...NO_TOKEN_PATHS,
+    "/auth/logout", // 로그아웃 중 401이 뜨면 굳이 재발급하지 않고 쿨하게 프론트 단만 초기화
 ] as const;
 
 const axiosInstance = axios.create({
@@ -63,13 +70,14 @@ let refreshPromise: Promise<string> | null = null;
 axiosInstance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
     // redux에 저장된 accessToken 불러옴
     const { accessToken } = store.getState().authState;
-
     const url = config.url ?? "";
+
+    // 💡 NO_TOKEN_PATHS 로 검사
     // 배열의 some 메서드를 사용해 예외 URL과 매칭
-    const isAuthEndpoint = AUTH_PATHS.some((path) => url.includes(path));
+    const isNoTokenEndpoint = NO_TOKEN_PATHS.some((path) => url.includes(path));
 
     // 토큰이 있는 경우 요청 헤더에 토큰 삽입
-    if (accessToken && !isAuthEndpoint) {
+    if (accessToken && !isNoTokenEndpoint) {
         config.headers.Authorization = `Bearer ${accessToken}`;
     }
 
@@ -109,10 +117,12 @@ axiosInstance.interceptors.response.use(
         // - reissue: reissue 요청에 reissue 로직은 무한루프
         // - logout: 로그아웃은 세션 정리 과정
         // 배열의 some 메서드를 사용해 예외 URL과 매칭
-        const isAuthEndpoint = AUTH_PATHS.some((path) => url.includes(path));
+        const isNoReissueEndpoint = NO_REISSUE_PATHS.some((path) =>
+            url.includes(path)
+        );
 
         // status가 401이고, 재시도 안 한 요청이며, login/reissue/logout이 아닌 경우
-        if (status === 401 && !originalRequest._retry && !isAuthEndpoint) {
+        if (status === 401 && !originalRequest._retry && !isNoReissueEndpoint) {
             // _retry flag 설정
             originalRequest._retry = true;
 
