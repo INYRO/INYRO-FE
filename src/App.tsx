@@ -22,8 +22,8 @@ import type { ApiResponse } from "./types/api";
 import { fetchUser } from "./utils/auth";
 import type { ReissueResult } from "./types/member";
 import ModalLayout from "./components/modal/ModalLayout";
+import { logoutApi } from "./api/authApi";
 
-type LogoutResponse = ApiResponse<string>;
 type ReissueResponse = ApiResponse<ReissueResult>;
 
 function App() {
@@ -45,11 +45,10 @@ function App() {
     const handleLogout = async () => {
         setIsLoading(true);
         try {
-            const response =
-                await axiosInstance.post<LogoutResponse>("/auth/logout");
+            const result = await logoutApi();
 
-            if (!response.data.isSuccess) {
-                console.warn("서버 로그아웃 실패", response.data);
+            if (!result.isSuccess) {
+                console.warn("서버 로그아웃 실패", result);
             }
         } catch (err) {
             /* 서버 요청이 실패한 경우 */
