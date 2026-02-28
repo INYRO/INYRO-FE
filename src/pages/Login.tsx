@@ -10,9 +10,11 @@
  * 에러 처리는 다음과 같습니다.
  * - Early Return 패턴을 사용하여 실패 시 로직을 빠르게 종료합니다.
  * - API 통신 에러 및 401(인증 실패) 에러는 handleApiError 유틸리티를 통해 RHF의 root 에러로 화면에 출력합니다.
+ *
+ * 에러 처리에 관해서 throw new error로 catch문에 넘기지 않은 이유는,
+ * catch로 들어가는 err은 axios server error에 해당하며,
+ * 그 외 error들은 유저 개인의 과실의 error기 때문에, if문 안에서 처리합니다.
  */
-
-// Todo: 에러처리를 throw new error로 넘겨주기
 
 import { loginApi } from "@/api/authApi";
 import { getMyInfoApi } from "@/api/memberApi";

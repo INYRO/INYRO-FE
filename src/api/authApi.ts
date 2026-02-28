@@ -16,7 +16,6 @@ import type {
  * 사용자가 입력한 학번과 비밀번호를 통해 학교 포털 시스템과 연동하여 재학생 여부를 검증합니다.
  */
 export type StudentVerificationResponse = ApiResponse<RegisterResult>;
-
 export const verifyStudentApi = async (data: StudentVerificationType) => {
     const response = await axiosInstance.post<StudentVerificationResponse>(
         "/auth/smul",
@@ -49,7 +48,6 @@ export const resetPasswordApi = async (data: ResetPasswordPayload) => {
  * 마이페이지에서 로그인된 유저가 새 비밀번호를 입력하여 변경합니다.
  */
 export type ChangePasswordResponse = ApiResponse<string>;
-
 export const changePasswordApi = async (data: ChangePasswordType) => {
     const response = await axiosInstance.post<ChangePasswordResponse>(
         "/auth/password/change",
@@ -63,10 +61,28 @@ export const changePasswordApi = async (data: ChangePasswordType) => {
  * 학번과 비밀번호를 받아 검증하고 토큰을 반환합니다.
  */
 export type LoginResponse = ApiResponse<LoginResult>;
-
 export const loginApi = async (data: LoginType) => {
     const response = await axiosInstance.post<LoginResponse>(
         "/auth/login",
+        data
+    );
+    return response.data;
+};
+
+/**
+ * [회원가입 최종 완료 API]
+ * 샘물 인증을 통과한 유저의 정보와 새 비밀번호를 받아 최종 회원가입을 진행합니다.
+ */
+export interface SignupPayload {
+    sno: string;
+    password: string;
+    name: string;
+    dept: string;
+    enrolled: boolean;
+}
+export const signupApi = async (data: SignupPayload) => {
+    const response = await axiosInstance.post<ApiResponse<string>>(
+        "/auth/signup",
         data
     );
     return response.data;
