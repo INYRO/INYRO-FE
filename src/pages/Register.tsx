@@ -147,6 +147,7 @@ export default function Register() {
                                 type="text"
                                 {...register("sno")}
                                 required
+                                label="학번"
                                 error={errors.sno?.message}
                                 isPlaceholder={false}
                             />
@@ -154,6 +155,7 @@ export default function Register() {
                                 type="password"
                                 {...register("password")}
                                 required
+                                label="비밀번호"
                                 error={errors.password?.message}
                                 isPlaceholder={false}
                             />
