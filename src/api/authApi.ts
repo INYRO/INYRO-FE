@@ -87,3 +87,13 @@ export const signupApi = async (data: SignupPayload) => {
     );
     return response.data;
 };
+
+/**
+ * [로그아웃 API]
+ * 서버에 로그아웃을 요청하여 Refresh Token 쿠키를 무효화(삭제)합니다.
+ */
+export const logoutApi = async () => {
+    const response =
+        await axiosInstance.post<ApiResponse<string>>("/auth/logout");
+    return response.data;
+};
