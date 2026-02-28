@@ -4,6 +4,7 @@
 
 import type { ApiResponse } from "@/types/api";
 import axiosInstance from "./axiosInstance";
+import type { ReservationsResult } from "@/types/reservation";
 
 /**
  * [예약 변경 API]
@@ -47,5 +48,16 @@ export const deleteReservationApi = async (reservationId: number) => {
     const response = await axiosInstance.delete<DeleteReservationResponse>(
         `/reservations/${reservationId}`
     );
+    return response.data;
+};
+
+/**
+ * [내 예약 목록 조회 API]
+ * 로그인된 유저의 모든 예약 기록을 불러옵니다.
+ */
+export type ReservationsResponse = ApiResponse<ReservationsResult>;
+export const getMyReservationsApi = async () => {
+    const response =
+        await axiosInstance.get<ReservationsResponse>("/reservations/my");
     return response.data;
 };

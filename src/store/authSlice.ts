@@ -19,7 +19,7 @@ interface AuthState {
 }
 
 // 값 혹은 페이로드는 type 사용
-type UserProfile = { sno: string; name: string; dept: string };
+export type UserProfile = { sno: string; name: string; dept: string };
 
 /* state의 초기값 설정 */
 // - 1) 앱 시작 시에는 로그인되지 않은 상태
