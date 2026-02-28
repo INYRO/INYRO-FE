@@ -28,22 +28,19 @@
 }
 */
 
-import axiosInstance from "@/api/axiosInstance";
 import {
     type ChangePasswordType,
     changePasswordSchema,
 } from "@/schema/authSchema";
 import { useAppDispatch } from "@/store/hooks";
 import { openModal } from "@/store/modalSlice";
-import type { ApiResponse } from "@/types/api";
 import { zodResolver } from "@hookform/resolvers/zod";
-import axios from "axios";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import FormButton from "../common/button/FormButton";
 import FormInput from "../common/input/FormInput";
-
-type ChangePasswordResponse = ApiResponse<string>;
+import { changePasswordApi } from "@/api/authApi";
+import { handleApiError } from "@/utils/errorHandler";
 
 export default function ChangePasswordModal() {
     const dispatch = useAppDispatch();
@@ -59,35 +56,21 @@ export default function ChangePasswordModal() {
     const onSubmit = handleSubmit(async (data: ChangePasswordType) => {
         try {
             setIsLoading(true);
-            const response = await axiosInstance.post<ChangePasswordResponse>(
-                "/auth/password/change",
-                data
-            );
+            const result = await changePasswordApi(data);
             // POST 성공/실패 처리
-            if (response.data.isSuccess) {
+            if (result.isSuccess) {
                 dispatch(openModal({ modalType: "changeComplete" }));
             } else {
                 setError("root", {
-                    message: response.data.message || "인증에 실패했습니다.",
+                    message: result.message || "인증에 실패했습니다.",
                 });
             }
         } catch (err) {
-            if (axios.isAxiosError<ChangePasswordResponse>(err)) {
-                console.warn(
-                    "비밀번호 변경 실패",
-                    err.response?.data || err.message
-                );
-                setError("root", {
-                    message:
-                        err.response?.data.message ||
-                        "요청 처리 중 오류가 발생했습니다.",
-                });
-            } else {
-                console.warn("알 수 없는 에러", err);
-                setError("root", {
-                    message: "알 수 없는 오류가 발생했습니다.",
-                });
-            }
+            handleApiError(
+                err,
+                setError,
+                "비밀번호 변경 실패: 다시 시도해주세요."
+            );
         } finally {
             setIsLoading(false);
         }

@@ -1,9 +1,19 @@
-import axiosInstance from "@/api/axiosInstance";
+/**
+ * 실질 회원가입 완료 페이지입니다.
+ *
+ * 주요 로직 흐름은 다음과 같습니다.
+ * - 1단계 회원가입(/register)에서 전달받은 location.state(userData)가 없거나 이미 가입된 유저라면 메인으로 쫓아냅니다.
+ * - 전달받은 학번은 수정할 수 없도록(readOnly) 고정하고, 사용할 비밀번호를 입력받습니다.
+ * - signupApi를 호출하여 최종 회원가입을 승인받습니다.
+ * - 가입 성공 시 로그인 페이지(/login)로 리다이렉트합니다.
+ *
+ * 주요 에러 처리는 다음과 같습니다.
+ * - API 통신 에러 및 가입 실패 에러는 handleApiError 유틸리티를 통해 RHF의 root 에러로 일괄 출력합니다.
+ */
+
 import FormButton from "@/components/common/button/FormButton";
 import Logo from "@/components/common/logo/Logo";
-import type { ApiResponse } from "@/types/api";
 import { zodResolver } from "@hookform/resolvers/zod";
-import axios from "axios";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -12,6 +22,8 @@ import {
     registerCompleteSchema,
 } from "@/schema/authSchema";
 import FormInput from "@/components/common/input/FormInput";
+import { signupApi } from "@/api/authApi";
+import { handleApiError } from "@/utils/errorHandler";
 
 interface LocationState {
     userData?: {
@@ -21,8 +33,6 @@ interface LocationState {
         registered: boolean;
     };
 }
-
-type RegisterResponse = ApiResponse<string>;
 
 export default function RegisterComplete() {
     const location = useLocation();
@@ -55,43 +65,25 @@ export default function RegisterComplete() {
     const onSubmit = handleSubmit(async (data) => {
         setIsLoading(true);
         try {
-            const response = await axiosInstance.post<RegisterResponse>(
-                "/auth/signup",
-                {
-                    ...data,
-                    sno: userData.sno,
-                    dept: userData.dept,
-                    name: userData.name,
-                    enrolled: true,
-                }
-            );
+            const result = await signupApi({
+                password: data.password,
+                sno: userData.sno,
+                dept: userData.dept,
+                name: userData.name,
+                enrolled: true, // 1단계를 통과했으므로 재학생 인증됨
+            });
 
             // 회원가입 실패 처리
-            if (!response.data.isSuccess) {
+            if (!result.isSuccess) {
                 setError("root", {
-                    message: response.data.message || "회원가입 실패",
+                    message: result.message || "회원가입 실패",
                 });
                 return;
             }
 
             void navigate("/login");
         } catch (err) {
-            if (axios.isAxiosError<RegisterResponse>(err)) {
-                console.warn(
-                    "회원가입 실패",
-                    err.response?.data || err.message
-                );
-                setError("root", {
-                    message:
-                        err.response?.data.message ||
-                        "요청 처리 중 오류가 발생했습니다.",
-                });
-            } else {
-                console.warn("알 수 없는 에러", err);
-                setError("root", {
-                    message: "알 수 없는 오류가 발생했습니다.",
-                });
-            }
+            handleApiError(err, setError, "회원가입 실패: 다시 시도해주세요.");
         } finally {
             setIsLoading(false);
         }
@@ -105,15 +97,17 @@ export default function RegisterComplete() {
                     <FormInput
                         type="text"
                         readOnly
+                        defaultValue={userData.sno}
                         {...register("sno")}
-                        value={userData.sno}
                         required
+                        label="학번"
                         error={errors.sno?.message}
                         isPlaceholder={false}
                     />
                     <FormInput
                         type="password"
                         required
+                        label="새 비밀번호 입력"
                         {...register("password")}
                         error={errors.password?.message}
                         isPlaceholder={false}
