@@ -4,12 +4,9 @@
  * 성공 시 완료 모달(CompleteModal)로 전환됩니다.
  */
 
-import axiosInstance from "@/api/axiosInstance";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { openModal } from "@/store/modalSlice";
-import type { ApiResponse } from "@/types/api";
 import { zodResolver } from "@hookform/resolvers/zod";
-import axios from "axios";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import FormButton from "../common/button/FormButton";
@@ -18,8 +15,8 @@ import {
     type ChangePasswordType,
     changePasswordSchema,
 } from "@/schema/authSchema";
-
-type ChangePasswordResponse = ApiResponse<string>;
+import { resetPasswordApi } from "@/api/authApi";
+import { handleApiError } from "@/utils/errorHandler";
 
 export default function ResetPasswordModal() {
     const dispatch = useAppDispatch();
@@ -38,40 +35,27 @@ export default function ResetPasswordModal() {
         if (!user) return;
         try {
             setIsLoading(true);
-            const response = await axiosInstance.post<ChangePasswordResponse>(
-                "/auth/password/reset/smul",
-                {
-                    sno: user.sno,
-                    newPassword: data.newPassword,
-                    newPasswordConfirmation: data.newPasswordConfirmation,
-                }
-            );
-            if (response.data.isSuccess) {
+            const result = await resetPasswordApi({
+                sno: user.sno,
+                newPassword: data.newPassword,
+                newPasswordConfirmation: data.newPasswordConfirmation,
+            });
+
+            if (result.isSuccess) {
                 dispatch(openModal({ modalType: "changeComplete" }));
             } else {
+                console.warn("비밀번호 재설정에 실패했습니다.");
                 setError("root", {
                     message:
-                        response.data.message ||
-                        "비밀번호 재설정에 실패했습니다.",
+                        result.message || "비밀번호 재설정에 실패했습니다.",
                 });
             }
         } catch (err) {
-            if (axios.isAxiosError<ChangePasswordResponse>(err)) {
-                console.warn(
-                    "비밀번호 변경 실패",
-                    err.response?.data || err.message
-                );
-                setError("root", {
-                    message:
-                        err.response?.data.message ||
-                        "요청 처리 중 오류가 발생했습니다.",
-                });
-            } else {
-                console.warn("알 수 없는 에러", err);
-                setError("root", {
-                    message: "알 수 없는 오류가 발생했습니다.",
-                });
-            }
+            handleApiError(
+                err,
+                setError,
+                "비밀번호 재설정 실패: 다시 시도해주세요."
+            );
         } finally {
             setIsLoading(false);
         }

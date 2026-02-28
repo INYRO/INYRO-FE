@@ -1,17 +1,28 @@
-import axiosInstance from "@/api/axiosInstance";
+/**
+ * 회원가입의 선수 단계인 재학생 인증 및 약관 동의 페이지입니다.
+ *
+ * 주요 로직 흐름은 다음과 같습니다.
+ * - 사용자가 약관에 동의했는지 state로 확인합니다.
+ * - React Hook Form과 Zod를 통해 입력된 학번/비밀번호를 검증합니다.
+ * - verifySmulApi를 호출하여 상명대학교 샘물 포털을 통해 재학생 인증을 진행합니다.
+ * - 인증에 성공하면 발급된 임시 유저 데이터(userData)를 들고 2단계(/register/complete)로 이동합니다.
+ *
+ * 중간 에러 처리 로직은 다음과 같습니다.
+ * - 약관 미동의 시 즉시 에러 메시지를 띄우고 종료합니다.
+ * - 샘물 인증 실패 시 (비밀번호 오류 등) 백엔드 메시지를 화면에 출력하고 종료합니다.
+ * - 시스템/네트워크 에러는 handleApiError가 일괄 처리합니다.
+ */
+
 import FormButton from "@/components/common/button/FormButton";
 import Logo from "@/components/common/logo/Logo";
-import type { ApiResponse } from "@/types/api";
-import type { RegisterResult } from "@/types/member";
 import { zodResolver } from "@hookform/resolvers/zod";
-import axios from "axios";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { type RegisterType, registerSchema } from "@/schema/authSchema";
 import FormInput from "@/components/common/input/FormInput";
-
-type RegisterResponse = ApiResponse<RegisterResult>;
+import { verifyStudentApi } from "@/api/authApi";
+import { handleApiError } from "@/utils/errorHandler";
 
 export default function Register() {
     const [agreed, setAgreed] = useState(false);
@@ -33,48 +44,24 @@ export default function Register() {
             setAgreedError("약관에 동의해주세요.");
             return;
         }
-
         setIsLoading(true);
         try {
-            const response = await axiosInstance.post<RegisterResponse>(
-                "/auth/smul",
-                data
-            );
-
+            const result = await verifyStudentApi(data);
             // 회원가입 실패 처리
-            if (!response.data.isSuccess) {
+            if (!result.isSuccess) {
                 setError("root", {
-                    message:
-                        response.data.message || "회원가입에 실패했습니다.",
+                    message: result.message || "회원가입에 실패했습니다.",
                 });
                 return;
             }
-
             // 회원가입 성공 처리
-            if (response.data.isSuccess) {
-                void navigate("/register/complete", {
-                    state: {
-                        userData: response.data.result,
-                    },
-                });
-            }
+            void navigate("/register/complete", {
+                state: {
+                    userData: result.result,
+                },
+            });
         } catch (err) {
-            if (axios.isAxiosError<RegisterResponse>(err)) {
-                console.warn(
-                    "회원가입 실패",
-                    err.response?.data || err.message
-                );
-                setError("root", {
-                    message:
-                        err.response?.data.message ||
-                        "요청 처리 중 오류가 발생했습니다.",
-                });
-            } else {
-                console.warn("알 수 없는 에러", err);
-                setError("root", {
-                    message: "알 수 없는 오류가 발생했습니다.",
-                });
-            }
+            handleApiError(err, setError, "샘물 인증 실패: 다시 시도해주세요.");
         } finally {
             setIsLoading(false);
         }
@@ -116,7 +103,7 @@ export default function Register() {
                     </ol>
                 </article>
                 <article className="flex gap-1">
-                    <form className="ml-[5px] flex gap-[3px] items-center">
+                    <div className="ml-[5px] flex gap-[3px] items-center">
                         <input
                             id="terms-agree"
                             type="checkbox"
@@ -130,7 +117,7 @@ export default function Register() {
                         <label htmlFor="terms-agree" className="body-t7">
                             다음 약관에 동의합니다.
                         </label>
-                    </form>
+                    </div>
                     <span
                         className={`${agreedError !== "" ? "flex" : "hidden"} body-t5 text-accent`}
                     >
@@ -160,6 +147,7 @@ export default function Register() {
                                 type="text"
                                 {...register("sno")}
                                 required
+                                label="학번"
                                 error={errors.sno?.message}
                                 isPlaceholder={false}
                             />
@@ -167,6 +155,7 @@ export default function Register() {
                                 type="password"
                                 {...register("password")}
                                 required
+                                label="비밀번호"
                                 error={errors.password?.message}
                                 isPlaceholder={false}
                             />
