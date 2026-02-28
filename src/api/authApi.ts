@@ -4,9 +4,10 @@
 
 import type { ApiResponse } from "@/types/api";
 import axiosInstance from "./axiosInstance";
-import type { RegisterResult } from "@/types/member";
+import type { LoginResult, RegisterResult } from "@/types/member";
 import type {
     ChangePasswordType,
+    LoginType,
     StudentVerificationType,
 } from "@/schema/authSchema";
 
@@ -52,6 +53,20 @@ export type ChangePasswordResponse = ApiResponse<string>;
 export const changePasswordApi = async (data: ChangePasswordType) => {
     const response = await axiosInstance.post<ChangePasswordResponse>(
         "/auth/password/change",
+        data
+    );
+    return response.data;
+};
+
+/**
+ * [로그인 API]
+ * 학번과 비밀번호를 받아 검증하고 토큰을 반환합니다.
+ */
+export type LoginResponse = ApiResponse<LoginResult>;
+
+export const loginApi = async (data: LoginType) => {
+    const response = await axiosInstance.post<LoginResponse>(
+        "/auth/login",
         data
     );
     return response.data;

@@ -4,6 +4,7 @@
 
 import type { ApiResponse } from "@/types/api";
 import axiosInstance from "./axiosInstance";
+import type { MemberResult } from "@/types/member";
 
 /**
  * [회원 탈퇴 API]
@@ -14,5 +15,16 @@ export type DeleteAccountResponse = ApiResponse<string>;
 export const deleteAccountApi = async () => {
     const response =
         await axiosInstance.delete<DeleteAccountResponse>("/members");
+    return response.data;
+};
+
+/**
+ * [내 정보 조회 API]
+ * 현재 로그인된 유저의 정보(학번, 이름, 학과 등)를 불러옵니다.
+ */
+export type MemberResponse = ApiResponse<MemberResult>;
+
+export const getMyInfoApi = async () => {
+    const response = await axiosInstance.get<MemberResponse>("/members/my");
     return response.data;
 };

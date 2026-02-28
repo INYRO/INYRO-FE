@@ -1,4 +1,21 @@
-import axiosInstance from "@/api/axiosInstance";
+/**
+ * 사용자 로그인을 페이지입니다.
+ *
+ * 주요 로직은 다음과 같습니다.
+ * - React Hook Form과 Zod를 사용하여 FormInput에 입력한 학번과 비밀번호 입력값을 검증합니다.
+ * - loginApi를 호출하여 AT(액세스 토큰(accessToken))을 발급받고 Redux에 저장합니다.
+ * - 토큰 발급에 성공하면 getMyInfoApi를 호출하여 유저 상세 정보를 가져와 Redux에 저장합니다.
+ * - 모든 인증 과정이 완료되면, 사용자가 원래 접근하려던 페이지(또는 메인 화면)로 리다이렉트합니다.
+ *
+ * 에러 처리는 다음과 같습니다.
+ * - Early Return 패턴을 사용하여 실패 시 로직을 빠르게 종료합니다.
+ * - API 통신 에러 및 401(인증 실패) 에러는 handleApiError 유틸리티를 통해 RHF의 root 에러로 화면에 출력합니다.
+ */
+
+// Todo: 에러처리를 throw new error로 넘겨주기
+
+import { loginApi } from "@/api/authApi";
+import { getMyInfoApi } from "@/api/memberApi";
 import FormButton from "@/components/common/button/FormButton";
 import LinkButton from "@/components/common/button/LinkButton";
 import FormInput from "@/components/common/input/FormInput";
@@ -7,16 +24,11 @@ import { type LoginType, loginSchema } from "@/schema/authSchema";
 import { setAccessToken, login } from "@/store/authSlice";
 import { useAppDispatch } from "@/store/hooks";
 import { openModal } from "@/store/modalSlice";
-import type { ApiResponse } from "@/types/api";
-import type { LoginResult, MemberResult } from "@/types/member";
+import { handleApiError } from "@/utils/errorHandler";
 import { zodResolver } from "@hookform/resolvers/zod";
-import axios from "axios";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useLocation } from "react-router-dom";
-
-type LoginResponse = ApiResponse<LoginResult>;
-type MemberResponse = ApiResponse<MemberResult>;
 
 export default function Login() {
     const [isLoading, setIsLoading] = useState(false);
@@ -39,56 +51,47 @@ export default function Login() {
         try {
             /* 로그인 요청 */
             // fetch-POST('/api/v1/auth/login', data) [데이터를 로그인 검증 API로 전송]
-            const loginRes = await axiosInstance.post<LoginResponse>(
-                "/auth/login",
-                form
-            );
+            const loginRes = await loginApi(form);
 
             // 로그인 요청 실패시 처리
-            if (!loginRes.data.isSuccess) {
-                throw new Error(loginRes.data.message || "로그인 실패");
+            if (!loginRes.isSuccess) {
+                console.warn("로그인에 실패했습니다.");
+                setError("root", {
+                    message: loginRes.message || "로그인에 실패했습니다.",
+                });
             }
 
             // 로그인 응답에서 accessToken을 받아 Redux에 저장
-            const accessToken = loginRes.data.result.accessToken;
+            const accessToken = loginRes.result.accessToken;
             dispatch(setAccessToken(accessToken));
 
             /* 유저 정보 조회 */
             // 성공시에만 login 확정
-            const userRes =
-                await axiosInstance.get<MemberResponse>("/members/my");
+            const userRes = await getMyInfoApi();
 
             // 유저 정보 불러오기 실패시 처리
-            if (!userRes.data.isSuccess) {
-                throw new Error(userRes.data.message || "유저 정보 조회 실패");
+            if (!userRes.isSuccess) {
+                console.warn("유저 정보 조회에 실패했습니다.");
+                setError("root", {
+                    message:
+                        userRes.message || "유저 정보 조회에 실패했습니다.",
+                });
             }
 
             // 성공시 redux store에 유저 데이터 저장
             dispatch(
                 login({
-                    sno: userRes.data.result.sno,
-                    name: userRes.data.result.name,
-                    dept: userRes.data.result.dept,
+                    sno: userRes.result.sno,
+                    name: userRes.result.name,
+                    dept: userRes.result.dept,
                 })
             );
-
             // 원래 가려던 페이지로 복귀(없으면 "/"로)
             const from =
                 (location.state as { from?: Location })?.from?.pathname || "/";
             void navigate(from, { replace: true });
         } catch (err) {
-            /* 에러 처리 */
-            if (axios.isAxiosError<LoginResponse>(err)) {
-                setError("root", {
-                    message:
-                        err.response?.data.message ||
-                        "요청 처리 중 오류가 발생했습니다.",
-                });
-            } else {
-                setError("root", {
-                    message: "알 수 없는 오류가 발생했습니다.",
-                });
-            }
+            handleApiError(err, setError, "로그인 실패: 다시 시도해주세요.");
         } finally {
             setIsLoading(false);
         }
