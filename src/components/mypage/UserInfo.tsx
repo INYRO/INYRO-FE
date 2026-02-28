@@ -1,3 +1,10 @@
+/**
+ * 마이페이지 상단에 위치한 내 정보(이름, 학번, 학과)를 표시하는 컴포넌트입니다.
+ *
+ * 주요 로직은 다음과 같습니다.
+ * - 부모 컴포넌트(MyPage)로부터 유저 데이터를 Props로 전달받아 화면에 렌더링합니다.
+ */
+
 interface UserInfoProps {
     name: string;
     sno: string;

@@ -1,3 +1,17 @@
+/**
+ * 마이페이지 중앙에 위치한 예약 기록 테이블 컴포넌트입니다.
+ *
+ * 주요 로직은 다음과 같습니다.
+ * - 부모인 'MyPage'로부터 로딩 상태(isLoading)와 예약 데이터 배열(reservations)을 전달받아 렌더링합니다.
+ * - isLoading이 true일 경우 레이아웃 시프트를 방지하기 위해 빈 테이블 껍데기와 로딩 메시지를 표시합니다.
+ *
+ * 예약 상태(reservationStatus)에 따라 우측 액션 버튼의 뷰를 다르게 처리합니다.
+ * 상태 및 처리는 다음과 같습니다.
+ * - 'COMPLETED': 회색 '완료' 배지 (수정 불가)
+ * - 'CANCELLED': 회색 '취소됨' 배지 (수정 불가)
+ * - 'UPCOMING': 예약 수정(changeReservation) 및 취소(deleteReservation) 모달을 띄우는 버튼
+ */
+
 import { useAppDispatch } from "@/store/hooks";
 import { openModal } from "@/store/modalSlice";
 import type { Reservation } from "@/types/reservation";
