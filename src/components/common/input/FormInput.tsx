@@ -35,7 +35,7 @@ const _Input = (
                 name={name}
                 placeholder={isPlaceholder ? label : rest.placeholder}
                 {...rest}
-                className={`h-[35px] ring-1  rounded-[10px] body-t6 px-[15px] bg-white read-only:bg-background-200 ${error ? "ring-accent" : "ring-background-200"} ${className || ""} `}
+                className={`h-[35px] ring-1  rounded-[10px] body-t7 px-[15px] bg-white read-only:bg-background-200 ${error ? "ring-accent" : "ring-background-200"} ${className || ""} `}
             />
             {error && (
                 <span className="flex flex-col body-t5 text-accent mt-[5px]">

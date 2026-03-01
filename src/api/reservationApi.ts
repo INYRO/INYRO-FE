@@ -61,3 +61,22 @@ export const getMyReservationsApi = async () => {
         await axiosInstance.get<ReservationsResponse>("/reservations/my");
     return response.data;
 };
+
+/**
+ * [예약 생성 API]
+ * 날짜, 시간대, 예약자 명단, 사용 목적을 받아 새로운 예약을 생성합니다.
+ */
+export interface CreateReservationPayload {
+    date: string;
+    participantList: string;
+    purpose: string;
+    timeSlots: string[];
+}
+export const createReservationApi = async (data: CreateReservationPayload) => {
+    // 응답 데이터가 딱히 없다면 ApiResponse<null> 이나 <string>을 사용합니다.
+    const response = await axiosInstance.post<ApiResponse<null>>(
+        "/reservations",
+        data
+    );
+    return response.data;
+};
