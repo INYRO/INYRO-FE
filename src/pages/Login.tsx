@@ -44,6 +44,7 @@ export default function Login() {
         handleSubmit,
         formState: { errors },
         setError,
+        clearErrors,
     } = useForm<LoginType>({
         resolver: zodResolver(loginSchema),
     });
@@ -103,7 +104,7 @@ export default function Login() {
         <div className="v-stack w-full gap-10">
             <Logo />
             <form onSubmit={(e) => void onSubmit(e)} className="flex flex-col">
-                <article className="flex flex-col gap-2.5 mb-[15px]">
+                <article className="flex flex-col gap-2.5">
                     <FormInput
                         type="text"
                         {...register("sno")}
@@ -111,6 +112,7 @@ export default function Login() {
                         error={errors.sno?.message}
                         label="학번"
                         isPlaceholder={false}
+                        onFocus={() => clearErrors("root")}
                     />
                     <FormInput
                         type="password"
@@ -119,16 +121,17 @@ export default function Login() {
                         required
                         error={errors.password?.message}
                         isPlaceholder={false}
+                        onFocus={() => clearErrors("root")}
                     />
                 </article>
-
                 <span
-                    className={`${errors.root?.message ? "flex" : "hidden"} body-t5 text-accent`}
+                    className={`${errors.root?.message ? "flex" : "hidden"} body-t5 text-accent mt-[5px]`}
                 >
                     {errors.root?.message}
                 </span>
-
-                <article className="flex flex-col gap-[7px] mt-[15px]">
+                <article
+                    className={`flex flex-col gap-[7px] ${errors.root || errors.password ? "mt-2.5" : "mt-[30px]"} `}
+                >
                     <FormButton
                         text="로그인"
                         type="submit"

@@ -26,3 +26,13 @@ export const formatDate = (value: SelectedDate): string | null => {
 
     return `${year}-${month}-${day}`;
 };
+
+// 선택한 마지막 시간에 30분을 더해 찐 종료 시간을 계산하는 도우미 함수
+export const calculateEndTime = (startTimeStr: string) => {
+    const [h, m] = startTimeStr.split(":").map(Number);
+    const dateObj = new Date();
+    dateObj.setHours(h, m + 30); // 30분 추가 (자동으로 시간/분 계산됨)
+    const endH = String(dateObj.getHours()).padStart(2, "0");
+    const endM = String(dateObj.getMinutes()).padStart(2, "0");
+    return `${endH}:${endM}`;
+};

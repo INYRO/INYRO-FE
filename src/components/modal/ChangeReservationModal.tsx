@@ -14,9 +14,9 @@ import {
 } from "@/schema/reservationSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import FormInput from "../common/input/FormInput";
 import { changeReservationApi } from "@/api/reservationApi";
 import { handleApiError } from "@/utils/errorHandler";
+import FormTextarea from "../common/input/FormTextarea";
 
 interface ChangeReservationModalProps {
     reservationId?: number;
@@ -74,32 +74,18 @@ export default function ChangeReservationModal({
                 onSubmit={(e) => void onSubmit(e)}
                 className="flex flex-col gap-[15px]"
             >
-                <section className="flex flex-col gap-[15px]">
-                    <span className="body-t1 underline underline-offset-2">
-                        예약자 명단
-                    </span>
-                    <FormInput
-                        required
-                        {...register("participantList")}
-                        error={errors.participantList?.message}
-                        type="text"
-                        className="h-[60px]"
-                        isPlaceholder
-                    />
-                </section>
-                <section className="flex flex-col gap-[15px]">
-                    <span className="body-t1 underline underline-offset-2">
-                        사용 목적
-                    </span>
-                    <FormInput
-                        required
-                        {...register("purpose")}
-                        error={errors.purpose?.message}
-                        type="text"
-                        className="h-[60px]"
-                        isPlaceholder
-                    />
-                </section>
+                <FormTextarea
+                    label="예약자 명단"
+                    error={errors.participantList?.message}
+                    placeholder="예: 홍길동, 가나디, ..."
+                    {...register("participantList")}
+                />
+                <FormTextarea
+                    label="사용 목적"
+                    error={errors.purpose?.message}
+                    placeholder="예: 스터디 목적..."
+                    {...register("purpose")}
+                />
                 <span
                     className={`${
                         errors.root?.message ? "flex" : "hidden"

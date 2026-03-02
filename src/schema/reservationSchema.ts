@@ -12,5 +12,10 @@ export const changeReservationSchema = z.object({
     participantList: z.string().min(1, "예약자 명단을 입력해주세요."),
     purpose: z.string().min(1, "사용 목적을 입력해주세요."),
 });
-
 export type ChangeReservationType = z.infer<typeof changeReservationSchema>;
+
+export const reserveCompleteSchema = z.object({
+    participantList: z.string().min(1, "예약자 명단을 입력해주세요."),
+    purpose: z.string().min(1, "사용 목적을 입력해주세요."),
+});
+export type ReserveCompleteType = z.infer<typeof reserveCompleteSchema>;

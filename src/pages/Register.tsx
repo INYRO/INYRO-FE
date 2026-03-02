@@ -35,6 +35,7 @@ export default function Register() {
         handleSubmit,
         formState: { errors },
         setError,
+        clearErrors,
     } = useForm<RegisterType>({
         resolver: zodResolver(registerSchema),
     });
@@ -150,6 +151,7 @@ export default function Register() {
                                 label="학번"
                                 error={errors.sno?.message}
                                 isPlaceholder={false}
+                                onFocus={() => clearErrors("root")}
                             />
                             <FormInput
                                 type="password"
@@ -158,6 +160,7 @@ export default function Register() {
                                 label="비밀번호"
                                 error={errors.password?.message}
                                 isPlaceholder={false}
+                                onFocus={() => clearErrors("root")}
                             />
                         </div>
                         <span
@@ -165,8 +168,14 @@ export default function Register() {
                         >
                             {errors.root?.message}
                         </span>
-                        <div className="mt-[9px]">
-                            <FormButton text="회원가입" isLoading={isLoading} />
+                        <div
+                            className={`${errors.root || errors.password ? "mt-2.5" : "mt-[30px]"} `}
+                        >
+                            <FormButton
+                                text="회원가입"
+                                type="submit"
+                                isLoading={isLoading}
+                            />
                         </div>
                     </form>
                 </article>
