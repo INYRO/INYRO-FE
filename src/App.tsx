@@ -124,7 +124,7 @@ function App() {
 
     return (
         <>
-            <main className="relative v-stack max-w-sm mx-auto items-center justify-center gap-5 min-h-screen p-9 *:animate-fade-in-out">
+            <main className="relative v-stack max-w-sm mx-auto items-center justify-center gap-5 min-h-dvh p-9 *:animate-fade-in-out">
                 {/* 세션 로그아웃 버튼 */}
                 {isLogin && (
                     <button
