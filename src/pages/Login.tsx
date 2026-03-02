@@ -62,6 +62,7 @@ export default function Login() {
                 setError("root", {
                     message: loginRes.message || "로그인에 실패했습니다.",
                 });
+                return;
             }
 
             // 로그인 응답에서 accessToken을 받아 Redux에 저장
@@ -79,6 +80,7 @@ export default function Login() {
                     message:
                         userRes.message || "유저 정보 조회에 실패했습니다.",
                 });
+                return;
             }
 
             // 성공시 redux store에 유저 데이터 저장
