@@ -1,3 +1,13 @@
+/*
+ * Reserve 컴포넌트는 사용자가 동아리방 예약 날짜와 시간을 선택하는 메인 페이지입니다.
+ *
+ * 주요 로직 흐름은 다음과 같습니다.
+ * - 날짜 선택: react-calendar를 사용하여 날짜를 선택하며, 과거 날짜는 비활성화 처리됩니다.
+ * - 가능 시간 조회: 날짜가 선택되거나 변경될 때마다 API를 호출하여 해당 날짜의 30분 단위 예약 가능 상태를 불러옵니다.
+ * - 시간 선점: 클릭한 시간을 화면에 반영하고, 백엔드에 선택/반납 API를 비동기로 요청합니다. 통신 실패 시 원래 상태로 롤백됩니다.
+ * - 시간 반납: 사용자가 같은 날짜를 다시 클릭하면, 해당 시간을 서버에 반납하여 상태를 동기화합니다.
+ */
+
 import FormButton from "@/components/common/button/FormButton";
 import { useEffect, useMemo, useState } from "react";
 import Calendar from "react-calendar";
@@ -5,9 +15,14 @@ import "react-calendar/dist/Calendar.css";
 import "@/styles/customCalendar.css";
 import { formatDate, formatToMonthYear } from "@/utils/utils";
 import { useForm } from "react-hook-form";
-import axiosInstance from "@/api/axiosInstance";
 import { useNavigate } from "react-router-dom";
 import Logo from "@/components/common/logo/Logo";
+import {
+    getAvailableTimesApi,
+    returnTimeApi,
+    selectTimeApi,
+} from "@/api/reservationApi";
+import TimeSlotGrid from "@/components/reserve/TimeSlotGrid";
 
 type DatePiece = Date | null;
 type SelectedDate = DatePiece | [DatePiece, DatePiece];
@@ -16,17 +31,37 @@ type FormValues = {
     time: string[];
 };
 
-interface AvailableTimesResponse {
-    result: {
-        available: Record<string, boolean>; // "09:00": true/false
-    };
-}
-
 export default function Reserve() {
+    // 기본 변수 선언
     const navigate = useNavigate();
+    // 유저의 날짜 선택 완료 상태 (true/false)
+    // 기본은 false이며, 날짜를 선택했을 때 timeTable을 보여줌
     const [hasPickedDate, setHasPickedDate] = useState(false);
+    // RHF 선언
+    const { register, setValue, watch, handleSubmit } = useForm<FormValues>({
+        // FormValues에 time의 기본값이 빈 배열([])임을 정의
+        // setValue("time", [...prev, time])를 사용하기 때문에,
+        // ...undefined가 되면 안돼서 빈 배열임을 명시함
+        defaultValues: { time: [] },
+    });
+    // time 배열 상태를 실시간으로 watch함
+    // useState처럼 값이 변할 때마다 컴포넌트를 리렌더링하여 UI를 업데이트함
+    const selectedTimes = watch("time", []);
+    // reactCalendar가 관리하는 날짜 데이터 (원시값)
+    const [date, setDate] = useState<SelectedDate>(null);
+    // 서버에서 받아온 예약 가능 여부 객체 (예: {"09:00": true})
+    const [availableMap, setAvailableMap] = useState<Record<string, boolean>>(
+        {}
+    );
+    // 로딩
+    const [loading, setLoading] = useState(false);
 
-    // 전체 타임슬롯 (09:00~21:30)
+    // 전체 타임슬롯 생성 (09:00~21:30)
+    // ["09:00", "09:30", ..., "21:30"]를 생성함
+    // useMemo를 사용할 시 첫 랜더시 한 번만 해당 계산을 실행하여 react memory에 저장한 후
+    // 재 랜더링 시 캐싱된 값을 불러와 사용함
+    // useMemo가 없을 시 timeSlots을 새로 만드는데, 이는 다른 데이터라고 react가 인식하게됨,
+    // 때문에, useMemo를 사용해 메모리에 저장된 값을 불러오는 방식으로 참조 무결성을 지킴
     const timeSlots = useMemo(() => {
         const slots: string[] = [];
         for (let hour = 9; hour < 22; hour++) {
@@ -39,19 +74,6 @@ export default function Reserve() {
         return slots;
     }, []);
 
-    // RHF
-    const { register, setValue, watch, handleSubmit } = useForm<FormValues>({
-        defaultValues: { time: [] },
-    });
-    const selectedTimes = watch("time", []);
-
-    // 날짜 / 가능시간 맵 / 로딩
-    const [date, setDate] = useState<SelectedDate>(null);
-    const [availableMap, setAvailableMap] = useState<Record<string, boolean>>(
-        {}
-    );
-    const [loading, setLoading] = useState(false);
-
     // date를 항상 Date로 정규화
     const normalizedDate = useMemo(() => {
         const d = Array.isArray(date) ? date[0] : date;
@@ -62,14 +84,12 @@ export default function Reserve() {
     useEffect(() => {
         const fetchAvailable = async () => {
             if (!normalizedDate) return;
-
             try {
                 setLoading(true);
-                const res = await axiosInstance.get<AvailableTimesResponse>(
-                    "/reservations/available",
-                    { params: { date: formatDate(normalizedDate) } }
+                const available = await getAvailableTimesApi(
+                    formatDate(normalizedDate)
                 );
-                setAvailableMap(res.data.result.available ?? {});
+                setAvailableMap(available ?? {});
             } catch (e) {
                 console.error("가능 시간 조회 실패:", e);
                 setAvailableMap({});
@@ -80,43 +100,53 @@ export default function Reserve() {
         void fetchAvailable();
     }, [normalizedDate]);
 
-    // 오늘 이전 시각 막기
-    const isSameDay = (a: Date, b: Date) =>
-        a.getFullYear() === b.getFullYear() &&
-        a.getMonth() === b.getMonth() &&
-        a.getDate() === b.getDate();
-
-    const isPastTimeSlotToday = (time: string, selectedDate: Date) => {
-        // time: "HH:mm"
-        const [hh, mm] = time.split(":").map(Number);
-
-        const slot = new Date(selectedDate);
-        slot.setHours(hh, mm, 0, 0);
-
-        const now = new Date();
-
-        // 지금보다 이전이면 막기
-        return slot < now;
-    };
-
+    // 여러 시간대 반납 로직
     const returnTimes = async (dateToReturn: Date, timesToReturn: string[]) => {
         if (timesToReturn.length === 0) return;
-
         await Promise.allSettled(
             timesToReturn.map((time) =>
-                axiosInstance.post("/reservations/time/return", {
-                    date: formatDate(dateToReturn),
-                    time,
-                })
+                returnTimeApi({ date: formatDate(dateToReturn), time })
             )
         );
     };
 
+    const handleTimeToggle = async (time: string, isSelected: boolean) => {
+        if (!normalizedDate) return;
+
+        const prev = selectedTimes;
+        const next = isSelected
+            ? prev.filter((t) => t !== time)
+            : [...prev, time];
+
+        // UI 먼저 즉각 반영
+        setValue("time", next, { shouldValidate: true });
+
+        try {
+            const payload = { date: formatDate(normalizedDate), time };
+            if (isSelected) {
+                await returnTimeApi(payload); // 선택 해제(반납) API
+            } else {
+                await selectTimeApi(payload); // 선택(찜) API
+            }
+        } catch (error) {
+            console.error("예약/반납 요청 실패:", error);
+            // 서버 통신 실패 시 UI 롤백
+            setValue("time", prev, { shouldValidate: true });
+        }
+    };
+
     const onSubmit = (data: FormValues) => {
+        if (!normalizedDate) return;
+        // 텅 빈 채로 '다음' 누르는 것 방어
+        if (data.time.length === 0) {
+            return;
+        }
+
         void navigate("/reserve/complete", {
             state: { time: data.time, date: formatDate(normalizedDate) },
         });
     };
+
     return (
         <div className="v-stack w-full gap-[35px]">
             <Logo variant="sub" />
@@ -157,84 +187,14 @@ export default function Reserve() {
                         type="hidden"
                         {...register("time", { required: true })}
                     />
-
-                    <div className="grid grid-cols-[repeat(auto-fit,minmax(55px,1fr))] gap-2">
-                        {timeSlots.map((time) => {
-                            const isSelected = selectedTimes.includes(time);
-
-                            // availableMap[time] === true 일 때만 가능
-                            const isAvailable = availableMap[time] === true;
-
-                            // 오늘 이전 시간 막는 로직
-                            const now = new Date();
-                            const isToday = normalizedDate
-                                ? isSameDay(normalizedDate, now)
-                                : false;
-                            const isPastTime = normalizedDate
-                                ? isToday &&
-                                  isPastTimeSlotToday(time, normalizedDate)
-                                : false;
-
-                            // 로딩 중이거나 오늘 또는 현재시간 이전이면 disabled
-                            const isDisabled =
-                                loading || !isAvailable || isPastTime;
-
-                            return (
-                                <button
-                                    key={time}
-                                    type="button"
-                                    disabled={isDisabled}
-                                    onClick={() => {
-                                        // 예외처리(비활성, 날짜없음)
-                                        if (isDisabled) return;
-                                        if (!normalizedDate) return;
-
-                                        const prev = selectedTimes;
-                                        const next = isSelected
-                                            ? prev.filter((t) => t !== time)
-                                            : [...prev, time];
-
-                                        // optimistic UI
-                                        setValue("time", next, {
-                                            shouldValidate: true,
-                                        });
-
-                                        const url = isSelected
-                                            ? "/reservations/time/return"
-                                            : "/reservations/time";
-
-                                        axiosInstance
-                                            .post(url, {
-                                                date: formatDate(
-                                                    normalizedDate
-                                                ),
-                                                time,
-                                            })
-                                            .catch((error) => {
-                                                console.error(
-                                                    "예약 요청 실패:",
-                                                    error
-                                                );
-
-                                                // 실패 시 정확한 롤백: 이전 상태로 복구
-                                                setValue("time", prev, {
-                                                    shouldValidate: true,
-                                                });
-                                            });
-                                    }}
-                                    className={`active:scale-[0.95] hover:bg-background-200 hover:border-none hover:text-inherit border rounded-[5px] body-t7 w-[55px] h-[25px] 
-                  ${
-                      isSelected
-                          ? "bg-secondary text-white border-none"
-                          : "border-background-200"
-                  }
-                  ${isDisabled ? "opacity-40 cursor-not-allowed" : ""} transition-all ease-in-out`}
-                                >
-                                    {time}
-                                </button>
-                            );
-                        })}
-                    </div>
+                    <TimeSlotGrid
+                        timeSlots={timeSlots}
+                        selectedTimes={selectedTimes}
+                        availableMap={availableMap}
+                        loading={loading}
+                        normalizedDate={normalizedDate}
+                        onTimeToggle={handleTimeToggle}
+                    />
                     <FormButton text="다음" type="submit" isLoading={loading} />
                 </form>
             )}
