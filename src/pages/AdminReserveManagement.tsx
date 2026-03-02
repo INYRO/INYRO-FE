@@ -18,6 +18,7 @@ export default function AdminReserveManagement() {
             );
             if (res.data.isSuccess) {
                 setReservations(res.data.result.reservations);
+                console.log(res.data.result);
             }
         } finally {
             setIsLoading(false);

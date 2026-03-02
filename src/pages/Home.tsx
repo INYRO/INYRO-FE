@@ -10,8 +10,7 @@ import Logo from "@/components/common/logo/Logo";
 import { useAppSelector } from "@/store/hooks";
 
 export default function Home() {
-    const isLogin = useAppSelector((state) => state.authState.isLogin); // redux store에서 isLogin state 가져옴
-
+    const { isLogin, user } = useAppSelector((state) => state.authState); // redux store에서 isLogin, user state 가져옴
     return (
         <div className="flex flex-col gap-5">
             <Logo />
@@ -24,6 +23,13 @@ export default function Home() {
                             text="마이페이지"
                             variant="outline"
                         />
+                        {user?.sno === "Bossisme" && (
+                            <LinkButton
+                                url="/admin"
+                                text="관리자 페이지"
+                                variant="ghost"
+                            />
+                        )}
                     </>
                 ) : (
                     <LinkButton url="/login" text="로그인" />
