@@ -75,12 +75,17 @@ export default function Reserve() {
     }, []);
 
     // date를 항상 Date로 정규화
+    // react-calendar는 날짜 하나만 선택하면 Date 객체를 주고, 범위를 선택하면 [Date, Date] 배열을 줌(안고르면 null)
+    // 예약은 한 날짜의 여러 시간 범위에서 진행되므로, 해당 함수가 필요함
+    // 따라서 배열일 경우 [0]만, 아닌경우 date를 반환하는 함수임
+    // useMemo의 의존성배열인 date는 date 값이 바뀌면 캐싱을 초기화하고 재계산을 진행함
     const normalizedDate = useMemo(() => {
         const d = Array.isArray(date) ? date[0] : date;
         return d ?? null;
     }, [date]);
 
     // 날짜 바뀔 때마다 가능시간 조회
+    // normalizedDate가 바뀔 때마다 진행
     useEffect(() => {
         const fetchAvailable = async () => {
             if (!normalizedDate) return;
@@ -92,7 +97,7 @@ export default function Reserve() {
                 setAvailableMap(available ?? {});
             } catch (e) {
                 console.error("가능 시간 조회 실패:", e);
-                setAvailableMap({});
+                setAvailableMap({}); // 에러 발생 시 map 객체 초기화
             } finally {
                 setLoading(false);
             }
@@ -101,6 +106,11 @@ export default function Reserve() {
     }, [normalizedDate]);
 
     // 여러 시간대 반납 로직
+    // 유저가 다른 날짜로 UI를 변경했을 때, 점유했던 시간대를 반납함
+    // Promise.allSettled는 다중 요청을 병렬로 처리하게 해주고, 모두 끝날때까지 기다림
+    // Promise.all의 경우는 다중 요청 중 하나만 에러가 나도 전체를 fail로 처리하기 때문
+    // 최종적으로는 다음의 로직을 따릅니다.
+    // timesToReturn 배열에 담긴 시간들을 하나씩 반납 API 요청으로 바꿉니다.
     const returnTimes = async (dateToReturn: Date, timesToReturn: string[]) => {
         if (timesToReturn.length === 0) return;
         await Promise.allSettled(
@@ -110,15 +120,25 @@ export default function Reserve() {
         );
     };
 
+    /*
+     * 특정 시간대를 클릭했을 때 선택/해제를 처리하는 함수입니다.
+     *
+     * 주요 로직은 다음과 같습니다.
+     * - API 응답 전 UI를 미리 반영해 UX를 향상시켰습니다.
+     * - 그 후, API 통신을 통해 선택 시간에 점유/반납 처리를 진행합니다.
+     * - 에러 발생 시 해당 선택 시간을 강제로 반납합니다.
+     */
     const handleTimeToggle = async (time: string, isSelected: boolean) => {
         if (!normalizedDate) return;
 
+        // 실패 시 복구를 위해 현재 상태를 미리 저장
         const prev = selectedTimes;
+        // 새로운 상태값 계산(선택 해제 시 필터링, 선택 시 추가)
         const next = isSelected
             ? prev.filter((t) => t !== time)
             : [...prev, time];
 
-        // UI 먼저 즉각 반영
+        // 서버와 통신하기 전에 UI 업데이트(미리 성공했다 치고 색칠하려고 함)
         setValue("time", next, { shouldValidate: true });
 
         try {
@@ -135,6 +155,10 @@ export default function Reserve() {
         }
     };
 
+    /*
+     * 최종 예약으로 넘어가는 onSubmit 함수입니다.
+     * 선택된 시간 데이터를 state에 담아 완료 페이지로 전달합니다.
+     */
     const onSubmit = (data: FormValues) => {
         if (!normalizedDate) return;
         // 텅 빈 채로 '다음' 누르는 것 방어
