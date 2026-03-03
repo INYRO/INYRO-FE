@@ -1,8 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
-import axiosInstance from "@/api/axiosInstance";
-import type { Reservation, ReservationListResponse } from "@/types/reservation";
+import type { Reservation } from "@/types/reservation";
 import FormButton from "@/components/common/button/FormButton";
 import Logo from "@/components/common/logo/Logo";
+import {
+    deleteAdminReservationApi,
+    getAdminReservationList,
+} from "@/api/admin";
 
 export default function AdminReserveManagement() {
     const [reservations, setReservations] = useState<Reservation[]>([]);
@@ -13,13 +16,13 @@ export default function AdminReserveManagement() {
     const fetchReservations = useCallback(async () => {
         setIsLoading(true);
         try {
-            const res = await axiosInstance.get<ReservationListResponse>(
-                "/admin/reservations"
-            );
-            if (res.data.isSuccess) {
-                setReservations(res.data.result.reservations);
-                console.log(res.data.result);
+            const result = await getAdminReservationList();
+            if (!result.isSuccess) {
+                console.warn("예약 불러오기에 실패했습니다.");
             }
+            setReservations(result.result.reservations);
+        } catch (error) {
+            console.error(error);
         } finally {
             setIsLoading(false);
         }
@@ -28,13 +31,17 @@ export default function AdminReserveManagement() {
     // 예약 삭제
     const deleteReservation = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        setIsLoading(true);
         if (!selectedId) {
             setIsLoading(false);
             return;
         }
+        setIsLoading(true);
         try {
-            await axiosInstance.delete(`/admin/reservations/${selectedId}`);
+            const result = await deleteAdminReservationApi(selectedId);
+            if (!result.isSuccess) {
+                console.warn("삭제에 실패했습니다.");
+                return;
+            }
             setSelectedId(null);
             void fetchReservations();
         } catch (error) {
@@ -109,13 +116,14 @@ export default function AdminReserveManagement() {
                                         />
                                     </td>
                                     <td className="py-1.5 body-t6 text-center border-r">
-                                        {r.reservationId}
+                                        {r.name}
                                     </td>
                                     <td className="py-1.5 body-t6 text-center border-r">
-                                        {r.date}
+                                        {r.date.replace(/-/g, ".")}
                                     </td>
                                     <td className="py-1.5 body-t6 text-center">
-                                        {r.startTime} ~ {r.endTime}
+                                        {r.startTime.substring(0, 5)} ~{" "}
+                                        {r.endTime.substring(0, 5)}
                                     </td>
                                 </tr>
                             ))
@@ -125,7 +133,12 @@ export default function AdminReserveManagement() {
             </div>
 
             <form onSubmit={(e) => void deleteReservation(e)}>
-                <FormButton text="선택삭제" isLoading={isLoading} />
+                <FormButton
+                    text="선택삭제"
+                    type="submit"
+                    variant="accent"
+                    isLoading={isLoading}
+                />
             </form>
         </div>
     );
