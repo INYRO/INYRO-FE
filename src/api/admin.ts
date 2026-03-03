@@ -9,9 +9,15 @@ export const getAdminReservationList = async () => {
     return response.data;
 };
 
-export const deleteAdminReservationApi = async (reservationId: number) => {
+export interface DeleteReservationPayload {
+    reservationIdList: number[];
+}
+export const deleteAdminReservationApi = async (
+    data: DeleteReservationPayload
+) => {
     const response = await axiosInstance.delete<ApiResponse<string>>(
-        `/admin/reservations/${reservationId}`
+        "/admin/reservations",
+        { data }
     );
     return response.data;
 };
