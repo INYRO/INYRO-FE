@@ -43,7 +43,7 @@ export default function FormButton({
     text,
     variant = "primary", // 기본값은 primary
     isLoading = false,
-    type = "button", // 기본값은 submit
+    type = "submit", // 기본값은 submit
     onClick,
     className,
 }: FormButtonProps) {

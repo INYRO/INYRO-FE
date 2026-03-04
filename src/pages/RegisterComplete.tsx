@@ -119,7 +119,11 @@ export default function RegisterComplete() {
                     {errors.root?.message}
                 </span>
                 <article className="flex flex-col gap-[7px] mt-[15px]">
-                    <FormButton text="회원가입" isLoading={isLoading} />
+                    <FormButton
+                        text="회원가입"
+                        type="submit"
+                        isLoading={isLoading}
+                    />
                 </article>
             </form>
         </div>
