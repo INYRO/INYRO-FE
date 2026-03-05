@@ -13,11 +13,17 @@ import {
 } from "@/api/admin";
 import { useAppDispatch } from "@/store/hooks";
 import { openModal } from "@/store/modalSlice";
+import { useSelection } from "@/hooks/useSelection";
 
 export default function AdminReserveManagement() {
     const [reservations, setReservations] = useState<Reservation[]>([]);
-    const [reservationIdList, setReservationIdList] = useState<number[]>([]);
     const [isLoading, setIsLoading] = useState(false);
+
+    const {
+        selectedList: reservationIdList,
+        toggleSelection,
+        clearSelection,
+    } = useSelection<number>();
 
     const dispatch = useAppDispatch();
 
@@ -52,7 +58,7 @@ export default function AdminReserveManagement() {
                 console.warn("삭제에 실패했습니다.");
                 return;
             }
-            setReservationIdList([]);
+            clearSelection();
             void fetchReservations();
             dispatch(openModal({ modalType: "changeComplete" }));
         } catch (error) {
@@ -66,15 +72,6 @@ export default function AdminReserveManagement() {
     const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         void deleteReservation();
-    };
-
-    // 개별 행 선택 토글 함수
-    const toggleSelection = (id: number) => {
-        setReservationIdList((prev) =>
-            prev.includes(id)
-                ? prev.filter((reserveId) => reserveId !== id)
-                : [...prev, id]
-        );
     };
 
     // reservation fetch useEffect

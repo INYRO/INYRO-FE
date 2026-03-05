@@ -14,13 +14,19 @@ import Logo from "@/components/common/logo/Logo";
 import { deleteAdminUserApi, getAdminUserList } from "@/api/admin";
 import { openModal } from "@/store/modalSlice";
 import { useAppDispatch } from "@/store/hooks";
+import { useSelection } from "@/hooks/useSelection";
 
 export default function AdminUserManagement() {
     const [members, setMembers] = useState<MemberResult[]>([]);
-    const [snoList, setSnoList] = useState<string[]>([]);
     const [sortType, setSortType] = useState("NAME");
     const [order, setOrder] = useState<"ASC" | "DESC">("ASC");
     const [isLoading, setIsLoading] = useState(false);
+
+    const {
+        selectedList: snoList,
+        toggleSelection,
+        clearSelection,
+    } = useSelection<string>();
 
     const dispatch = useAppDispatch();
 
@@ -44,13 +50,6 @@ export default function AdminUserManagement() {
             setIsLoading(false);
         }
     }, [sortType, order]);
-
-    // 개별 행 선택 토글 함수
-    const toggleSelection = (id: string) => {
-        setSnoList((prev) =>
-            prev.includes(id) ? prev.filter((sno) => sno !== id) : [...prev, id]
-        );
-    };
 
     // 폼 제출 핸들러
     const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
@@ -89,7 +88,7 @@ export default function AdminUserManagement() {
                 console.warn("유저 삭제 중 오류가 발생했습니다.");
                 return;
             }
-            setSnoList([]);
+            clearSelection();
             void fetchMembers();
             dispatch(openModal({ modalType: "changeComplete" }));
         } catch (error) {
