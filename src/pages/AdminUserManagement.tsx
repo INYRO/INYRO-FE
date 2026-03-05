@@ -12,8 +12,6 @@ import FormButton from "@/components/common/button/FormButton";
 import type { MemberResult, MemberStatus } from "@/types/member";
 import Logo from "@/components/common/logo/Logo";
 import { deleteAdminUserApi, getAdminUserList } from "@/api/admin";
-import { openModal } from "@/store/modalSlice";
-import { useAppDispatch } from "@/store/hooks";
 import { useSelection } from "@/hooks/useSelection";
 
 export default function AdminUserManagement() {
@@ -27,8 +25,6 @@ export default function AdminUserManagement() {
         toggleSelection,
         clearSelection,
     } = useSelection<string>();
-
-    const dispatch = useAppDispatch();
 
     // 유저 목록 가져오기
     const fetchMembers = useCallback(async () => {
@@ -54,7 +50,16 @@ export default function AdminUserManagement() {
     // 폼 제출 핸들러
     const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        void deleteSelectedUser();
+        if (snoList.length === 0) {
+            alert("삭제할 유저를 먼저 선택해주세요.");
+            return;
+        }
+        const isConfirmed = window.confirm(
+            "선택한 유저를 정말 삭제하시겠습니까?\n삭제 후에는 복구할 수 없습니다."
+        );
+        if (isConfirmed) {
+            void deleteSelectedUser();
+        }
     };
 
     // user Status 업데이트
@@ -90,7 +95,7 @@ export default function AdminUserManagement() {
             }
             clearSelection();
             void fetchMembers();
-            dispatch(openModal({ modalType: "changeComplete" }));
+            alert("삭제되었습니다.");
         } catch (error) {
             console.error(error);
         } finally {

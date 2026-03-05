@@ -11,8 +11,6 @@ import {
     deleteAdminReservationApi,
     getAdminReservationList,
 } from "@/api/admin";
-import { useAppDispatch } from "@/store/hooks";
-import { openModal } from "@/store/modalSlice";
 import { useSelection } from "@/hooks/useSelection";
 
 export default function AdminReserveManagement() {
@@ -24,8 +22,6 @@ export default function AdminReserveManagement() {
         toggleSelection,
         clearSelection,
     } = useSelection<number>();
-
-    const dispatch = useAppDispatch();
 
     // 예약 리스트
     const fetchReservations = useCallback(async () => {
@@ -60,7 +56,7 @@ export default function AdminReserveManagement() {
             }
             clearSelection();
             void fetchReservations();
-            dispatch(openModal({ modalType: "changeComplete" }));
+            alert("삭제되었습니다.");
         } catch (error) {
             console.error(error);
         } finally {
@@ -71,7 +67,16 @@ export default function AdminReserveManagement() {
     // 폼 제출 핸들러
     const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        void deleteReservation();
+        if (reservationIdList.length === 0) {
+            alert("삭제할 예약을 먼저 선택해주세요.");
+            return;
+        }
+        const isConfirmed = window.confirm(
+            "선택한 예약을 정말 삭제하시겠습니까?\n삭제 후에는 복구할 수 없습니다."
+        );
+        if (isConfirmed) {
+            void deleteReservation();
+        }
     };
 
     // reservation fetch useEffect

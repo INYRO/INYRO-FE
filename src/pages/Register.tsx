@@ -47,11 +47,15 @@ export default function Register() {
         }
         setIsLoading(true);
         try {
+            if (!data.password || !data.sno) {
+                console.warn("sno 혹은 password가 입력되지 않았습니다.");
+                return;
+            }
             const result = await verifyStudentApi(data);
             // 회원가입 실패 처리
             if (!result.isSuccess) {
                 setError("root", {
-                    message: result.message || "회원가입에 실패했습니다.",
+                    message: "회원가입에 실패했습니다.",
                 });
                 return;
             }
@@ -62,7 +66,7 @@ export default function Register() {
                 },
             });
         } catch (err) {
-            handleApiError(err, setError, "샘물 인증 실패: 다시 시도해주세요.");
+            handleApiError(err, setError, "서버 에러가 발생했습니다.");
         } finally {
             setIsLoading(false);
         }
