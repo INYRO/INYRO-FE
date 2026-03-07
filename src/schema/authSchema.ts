@@ -10,12 +10,17 @@
  */
 
 import z from "zod";
-import { passwordValidation, snoValidation } from "./authValidators";
+import {
+    passwordEasyValidation,
+    passwordHardValidation,
+    snoEasyValidation,
+    snoHardValidation,
+} from "./authValidators";
 
 // 공통 베이스 스키마
 const baseAuthSchema = z.object({
-    sno: snoValidation,
-    password: passwordValidation,
+    sno: snoEasyValidation,
+    password: passwordEasyValidation,
 });
 
 // 로그인 스키마
@@ -29,7 +34,7 @@ export type StudentVerificationType = z.infer<typeof studentVerificationSchema>;
 // 비밀번호 변경 스키마
 export const changePasswordSchema = z
     .object({
-        newPassword: passwordValidation,
+        newPassword: passwordHardValidation,
         newPasswordConfirmation: z.string(),
     })
     .refine((data) => data.newPassword === data.newPasswordConfirmation, {
@@ -44,5 +49,8 @@ export const registerSchema = baseAuthSchema;
 export type RegisterType = z.infer<typeof registerSchema>;
 
 // 회원가입 완료 스키마
-export const registerCompleteSchema = baseAuthSchema;
+export const registerCompleteSchema = z.object({
+    sno: snoHardValidation,
+    password: passwordHardValidation,
+});
 export type RegisterCompleteType = z.infer<typeof registerCompleteSchema>;

@@ -11,15 +11,17 @@ import {
     deleteAdminReservationApi,
     getAdminReservationList,
 } from "@/api/admin";
-import { useAppDispatch } from "@/store/hooks";
-import { openModal } from "@/store/modalSlice";
+import { useSelection } from "@/hooks/useSelection";
 
 export default function AdminReserveManagement() {
     const [reservations, setReservations] = useState<Reservation[]>([]);
-    const [reservationIdList, setReservationIdList] = useState<number[]>([]);
     const [isLoading, setIsLoading] = useState(false);
 
-    const dispatch = useAppDispatch();
+    const {
+        selectedList: reservationIdList,
+        toggleSelection,
+        clearSelection,
+    } = useSelection<number>();
 
     // 예약 리스트
     const fetchReservations = useCallback(async () => {
@@ -52,9 +54,9 @@ export default function AdminReserveManagement() {
                 console.warn("삭제에 실패했습니다.");
                 return;
             }
-            setReservationIdList([]);
+            clearSelection();
             void fetchReservations();
-            dispatch(openModal({ modalType: "changeComplete" }));
+            alert("삭제되었습니다.");
         } catch (error) {
             console.error(error);
         } finally {
@@ -65,16 +67,16 @@ export default function AdminReserveManagement() {
     // 폼 제출 핸들러
     const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        void deleteReservation();
-    };
-
-    // 개별 행 선택 토글 함수
-    const toggleSelection = (id: number) => {
-        setReservationIdList((prev) =>
-            prev.includes(id)
-                ? prev.filter((reserveId) => reserveId !== id)
-                : [...prev, id]
+        if (reservationIdList.length === 0) {
+            alert("삭제할 예약을 먼저 선택해주세요.");
+            return;
+        }
+        const isConfirmed = window.confirm(
+            "선택한 예약을 정말 삭제하시겠습니까?\n삭제 후에는 복구할 수 없습니다."
         );
+        if (isConfirmed) {
+            void deleteReservation();
+        }
     };
 
     // reservation fetch useEffect

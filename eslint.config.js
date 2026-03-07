@@ -98,7 +98,7 @@ export default tseslint.config(
             // "jsx-a11y/alt-text": "warn",
             // "jsx-a11y/aria-props": "warn",
             // "jsx-a11y/aria-role": "warn",
-            // 당장 수정하기 번거로운 a11y 규칙들 임시로 끔
+            // 당장 수정하기 귀찮은 a11y 규칙들 임시로 껐음
             "jsx-a11y/click-events-have-key-events": "off", // div에 onClick 쓸 때 키보드 이벤트 없어도 봐줌
             "jsx-a11y/no-static-element-interactions": "off", // div를 버튼처럼 써도 봐줌
 
@@ -108,7 +108,7 @@ export default tseslint.config(
                 { allowConstantExport: true }, // 상수 export 허용 옵션 추가
             ],
 
-            // --- 기타 ---
+            // 기타
             "no-var": "error", // var 대신 const/let 사용
             "no-console": ["warn", { allow: ["warn", "error"] }], // console.log 경고
         },

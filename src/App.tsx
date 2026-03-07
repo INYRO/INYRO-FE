@@ -24,45 +24,58 @@ import type { ReissueResult } from "./types/member";
 import ModalLayout from "./components/modal/ModalLayout";
 import { logoutApi } from "./api/authApi";
 
+/* ReissueResponse는 다음과 같은 형태입니다. */
+/*
+    {
+        isSuccess: boolean;
+        code: string;
+        message: string;
+        result: {
+            accessToken: string;
+        }
+    }
+*/
 type ReissueResponse = ApiResponse<ReissueResult>;
 
 function App() {
-    const dispatch = useAppDispatch(); // isLogin 상태를 업데이트하기 위한 dispatch 선언
+    /* 기본 변수 선언 */
+    const dispatch = useAppDispatch();
+    const navigate = useNavigate();
+    const [isLoading, setIsLoading] = useState(false);
 
-    // redux store에서 isLogin state와 authInitialized state 가져옴
+    /* Redux store 접근 */
+    // 로그인 상태를 판단할 변수인 isLogin을 authStore에서 가져옴
     const isLogin = useAppSelector((state) => state.authState.isLogin);
+    // 부팅 여부를 판단할 authInitialized를 authStore에서 가져옴
+    // authInitialized의 경우 false일 경우 아직 부팅중인 상태
     const authInitialized = useAppSelector(
         (state) => state.authState.authInitialized
     );
 
-    const navigate = useNavigate(); // navigate
-
-    // 로딩여부 저장 state
-    const [isLoading, setIsLoading] = useState(false);
-
-    /* 로그아웃 handling function */
-    // - 서버에 로그아웃 요청시 성공/실패와 무관하게 프론트 인증 상태 정리
+    /*
+     * 로그아웃 작업을 진행하는 handleLogout 함수입니다.
+     * 로그아웃 요청 시 서버의 성공/실패 응답과 무관하게 프론트 인증 상태를 정리합니다.
+     */
     const handleLogout = async () => {
         setIsLoading(true);
         try {
+            /* 로그아웃 작업 시작 */
             const result = await logoutApi();
-
             if (!result.isSuccess) {
-                console.warn("서버 로그아웃 실패", result);
+                console.warn("로그아웃 실패", result.message);
             }
         } catch (err) {
-            /* 서버 요청이 실패한 경우 */
-            // axios-error 처리
+            /* 서버 요청 실패 처리입니다. */
             if (axios.isAxiosError(err)) {
-                console.warn(
-                    "로그아웃 실패",
-                    err.response?.data || err.message
+                console.error(
+                    "로그아웃 요청 중 서버 에러가 발생했습니다.",
+                    err
                 );
             } else {
-                console.warn("알 수 없는 에러", err);
+                console.error("알 수 없는 에러가 발생했습니다.", err);
             }
         } finally {
-            // 어떤 경우든 프론트에서 로그아웃 상태로 정리
+            /* 어떤 경우든 프론트에서 로그아웃 상태로 정리합니다. */
             dispatch(setAccessToken(null));
             dispatch(logout());
             await navigate("/");
@@ -70,53 +83,59 @@ function App() {
         }
     };
 
-    /* 앱 부팅 시 */
-    // 1) refreshToken 쿠키 기반으로 AT 재발급
-    // 2) 유저 정보 조회
-    // 3) 로그인 상태 복구
+    /*
+     * 앱 부팅 시 처리하는 내용입니다.
+     *
+     * 다음과 같은 절차로 진행됩니다.
+     * 1) refreshToken 쿠키 기반으로 AT 재발급
+     * 2) 유저 정보 조회
+     * 3) 로그인 상태 복구
+     */
     useEffect(() => {
         const bootstrapAuth = async () => {
             setIsLoading(true);
             try {
-                /* refreshToken-Cookie로 accessToken 재발급 */
-                // - Authorization 헤더 없이, 쿠키만으로 발급
+                /* AT 재발급 부분입니다. */
+                // Authorization 헤더 없이, RT 쿠키만으로 accessToken 발급
                 const reissueRes =
                     await axiosInstance.post<ReissueResponse>("/auth/reissue");
                 if (!reissueRes.data.isSuccess) {
-                    throw new Error("재발급 실패");
+                    console.warn("AT 재발급 실패", reissueRes.data.message);
+                    return;
                 }
 
-                const newAccessToken = reissueRes.data.result.accessToken;
-                dispatch(setAccessToken(newAccessToken));
+                // 재발급된 AT를 authStore의 저장
+                dispatch(setAccessToken(reissueRes.data.result.accessToken));
 
-                /* 유저 정보 조회 */
-                // 성공 시 login 확정
+                /* 유저 정보 조회 부분입니다. */
                 const user = await fetchUser();
-                if (!user) throw new Error("유저 정보 불러오기 실패");
+                if (!user) {
+                    console.warn("유저 정보 조회 실패");
+                    return;
+                }
 
+                // 반환된 user 객체를 바탕으로 로그인
                 dispatch(login(user));
             } catch (err) {
-                // 부팅 중 인증 복구 실패 시 로그아웃 상태로 정리
+                /* 부팅 중 인증 복구 실패 처리입니다.  */
+                // 실패 시 항상 AT 초기화와 logout 실행
                 dispatch(setAccessToken(null));
                 dispatch(logout());
 
-                // axios-error 처리
+                /* 서버 요청 실패 처리입니다. */
                 if (axios.isAxiosError(err)) {
-                    console.warn(
-                        "인증 부팅 실패",
-                        err.response?.data || err.message
-                    );
+                    console.warn("인증 부팅 중 서버 에러가 발생했습니다.", err);
                 } else {
-                    console.warn("인증 부팅 실패", err);
+                    console.warn("알 수 없는 에러가 발생했습니다.", err);
                 }
             } finally {
-                // 부팅 시도는 성공/실패와 관계없이 완료 처리
+                /* 부팅 시도는 성공/실패 관계 없이 완료 처리합니다. */
                 dispatch(setAuthInitialized(true));
                 setIsLoading(false);
             }
         };
 
-        // 이미 부팅이 끝난 상태면 다시 실행하지 않음
+        /* 이미 부팅이 끝난 상태면 로직을 타지 않습니다. */
         if (!authInitialized) {
             void bootstrapAuth();
         }

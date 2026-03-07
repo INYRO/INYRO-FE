@@ -58,9 +58,13 @@ export default function Login() {
 
             // 로그인 요청 실패시 처리
             if (!loginRes.isSuccess) {
-                console.warn("로그인에 실패했습니다.");
+                console.warn(
+                    "loginApi 요청 후 isSuccess가 false가 발생했습니다."
+                );
                 setError("root", {
-                    message: loginRes.message || "로그인에 실패했습니다.",
+                    message:
+                        loginRes.message ||
+                        "아이디 혹은 비밀번호가 틀렸습니다.",
                 });
                 return;
             }

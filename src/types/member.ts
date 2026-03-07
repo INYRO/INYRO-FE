@@ -35,21 +35,6 @@ export interface ReissueResult {
 
 // 페이징 처리가 포함된 맴버 목록
 // ApiResponse Generic을 재사용 해 중복 제거
-/*
-export interface MemberListResponse {
-    isSuccess: boolean;
-    code: string;
-    message: string;
-    result: {
-        content: MemberResult[];
-        pageNumber: number;
-        pageSize: number;
-        totalElements: number;
-        totalPages: number;
-        last: boolean;
-    };
-}
-*/
 export type MemberListResponse = ApiResponse<{
     content: MemberResult[];
     pageNumber: number;

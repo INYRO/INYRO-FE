@@ -22,7 +22,7 @@
 
         /* Linting */
         "strict": true,
-        // tsconfig.app.json과 일관성을 맞추기 위해, 주석처리함.
+        // tsconfig.app.json과 일관성을 맞추기 위해, 주석처리함
         // 안 쓰는 변수 검사는 ESLint에게 맡김
         // "noUnusedLocals": true,
         // "noUnusedParameters": true,

@@ -72,7 +72,7 @@ axiosInstance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
     const { accessToken } = store.getState().authState;
     const url = config.url ?? "";
 
-    // 💡 NO_TOKEN_PATHS 로 검사
+    // NO_TOKEN_PATHS 로 검사
     // 배열의 some 메서드를 사용해 예외 URL과 매칭
     const isNoTokenEndpoint = NO_TOKEN_PATHS.some((path) => url.includes(path));
 
