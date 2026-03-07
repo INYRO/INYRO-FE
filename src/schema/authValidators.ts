@@ -19,14 +19,20 @@
 
 import z from "zod";
 
-export const snoValidation = z
+export const snoEasyValidation = z.string().min(1, "학번을 입력해주세요.");
+
+export const snoHardValidation = z
     .string()
     .refine(
         (v) => v === "Bossisme" || /^\d{9}$/.test(v),
         "학번은 숫자 9자리입니다."
     );
 
-export const passwordValidation = z
+export const passwordEasyValidation = z
+    .string()
+    .min(1, "비밀번호를 입력해주세요.");
+
+export const passwordHardValidation = z
     .string()
     .min(4, "비밀번호는 4자 이상이어야 합니다.")
     .max(16, "비밀번호는 16자 이하여야 합니다.")
