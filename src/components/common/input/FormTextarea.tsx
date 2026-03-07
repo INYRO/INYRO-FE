@@ -50,7 +50,7 @@ const _Input = (
                 name={name}
                 placeholder={isPlaceholder ? label : rest.placeholder}
                 {...rest}
-                className={`border rounded-[10px] h-20 bg-stroke border-background-200 body-t6 p-4 outline-none focus:border-secondary transition-colors resize-none ${error ? "ring-accent focus:ring-accent" : "focus:ring-secondary ring-background-200"} ${className || ""} `}
+                className={`rounded-[10px] ring-1 h-20 bg-stroke body-t7 p-4 outline-none transition-colors resize-none ${error ? "ring-accent focus:ring-accent" : "focus:ring-secondary ring-background-200"} ${className || ""} `}
             />
             {error && (
                 <span className="flex flex-col body-t5 text-accent mt-[5px]">

@@ -255,7 +255,12 @@ export default function AdminUserManagement() {
                         </tbody>
                     </table>
                 </section>
-                <FormButton text="선택삭제" isLoading={isLoading} />
+                <FormButton
+                    text="선택삭제"
+                    variant="accent"
+                    isLoading={isLoading}
+                    type="submit"
+                />
             </form>
         </div>
     );

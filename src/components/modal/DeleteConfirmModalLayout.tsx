@@ -11,7 +11,7 @@ export default function DeleteConfirmModalLayout({
     onClick,
     isLoading,
 }: DeleteConfirmModalLayout) {
-    const messageText = messageType === "계정" ? "탈퇴" : "삭제";
+    const messageText = messageType === "계정" ? "탈퇴" : "취소";
     return (
         <>
             <p className="body-t1 text-accent text-center">{messageText}안내</p>

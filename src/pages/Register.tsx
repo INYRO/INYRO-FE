@@ -173,10 +173,10 @@ export default function Register() {
                             {errors.root?.message}
                         </span>
                         <div
-                            className={`${errors.root || errors.password ? "mt-2.5" : "mt-[30px]"} `}
+                            className={`${errors.root || errors.password ? "mt-2.5" : "mt-[25px]"} `}
                         >
                             <FormButton
-                                text="회원가입"
+                                text="인증"
                                 type="submit"
                                 isLoading={isLoading}
                             />
